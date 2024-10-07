@@ -1,6 +1,8 @@
+import React from "react";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Link from "next/link";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,7 +30,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div>
+          <div className="h-36">
+            <img className="mx-auto" src="/rainfall_banner.png" alt="Rainfall banner" />
+          </div>
+          <nav className="flex justify-center space-x-4 font-bold text-white my-2">
+            <div><Link href="/">Home</Link></div>
+            <div><Link href="/interactive-map">Interactive Map</Link></div>
+          </nav>
+          <main className="min-h-screen">{children}</main>
+          <footer className="flex row-start-3 justify-center">
+            Footer
+          </footer>
+        </div>
       </body>
     </html>
   );
