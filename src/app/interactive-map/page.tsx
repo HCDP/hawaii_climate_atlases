@@ -1,34 +1,41 @@
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
-import L from 'leaflet'
-import {useMemo} from "react";
+import React, { useMemo } from "react";
 import dynamic from "next/dynamic";
 
+interface Props {
+  position: number[],
+  zoom: number,
+}
+
 export default function InteractiveMap() {
-  const Map = useMemo(() => dynamic(
-    () => import('@/components/Map/Map'),
-    {
-      loading: () => <p>A map is loading</p>,
-      ssr: false
-    }
+  // const Map = useMemo(() => dynamic(
+  //   () => import('@/components/Map/Map'),
+  //   {
+  //     loading: () => <p>A map is loading</p>,
+  //     ssr: false
+  //   }
+  // ), []);
+
+  const Map = useMemo(
+    () => dynamic<Partial<Props>>(
+      () => import('@/components/Map'),
+      {
+        loading: () => (
+          <p className="text-center">
+            Loading map
+          </p>
+        ),
+        ssr: false,
+      }
   ), []);
 
   return (
       <div className="flex justify-center">
-        This is the interactive map
-        <div>
-          <Map />
+        <div className="min-w-full" style={{ width: "100%", height: "800px" }}>
+          <Map
+            position={[21.297, -157.817]}
+            zoom={7.2}
+          />
         </div>
-        {/*<MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>*/}
-        {/*  <TileLayer*/}
-        {/*    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'*/}
-        {/*    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"*/}
-        {/*  />*/}
-        {/*  <Marker position={[51.505, -0.09]}>*/}
-        {/*    <Popup>*/}
-        {/*      A pretty CSS3 popup. <br /> Easily customizable.*/}
-        {/*    </Popup>*/}
-        {/*  </Marker>*/}
-        {/*</MapContainer>*/}
       </div>
   );
 }
