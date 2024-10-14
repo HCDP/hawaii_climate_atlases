@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Link from "next/link";
+import NavBar from "@/components/NavBar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,6 +25,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   // var map = L.map("rainfall-interactive-map").setView([51.505, -0.09], 13);
   // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   //   maxZoom: 19,
@@ -49,16 +50,10 @@ export default function RootLayout({
           <div className="h-36">
             <img className="mx-auto" src="/rainfall_banner.png" alt="Rainfall banner" />
           </div>
-          <nav role="navigation" className="flex justify-center my-2">
-            <ul className="space-x-4 font-bold text-white">
-              <li className="inline">
-                <Link className="hover:text-gray-400" href="/">Home</Link>
-              </li>
-              <li className="inline">
-                <Link className="hover:text-gray-400" href="/interactive-map">Interactive Map</Link>
-              </li>
-            </ul>
-          </nav>
+          <NavBar navLinks={[
+            { text: 'Home', path: '/'},
+            { text: 'Interactive Map', path: '/interactive-map' },
+          ]} />
           <main className="min-h-screen">{children}</main>
           <footer className="flex row-start-3 justify-center">
             Footer

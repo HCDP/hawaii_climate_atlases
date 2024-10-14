@@ -1,22 +1,10 @@
 import React, { useMemo } from "react";
 import dynamic from "next/dynamic";
-
-interface Props {
-  position: number[],
-  zoom: number,
-}
+import { MapProps } from "@/components/Map";
 
 export default function InteractiveMap() {
-  // const Map = useMemo(() => dynamic(
-  //   () => import('@/components/Map/Map'),
-  //   {
-  //     loading: () => <p>A map is loading</p>,
-  //     ssr: false
-  //   }
-  // ), []);
-
   const Map = useMemo(
-    () => dynamic<Partial<Props>>(
+    () => dynamic<Partial<MapProps>>(
       () => import('@/components/Map'),
       {
         loading: () => (
