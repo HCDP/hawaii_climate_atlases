@@ -15,12 +15,12 @@ const NavBar = (props: Props) => {
   const path: string = usePathname();
   const { navLinks } = props;
   return (
-    <nav role="navigation" className="flex justify-center my-2">
-      <ul className="space-x-4 font-bold text-white">
+    <nav role="navigation" className="flex justify-center h-full ">
+      <ul className="space-x-4 font-bold text-white mt-3">
         {navLinks.map(navLink => (
           <li className="inline" key={navLink.path}>
             <Link
-              className={`hover:text-gray-400 ${path === navLink.path && 'text-gray-400'}`}
+              className={`text-nowrap hover:text-gray-400 ${path === navLink.path && 'text-gray-400'}`}
               href={navLink.path}
             >
               {navLink.text}

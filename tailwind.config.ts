@@ -13,6 +13,9 @@ const config: Config = {
         foreground: "var(--foreground)",
       },
     },
+    fontFamily: {
+      serif: [ "Times New Roman", "Times", "ui-serif", "Georgia", "Cambria", "serif" ]
+    },
   },
   plugins: [],
 };
