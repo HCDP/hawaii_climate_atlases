@@ -1,11 +1,11 @@
 "use client"
 
-import React, {ChangeEvent, FormEvent, useCallback, useMemo, useState} from 'react'
-import { MapContainer, Marker, TileLayer, Popup, Tooltip, useMapEvents } from "react-leaflet"
+import React, { ChangeEvent, FormEvent, useCallback, useMemo, useState } from 'react';
+import { MapContainer, Marker, TileLayer, Popup, Tooltip, useMapEvents } from "react-leaflet";
 import { LatLngExpression, LatLng, Map } from "leaflet";
-import "leaflet/dist/leaflet.css"
-import "leaflet-defaulticon-compatibility"
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css"
+import "leaflet/dist/leaflet.css";
+import "leaflet-defaulticon-compatibility";
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 
 export interface Props {
   position: number[],
@@ -15,8 +15,9 @@ export interface Props {
 const parseLocation = (input: string): LatLng | null => {
   const latLng: number[2] = input.split(",").map(s => parseFloat(s));
   if (latLng[0] && latLng[1]) {
-    return new LatLng(21.344875, -157.908248);
+    return new LatLng(latLng[0], latLng[1]);
   } else {
+    console.log("invalid");
     return null;
   }
 }
@@ -32,7 +33,7 @@ const Map: React.FC<Props> = (props: Props) => {
   const ClickHandler = () => {
     const map = useMapEvents({
       click(e) {
-        map.locate();
+        console.log(map.getCenter());
       },
       locationfound: (location) => {
         console.log('Location of cursor:', location)
@@ -46,6 +47,7 @@ const Map: React.FC<Props> = (props: Props) => {
     const parsedLatLng = parseLocation(input);
     if (parsedLatLng !== null) {
       console.log(parsedLatLng);
+      console.log(mp.getCenter());
       mp.setView(parsedLatLng);
     }
   };
@@ -79,8 +81,9 @@ const Map: React.FC<Props> = (props: Props) => {
             <label className="font-bold">
               Location: <input
               type="text"
-              className="border-2 border-gray-500"
+              className="border-2 border-gray-500 pl-1 w-[20rem]"
               name="locationInput"
+              placeholder="Degrees: Latitude, Longitude"
             />
             </label>
           </form>
