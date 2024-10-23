@@ -1,11 +1,35 @@
 "use client"
 
 import React, { ChangeEvent, FormEvent, useCallback, useMemo, useState } from 'react';
-import { MapContainer, Marker, TileLayer, Popup, Tooltip, useMapEvents } from "react-leaflet";
+import {MapContainer, Marker, TileLayer, Popup, Tooltip, useMapEvents, useMap} from "react-leaflet";
 import { LatLngExpression, LatLng, Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
+
+export interface Station {
+  SKN: number,
+  Name: string,
+  Lat_DD: number,
+  Lon_DD: number,
+  Observer: string,
+  MinYear: number,
+  MaxYear: number,
+  JanAvgIn: number,
+  FebAvgIn: number,
+  MarAvgIn: number,
+  AprAvgIn: number,
+  MayAvgIn: number,
+  JunAvgIn: number,
+  JulAvgIn: number,
+  AugAvgIn: number,
+  SepAvgIn: number,
+  OctAvgIn: number,
+  NovAvgIn: number,
+  DecAvgIn: number,
+  DataSources: string,
+  StationStatus: 'Current' | 'Discontinued' | 'Virtual',
+}
 
 export interface Props {
   position: number[],
@@ -13,11 +37,10 @@ export interface Props {
 }
 
 const parseLocation = (input: string): LatLng | null => {
-  const latLng: number[2] = input.split(",").map(s => parseFloat(s));
-  if (latLng[0] && latLng[1]) {
-    return new LatLng(latLng[0], latLng[1]);
+  const [lat, lng] = input.split(",").map(s => parseFloat(s));
+  if (lat && lng) {
+    return new LatLng(lat, lng);
   } else {
-    console.log("invalid");
     return null;
   }
 }
@@ -51,6 +74,7 @@ const Map: React.FC<Props> = (props: Props) => {
       mp.setView(parsedLatLng);
     }
   };
+  // this useMemo might be useless because we're already memoizing the map in interactive-map/page.tsx
   const displayMap = useMemo(() => (
     <MapContainer
       center={position}
@@ -58,19 +82,22 @@ const Map: React.FC<Props> = (props: Props) => {
       dragging={true}
       scrollWheelZoom={true}
       zoomControl={false}
-      style={{ width: "100%", height: "100%", zIndex: "10" }}
+      className="w-full h-full z-10 focus:outline-none"
       ref={setMap}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={position}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
-      <ClickHandler />
+      {/*<Marker position={position}>*/}
+      {/*  <Popup>*/}
+      {/*    A pretty CSS3 popup. <br /> Easily customizable.*/}
+      {/*  </Popup>*/}
+      {/*</Marker>*/}
+      {/*<ClickHandler />*/}
+      {/*{stations ? stations.map((station) => (*/}
+      {/*  <></>*/}
+      {/*)) : ''}*/}
     </MapContainer>
   ), []);
   return (

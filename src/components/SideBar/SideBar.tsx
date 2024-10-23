@@ -7,16 +7,17 @@ export default function SideBar () {
     () => dynamic<Partial<PlotProps>>(
       () => import('../Plot'),
       {
-        ssr: false,
         loading: () => (
           <p>
             Loading Plotly
-          </p>),
+          </p>
+        ),
+        ssr: false,
       },
     ), []);
   return (
     <>
-      <Plot />
+      <Plot title="Mean Monthly Rainfall" />
     </>
   );
 }

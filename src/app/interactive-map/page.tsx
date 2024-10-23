@@ -1,8 +1,16 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { MapProps } from "@/components/Map";
+import { Station, MapProps } from "@/components/Map";
+import { promises as fs } from 'fs';
+import SideBar from "@/components/SideBar";
 
-export default function InteractiveMap() {
+async function loadData () {
+  const file = await fs.readFile(process.cwd() + '/public/FinalStationData_Used_json.json', 'utf8');
+  const stations: Station[] = JSON.parse(file);
+  return stations;
+}
+
+export default async function InteractiveMap() {
   const Map = useMemo(
     () => dynamic<Partial<MapProps>>(
       () => import('@/components/Map'),
@@ -15,10 +23,18 @@ export default function InteractiveMap() {
         ssr: false,
       }
   ), []);
+  await useMemo(() => {
+    loadData().then((stations) => {
+      console.log(stations);
+    });
+  }, []);
 
   return (
-      <div className="flex justify-center">
-        <div className="min-w-full" style={{ width: "100%", height: "800px" }}>
+      <div className="flex">
+        <div className="min-w-[24rem]">
+          <SideBar />
+        </div>
+        <div className="min-w-full w-full" style={{ width: "100%", height: "800px" }}>
           <Map
             position={[21.297, -157.817]}
             zoom={7.2}

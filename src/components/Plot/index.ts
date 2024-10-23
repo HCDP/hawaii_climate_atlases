@@ -1,2 +1,2 @@
-export { default } from './Plot';
-export { Props as PlotProps } from './Plot.tsx';
+export { default } from './Plot.tsx';
+export type { Props as PlotProps } from './Plot.tsx';
