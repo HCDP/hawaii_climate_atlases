@@ -1,8 +1,9 @@
 "use client"
 
 import React, { ChangeEvent, FormEvent, useCallback, useMemo, useState } from 'react';
-import {MapContainer, Marker, TileLayer, Popup, Tooltip, useMapEvents, useMap} from "react-leaflet";
+import {MapContainer, Marker, TileLayer, Popup, Tooltip, useMapEvents, useMap, Polygon} from "react-leaflet";
 import { LatLngExpression, LatLng, Map } from "leaflet";
+import { Circle, Rectangle } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -34,6 +35,7 @@ export interface Station {
 export interface Props {
   position: number[],
   zoom: number,
+  stations: Station[],
 }
 
 const parseLocation = (input: string): LatLng | null => {
@@ -51,6 +53,7 @@ const Map: React.FC<Props> = (props: Props) => {
     // coordinates of UH Manoa
     position = [21.344875, -157.908248],
     zoom = 7.2,
+    stations = null,
   } = props;
   const [mp, setMap] = useState<Map>(null);
   const ClickHandler = () => {
@@ -59,7 +62,7 @@ const Map: React.FC<Props> = (props: Props) => {
         console.log(map.getCenter());
       },
       locationfound: (location) => {
-        console.log('Location of cursor:', location)
+        console.log('Location of cursor:', location);
       },
     });
     return null;
@@ -95,14 +98,45 @@ const Map: React.FC<Props> = (props: Props) => {
       {/*  </Popup>*/}
       {/*</Marker>*/}
       {/*<ClickHandler />*/}
-      {/*{stations ? stations.map((station) => (*/}
-      {/*  <></>*/}
-      {/*)) : ''}*/}
+      {stations && stations.map((station) => {
+        const radius = 100;
+        if (station.StationStatus === 'Current') {
+          return (
+            <Rectangle
+              bounds={[[station.Lat_DD - 0.001, station.Lon_DD - 0.001], [station.Lat_DD + 0.001, station.Lon_DD + 0.001]]}
+              key={station.SKN + ' ' + station.Name}
+              pathOptions={{ color: 'green' }}
+            />
+          );
+        } else if (station.StationStatus === 'Discontinued') {
+          return (
+            <Circle
+              center={[station.Lat_DD, station.Lon_DD]}
+              radius={radius}
+              pathOptions={{ color: 'red' }}
+              key={station.SKN + ' ' + station.Name}
+            />
+          );
+        } else {
+          return (
+            <Polygon
+              positions={[
+                [station.Lat_DD + 0.002, station.Lon_DD],
+                [station.Lat_DD, station.Lon_DD + 0.002],
+                [station.Lat_DD - 0.002, station.Lon_DD],
+                [station.Lat_DD, station.Lon_DD - 0.002],
+              ]}
+              pathOptions={{ color: 'magenta' }}
+              key={station.SKN + ' ' + station.Name}
+            />
+          );
+        }
+      })}
     </MapContainer>
-  ), []);
+  ), [stations]);
   return (
     <>
-      <div className="absolute z-20 p-3 w-full">
+      <div className="absolute z-20 p-3">
         {mp && (
           <form onSubmit={handleLocationChange}>
             <label className="font-bold">
