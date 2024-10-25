@@ -1,8 +1,8 @@
 "use client"
 
-import React, { ChangeEvent, FormEvent, useCallback, useMemo, useState } from 'react';
-import {MapContainer, Marker, TileLayer, Popup, Tooltip, useMapEvents, useMap, Polygon} from "react-leaflet";
-import { LatLngExpression, LatLng, Map } from "leaflet";
+import React, { useMemo, useState } from 'react';
+import {MapContainer, TileLayer, useMapEvents, Polygon } from "react-leaflet";
+import { LatLng, Map } from "leaflet";
 import { Circle, Rectangle } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
@@ -32,12 +32,6 @@ export interface Station {
   StationStatus: 'Current' | 'Discontinued' | 'Virtual',
 }
 
-export interface Props {
-  position: number[],
-  zoom: number,
-  stations: Station[],
-}
-
 const parseLocation = (input: string): LatLng | null => {
   const [lat, lng] = input.split(",").map(s => parseFloat(s));
   if (lat && lng) {
@@ -47,13 +41,21 @@ const parseLocation = (input: string): LatLng | null => {
   }
 }
 
-const Map: React.FC<Props> = (props: Props) => {
+export interface Props {
+  position: number[],
+  zoom: number,
+  stations: Station[],
+  setSelectedStation: (station: Station) => void,
+}
+
+const Map: React.FC<Props> = (props) => {
   // default position and zoom values
   const {
     // coordinates of UH Manoa
     position = [21.344875, -157.908248],
     zoom = 7.2,
     stations = null,
+    setSelectedStation,
   } = props;
   const [mp, setMap] = useState<Map>(null);
   const ClickHandler = () => {
@@ -100,16 +102,20 @@ const Map: React.FC<Props> = (props: Props) => {
       {/*<ClickHandler />*/}
       {stations && stations.map((station) => {
         const radius = 100;
-        if (station.StationStatus === 'Current') {
-          return (
+        switch (station.StationStatus) {
+          case "Current": return (
             <Rectangle
               bounds={[[station.Lat_DD - 0.001, station.Lon_DD - 0.001], [station.Lat_DD + 0.001, station.Lon_DD + 0.001]]}
-              key={station.SKN + ' ' + station.Name}
               pathOptions={{ color: 'green' }}
+              eventHandlers={{
+                click: () => {
+                  setSelectedStation(station);
+                },
+              }}
+              key={station.SKN + ' ' + station.Name}
             />
           );
-        } else if (station.StationStatus === 'Discontinued') {
-          return (
+          case "Discontinued": return (
             <Circle
               center={[station.Lat_DD, station.Lon_DD]}
               radius={radius}
@@ -117,8 +123,8 @@ const Map: React.FC<Props> = (props: Props) => {
               key={station.SKN + ' ' + station.Name}
             />
           );
-        } else {
-          return (
+
+          case "Virtual": return (
             <Polygon
               positions={[
                 [station.Lat_DD + 0.002, station.Lon_DD],

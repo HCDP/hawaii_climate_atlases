@@ -1,8 +1,11 @@
 import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { PlotProps } from "@/components/Plot";
+import { PlotProps } from '@/components/Plot';
+import { Station } from '@/components/Map';
 
-export default function SideBar () {
+const SideBar: React.FC<{
+  selectedStation: Station,
+}> = ({ selectedStation }) => {
   const Plot = useMemo(
     () => dynamic<Partial<PlotProps>>(
       () => import('../Plot'),
@@ -17,7 +20,9 @@ export default function SideBar () {
     ), []);
   return (
     <>
-      <Plot title="Mean Monthly Rainfall" />
+      <Plot title={selectedStation ? selectedStation.Name : 'Mean Monthly Rainfall'} />
     </>
   );
 }
+
+export default SideBar;

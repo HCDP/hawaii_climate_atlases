@@ -7,7 +7,7 @@ export interface Props {
   title: string,
 }
 
-const PlotlyPlot: React.FC = (props: Props) => {
+const PlotlyPlot: React.FC<Props> = (props) => {
   const { title  } = props;
   return (
     <Plot

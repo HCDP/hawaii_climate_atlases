@@ -28,13 +28,14 @@ const ClientInteractiveMap: React.FC<Props> = (props: Props) => {
   return (
     <div className="flex">
       <div className="min-w-[24rem]">
-        <SideBar />
+        <SideBar selectedStation={selectedStation} />
       </div>
       <div className="w-full h-[800px]">
         <Map
           position={[21.297, -157.817]}
           zoom={7.2}
           stations={stations}
+          setSelectedStation={setSelectedStation}
         />
       </div>
     </div>

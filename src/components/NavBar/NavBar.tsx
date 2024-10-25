@@ -4,14 +4,12 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import React from "react";
 
-interface Props {
+const NavBar: React.FC<{
   navLinks: {
     text: string,
     path: string,
   }[]
-}
-
-const NavBar = (props: Props) => {
+}> = (props) => {
   const path: string = usePathname();
   const { navLinks } = props;
   return (
