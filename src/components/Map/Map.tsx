@@ -1,12 +1,12 @@
 "use client"
 
-import React, { useMemo, useState } from 'react';
-import {MapContainer, TileLayer, useMapEvents, Polygon } from "react-leaflet";
+import React, { useMemo, useRef, useState } from 'react';
+import {MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import { LatLng, Map } from "leaflet";
-import { Circle, Rectangle } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
+import StationIcon from "@/components/Map/StationIcon";
 
 export interface Station {
   SKN: number,
@@ -54,21 +54,12 @@ const Map: React.FC<Props> = (props) => {
     // coordinates of UH Manoa
     position = [21.344875, -157.908248],
     zoom = 7.2,
-    stations = null,
+    stations = [],
     setSelectedStation,
   } = props;
   const [mp, setMap] = useState<Map>(null);
-  const ClickHandler = () => {
-    const map = useMapEvents({
-      click(e) {
-        console.log(map.getCenter());
-      },
-      locationfound: (location) => {
-        console.log('Location of cursor:', location);
-      },
-    });
-    return null;
-  }
+  const iconRefs = useRef<StationIcon>([]);
+
   const handleLocationChange = (e: React.SyntheticEvent) => {
     e.preventDefault();
     const input: string = new FormData(e.target).get("locationInput") as string;
@@ -79,6 +70,7 @@ const Map: React.FC<Props> = (props) => {
       mp.setView(parsedLatLng);
     }
   };
+
   // this useMemo might be useless because we're already memoizing the map in interactive-map/page.tsx
   const displayMap = useMemo(() => (
     <MapContainer
@@ -94,52 +86,19 @@ const Map: React.FC<Props> = (props) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {/*<Marker position={position}>*/}
-      {/*  <Popup>*/}
-      {/*    A pretty CSS3 popup. <br /> Easily customizable.*/}
-      {/*  </Popup>*/}
-      {/*</Marker>*/}
-      {/*<ClickHandler />*/}
-      {stations && stations.map((station) => {
-        const radius = 100;
-        switch (station.StationStatus) {
-          case "Current": return (
-            <Rectangle
-              bounds={[[station.Lat_DD - 0.001, station.Lon_DD - 0.001], [station.Lat_DD + 0.001, station.Lon_DD + 0.001]]}
-              pathOptions={{ color: 'green' }}
-              eventHandlers={{
-                click: () => {
-                  setSelectedStation(station);
-                },
-              }}
-              key={station.SKN + ' ' + station.Name}
-            />
-          );
-          case "Discontinued": return (
-            <Circle
-              center={[station.Lat_DD, station.Lon_DD]}
-              radius={radius}
-              pathOptions={{ color: 'red' }}
-              key={station.SKN + ' ' + station.Name}
-            />
-          );
-
-          case "Virtual": return (
-            <Polygon
-              positions={[
-                [station.Lat_DD + 0.002, station.Lon_DD],
-                [station.Lat_DD, station.Lon_DD + 0.002],
-                [station.Lat_DD - 0.002, station.Lon_DD],
-                [station.Lat_DD, station.Lon_DD - 0.002],
-              ]}
-              pathOptions={{ color: 'magenta' }}
-              key={station.SKN + ' ' + station.Name}
-            />
-          );
-        }
-      })}
+      {stations.map((station, index) => (
+        <StationIcon
+          station={station}
+          onClick={setSelectedStation}
+          ref={element => {
+            iconRefs.current[index] = element;
+          }}
+          key={index}
+        />
+      ))}
     </MapContainer>
   ), [stations]);
+
   return (
     <>
       <div className="absolute z-20 p-3">
