@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useMemo, useRef, useState } from 'react';
-import {MapContainer, TileLayer, useMapEvents } from "react-leaflet";
+import {MapContainer, TileLayer, useMap, useMapEvents} from "react-leaflet";
 import { LatLng, Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
@@ -41,6 +41,17 @@ const parseLocation = (input: string): LatLng | null => {
   }
 }
 
+const handleLocationChange = (e: React.SyntheticEvent, map: Map) => {
+  e.preventDefault();
+  const input: string = new FormData(e.target).get("locationInput") as string;
+  const parsedLatLng = parseLocation(input);
+  if (parsedLatLng !== null) {
+    console.log(parsedLatLng);
+    console.log(map.getCenter());
+    map.setView(parsedLatLng);
+  }
+};
+
 export interface Props {
   position: number[],
   zoom: number,
@@ -58,18 +69,33 @@ const Map: React.FC<Props> = (props) => {
     setSelectedStation,
   } = props;
   const [mp, setMap] = useState<Map>(null);
-  const iconRefs = useRef<StationIcon>([]);
+  const iconRefs = useRef([]);
 
-  const handleLocationChange = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    const input: string = new FormData(e.target).get("locationInput") as string;
-    const parsedLatLng = parseLocation(input);
-    if (parsedLatLng !== null) {
-      console.log(parsedLatLng);
-      console.log(mp.getCenter());
-      mp.setView(parsedLatLng);
-    }
-  };
+  const ZoomendHandler = () => {
+    const map = useMapEvents({
+      zoomend: () => {
+        console.log("Finished zoom");
+        const icons = iconRefs.current;
+        let radius: number;
+        const zoom = map.getZoom();
+        const pivotZoom = 12;
+        const pivotRadius = 160;
+        //scaled
+        if (zoom > pivotZoom) {
+          const scale = map.getZoomScale(pivotZoom, map.getZoom());
+          radius = pivotRadius * scale;
+        }
+        //static
+        else {
+          radius = pivotRadius;
+        }
+        icons.forEach(icon => {
+          icon.setRadius(radius);
+        });
+      }
+    });
+    return null;
+  }
 
   // this useMemo might be useless because we're already memoizing the map in interactive-map/page.tsx
   const displayMap = useMemo(() => (
@@ -96,6 +122,7 @@ const Map: React.FC<Props> = (props) => {
           key={index}
         />
       ))}
+      <ZoomendHandler />
     </MapContainer>
   ), [stations]);
 
@@ -103,14 +130,14 @@ const Map: React.FC<Props> = (props) => {
     <>
       <div className="absolute z-20 p-3">
         {mp && (
-          <form onSubmit={handleLocationChange}>
+          <form onSubmit={e => handleLocationChange(e, mp)}>
             <label className="font-bold">
               Location: <input
-              type="text"
-              className="border-2 border-gray-500 pl-1 w-[20rem]"
-              name="locationInput"
-              placeholder="Degrees: Latitude, Longitude"
-            />
+                type="text"
+                className="border-2 border-gray-500 pl-1 w-[20rem]"
+                name="locationInput"
+                placeholder="Degrees: Latitude, Longitude"
+              />
             </label>
           </form>
         )}
