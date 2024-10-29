@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useMemo, useRef, useState } from 'react';
-import {MapContainer, TileLayer, useMap, useMapEvents} from "react-leaflet";
+import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import { LatLng, Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
@@ -74,23 +74,12 @@ const Map: React.FC<Props> = (props) => {
   const ZoomendHandler = () => {
     const map = useMapEvents({
       zoomend: () => {
-        console.log("Finished zoom");
         const icons = iconRefs.current;
-        let radius: number;
         const zoom = map.getZoom();
-        const pivotZoom = 12;
-        const pivotRadius = 160;
-        //scaled
-        if (zoom > pivotZoom) {
-          const scale = map.getZoomScale(pivotZoom, map.getZoom());
-          radius = pivotRadius * scale;
-        }
-        //static
-        else {
-          radius = pivotRadius;
-        }
+        const pivotZoom = 13;
+        const scale = zoom > pivotZoom ? map.getZoomScale(pivotZoom, map.getZoom()) : 1;
         icons.forEach(icon => {
-          icon.setRadius(radius);
+          icon.reSize(scale);
         });
       }
     });
@@ -119,9 +108,38 @@ const Map: React.FC<Props> = (props) => {
           ref={element => {
             iconRefs.current[index] = element;
           }}
+          scale={1}
           key={index}
         />
       ))}
+      {/*<StationIcon*/}
+      {/*  station={{*/}
+      {/*    "SKN": 514,*/}
+      {/*    "Name": "Gage 40",*/}
+      {/*    "Lat_DD": 21.137,*/}
+      {/*    "Lon_DD": -157.20442,*/}
+      {/*    "DataSources": "Fill, State",*/}
+      {/*    "StationStatus": "Current"*/}
+
+      {/*  }}*/}
+      {/*  onClick={setSelectedStation}*/}
+      {/*  scale={1}*/}
+      {/*  key={"asdfasfasdfasfasfdsafsafas"}*/}
+      {/*/>*/}
+      {/*<StationIcon*/}
+      {/*  station={{*/}
+      {/*    "SKN": 514,*/}
+      {/*    "Name": "Gage 40",*/}
+      {/*    "Lat_DD": 21.137,*/}
+      {/*    "Lon_DD": -157.20442,*/}
+      {/*    "DataSources": "Fill, State",*/}
+      {/*    "StationStatus": "Discontinued"*/}
+
+      {/*  }}*/}
+      {/*  onClick={setSelectedStation}*/}
+      {/*  scale={1}*/}
+      {/*  key={"asdfasfasdfasfasfdsafsafasa"}*/}
+      {/*/>*/}
       <ZoomendHandler />
     </MapContainer>
   ), [stations]);
