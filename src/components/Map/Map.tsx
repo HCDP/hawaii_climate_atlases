@@ -99,7 +99,8 @@ const Map: React.FC<Props> = (props) => {
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
       />
       {stations.map((station, index) => (
         <StationIcon

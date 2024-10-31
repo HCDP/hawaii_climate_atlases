@@ -20,7 +20,7 @@ const SideBar: React.FC<{
     ), []);
   return (
     <>
-      <Plot title={selectedStation ? selectedStation.Name : 'Mean Monthly Rainfall'} />
+      <Plot station={selectedStation || null} />
     </>
   );
 }
