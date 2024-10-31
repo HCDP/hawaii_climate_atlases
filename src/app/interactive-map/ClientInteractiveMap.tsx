@@ -12,6 +12,7 @@ interface Props {
 const ClientInteractiveMap: React.FC<Props> = (props: Props) => {
   const { stations } = props;
   const [selectedStation, setSelectedStation] = useState<Station>(null);
+  const [selectedUnits, setSelectedUnits] = useState<"IN" | "MM">("IN");
   const Map = useMemo(
     () => dynamic<Partial<MapProps>>(
       () => import('@/components/Map'),
@@ -27,15 +28,16 @@ const ClientInteractiveMap: React.FC<Props> = (props: Props) => {
 
   return (
     <div className="flex">
-      <div className="min-w-[24rem]">
+      <div className="min-w-[24rem] max-h-[800px]">
         <SideBar selectedStation={selectedStation} />
       </div>
-      <div className="w-full h-[800px]">
+      <div className="w-full h-screen">
         <Map
           position={[21.297, -157.817]}
           zoom={7.2}
           stations={stations}
           setSelectedStation={setSelectedStation}
+          setSelectedUnits={setSelectedUnits}
         />
       </div>
     </div>

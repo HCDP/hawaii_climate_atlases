@@ -69,7 +69,7 @@ export default function RootLayout({
           <main className="min-h-screen max-w-screen font-serif">
             {children}
           </main>
-          <footer className="flex row-start-3 justify-center">
+          <footer className="flex justify-center">
             Footer
           </footer>
         </div>

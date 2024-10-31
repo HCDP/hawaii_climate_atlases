@@ -16,18 +16,18 @@ export interface Station {
   Observer: string,
   MinYear: number,
   MaxYear: number,
-  JanAvgIn: number,
-  FebAvgIn: number,
-  MarAvgIn: number,
-  AprAvgIn: number,
-  MayAvgIn: number,
-  JunAvgIn: number,
-  JulAvgIn: number,
-  AugAvgIn: number,
-  SepAvgIn: number,
-  OctAvgIn: number,
-  NovAvgIn: number,
-  DecAvgIn: number,
+  JanAvgIN: number,
+  FebAvgIN: number,
+  MarAvgIN: number,
+  AprAvgIN: number,
+  MayAvgIN: number,
+  JunAvgIN: number,
+  JulAvgIN: number,
+  AugAvgIN: number,
+  SepAvgIN: number,
+  OctAvgIN: number,
+  NovAvgIN: number,
+  DecAvgIN: number,
   DataSources: string,
   StationStatus: 'Current' | 'Discontinued' | 'Virtual',
 }
@@ -147,18 +147,20 @@ const Map: React.FC<Props> = (props) => {
 
   return (
     <>
-      <div className="absolute z-20 p-3">
+      <div className="absolute z-20 p-3 h-[200px]">
         {mp && (
-          <form onSubmit={e => handleLocationChange(e, mp)}>
-            <label className="font-bold">
-              Location: <input
-                type="text"
-                className="border-2 border-gray-500 pl-1 w-[20rem]"
-                name="locationInput"
-                placeholder="Degrees: Latitude, Longitude"
-              />
-            </label>
-          </form>
+          <div className="flex h-full">
+            <form onSubmit={e => handleLocationChange(e, mp)}>
+              <label className="font-bold">
+                Location: <input
+                  type="text"
+                  className="border-2 border-gray-500 pl-1 w-[20rem]"
+                  name="locationInput"
+                  placeholder="Degrees: Latitude, Longitude"
+                />
+              </label>
+            </form>
+          </div>
         )}
       </div>
       {displayMap}
