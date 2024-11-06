@@ -8,7 +8,7 @@ interface Props {
   scale: number,
 }
 
-const StationIcon = forwardRef(function StationIcon(props: Props, ref) {
+export const StationIcon = forwardRef(function StationIcon(props: Props, ref) {
   const {
     station,
     onClick,
@@ -87,5 +87,3 @@ const StationIcon = forwardRef(function StationIcon(props: Props, ref) {
       );
   }
 });
-
-export default StationIcon;

@@ -9,9 +9,8 @@ const NavBar: React.FC<{
     text: string,
     path: string,
   }[]
-}> = (props) => {
+}> = ({ navLinks }) => {
   const path: string = usePathname();
-  const { navLinks } = props;
   return (
     <nav role="navigation" className="flex justify-center h-full ">
       <ul className="space-x-4 font-bold text-white mt-3">

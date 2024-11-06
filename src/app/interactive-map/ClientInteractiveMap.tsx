@@ -5,12 +5,9 @@ import { MapProps, Station } from '@/components/Map';
 import SideBar from "@/components/SideBar";
 import dynamic from "next/dynamic";
 
-interface Props {
+const ClientInteractiveMap: React.FC<{
   stations: Station[],
-}
-
-const ClientInteractiveMap: React.FC<Props> = (props: Props) => {
-  const { stations } = props;
+}> = ({ stations }) => {
   const [selectedStation, setSelectedStation] = useState<Station>(null);
   const [selectedUnits, setSelectedUnits] = useState<"IN" | "MM">("IN");
   const Map = useMemo(
@@ -27,14 +24,15 @@ const ClientInteractiveMap: React.FC<Props> = (props: Props) => {
     ), []);
 
   return (
-    <div className="flex">
-      <div className="min-w-[24rem] max-h-[800px]">
-        <SideBar selectedStation={selectedStation} />
+    <div className="flex font-sans">
+      <div className="min-w-[24rem] max-h-screen">
+        <SideBar selectedStation={selectedStation} selectedUnits={selectedUnits} />
       </div>
-      <div className="w-full h-screen">
+      <div className="bg-gray-300 w-1 h-screen" />
+      <div className="w-screen h-screen">
         <Map
           position={[21.297, -157.817]}
-          zoom={7.2}
+          zoom={7}
           stations={stations}
           setSelectedStation={setSelectedStation}
           setSelectedUnits={setSelectedUnits}

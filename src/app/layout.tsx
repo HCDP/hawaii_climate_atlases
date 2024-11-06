@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
+import { NextUIProvider } from "@nextui-org/react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -46,34 +47,37 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div>
-          <div className="bg-[#708090]">
-            {/*<div className="h-[140px] bg-[url('/rainfall_banner.png')] bg-top bg-no-repeat overflow-visible" />*/}
-            <div className="h-[140px] overflow-visible">
-              <img className="mx-auto max-h-none max-w-none" src="/rainfall_banner.png" alt="rainfall banner" />
+        <NextUIProvider>
+          <div>
+            <div className="bg-[#708090]">
+              {/*<div className="h-[140px] bg-[url('/rainfall_banner.png')] bg-top bg-no-repeat overflow-visible" />*/}
+              <div className="h-[140px] overflow-visible">
+                <img className="mx-auto max-h-none max-w-none" src="/rainfall_banner.png" alt="Rainfall Atlas of Hawaii banner" />
+              </div>
+              <div className="h-[45px] w-full min-w-[972px] bg-[url('/navi_bg.gif')]">
+                <NavBar navLinks={[
+                  { text: 'Home', path: '/'},
+                  { text: 'Interactive Map', path: '/interactive-map' },
+                  { text: 'Downloads', path: '/downloads'},
+                  { text: 'How to cite', path: '/how-to-cite' },
+                  { text: 'History', path: '/history'},
+                  { text: 'Methods', path: '/methods' },
+                  { text: 'Rainfall', path: '/rainfall' },
+                  { text: 'Acknowledgements', path: '/acknowledgements' },
+                  { text: 'People', path: '/people' },
+                ]} />
+              </div>
             </div>
-            <div className="h-[45px] w-full min-w-[972px] bg-[url('/navi_bg.gif')]">
-              <NavBar navLinks={[
-                { text: 'Home', path: '/'},
-                { text: 'Interactive Map', path: '/interactive-map' },
-                { text: 'Downloads', path: '/downloads'},
-                { text: 'How to cite', path: '/how-to-cite' },
-                { text: 'History', path: '/history'},
-                { text: 'Methods', path: '/methods' },
-                { text: 'Rainfall', path: '/rainfall' },
-                { text: 'Acknowledgements', path: '/acknowledgements' },
-                { text: 'People', path: '/people' },
-              ]} />
-            </div>
+            <main className="min-h-screen max-w-screen font-serif">
+              {children}
+            </main>
+            <footer className="flex justify-center">
+              Footer
+            </footer>
           </div>
-          <main className="min-h-screen max-w-screen font-serif">
-            {children}
-          </main>
-          <footer className="flex justify-center">
-            Footer
-          </footer>
-        </div>
+        </NextUIProvider>
       </body>
     </html>
+
   );
 }

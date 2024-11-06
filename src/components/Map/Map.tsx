@@ -1,12 +1,15 @@
 "use client"
 
 import React, { useMemo, useRef, useState } from 'react';
-import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
+import {MapContainer, TileLayer, useMapEvents, ZoomControl} from "react-leaflet";
 import { LatLng, Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-import StationIcon from "@/components/Map/StationIcon";
+import { StationIcon } from "@/components/Map";
+import FitScreenOutlined from "@mui/icons-material/FitScreenOutlined";
+import { Button } from "@nextui-org/button";
+import { Input } from "@nextui-org/input";
 
 export interface Station {
   SKN: number,
@@ -59,16 +62,15 @@ export interface Props {
   setSelectedStation: (station: Station) => void,
 }
 
-const Map: React.FC<Props> = (props) => {
-  // default position and zoom values
-  const {
-    // coordinates of UH Manoa
+const Map: React.FC<Props> = (
+  {
     position = [21.344875, -157.908248],
-    zoom = 7.2,
+    zoom = 7,
     stations = [],
-    setSelectedStation,
-  } = props;
-  const [mp, setMap] = useState<Map>(null);
+    setSelectedStation
+  }: Props
+) => {
+  const [mp, setMp] = useState<Map>(null);
   const iconRefs = useRef([]);
 
   const ZoomendHandler = () => {
@@ -87,15 +89,15 @@ const Map: React.FC<Props> = (props) => {
   }
 
   // this useMemo might be useless because we're already memoizing the map in interactive-map/page.tsx
-  const displayMap = useMemo(() => (
+  const displayMap = (
     <MapContainer
       center={position}
       zoom={zoom}
       dragging={true}
-      scrollWheelZoom={true}
+      scrollWheelZoom={false}
       zoomControl={false}
       className="w-full h-full z-10 focus:outline-none"
-      ref={setMap}
+      ref={setMp}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -141,30 +143,40 @@ const Map: React.FC<Props> = (props) => {
       {/*  scale={1}*/}
       {/*  key={"asdfasfasdfasfasfdsafsafasa"}*/}
       {/*/>*/}
+      <ZoomControl position="bottomleft" />
       <ZoomendHandler />
     </MapContainer>
-  ), [stations]);
+  );
 
   return (
-    <>
-      <div className="absolute z-20 p-3 h-[200px]">
+    <div className="relative w-full h-full">
+      <div className="absolute w-full z-20">
         {mp && (
-          <div className="flex h-full">
+          <div className="flex justify-between m-4">
             <form onSubmit={e => handleLocationChange(e, mp)}>
-              <label className="font-bold">
-                Location: <input
-                  type="text"
-                  className="border-2 border-gray-500 pl-1 w-[20rem]"
-                  name="locationInput"
-                  placeholder="Degrees: Latitude, Longitude"
-                />
-              </label>
+              <Input
+                name="locationInput"
+                color="default"
+                radius="sm"
+                placeholder="Location: Latitude, Longitude (degrees)"
+                style={{ width: "20rem" }} />
             </form>
+            <div>
+              <Button
+                onPress={() => mp.getContainer().focus()}
+                radius="full"
+                size="lg"
+                isIconOnly
+                className="bg-white"
+              >
+                <FitScreenOutlined />
+              </Button>
+            </div>
           </div>
         )}
       </div>
       {displayMap}
-    </>
+    </div>
   );
 }
 
