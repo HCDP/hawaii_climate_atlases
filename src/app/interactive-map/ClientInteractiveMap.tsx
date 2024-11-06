@@ -28,15 +28,19 @@ const ClientInteractiveMap: React.FC<{
       <div className="min-w-[24rem] max-h-screen">
         <SideBar selectedStation={selectedStation} selectedUnits={selectedUnits} />
       </div>
-      <div className="bg-gray-300 w-1 h-screen" />
-      <div className="w-screen h-screen">
-        <Map
-          position={[21.297, -157.817]}
-          zoom={7}
-          stations={stations}
-          setSelectedStation={setSelectedStation}
-          setSelectedUnits={setSelectedUnits}
-        />
+      <div className="w-full h-full max-h-screen">
+        <div className="w-full h-full flex justify-center">
+          <div className="mt-24 w-[1366px] h-[768px]">
+            <Map
+              position={[21.297, -157.817]}
+              zoom={7}
+              stations={stations}
+              setSelectedStation={setSelectedStation}
+              setSelectedUnits={setSelectedUnits}
+            />
+          </div>
+        </div>
+        <div className="min-h-24 p-4">Units</div>
       </div>
     </div>
   );

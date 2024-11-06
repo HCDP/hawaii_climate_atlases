@@ -55,8 +55,8 @@ const SideBar: React.FC<{
   ] : [];
 
   return (
-    <div className="flex flex-col max-h-full p-4">
-      <div className="h-[300px]">
+    <div className="flex flex-col max-h-full items-stretch h-full">
+      <div className="h-[300px] p-4 shrink-0">
         <Plot
           stationName={selectedStation && selectedStation.Name}
           xdata={months}
@@ -64,7 +64,7 @@ const SideBar: React.FC<{
           units={selectedUnits}
         />
       </div>
-      <div className="overflow-y-auto">
+      <div className="overflow-y-auto px-4 grow pt-0 mt-0">
         {selectedStation && (
           <Accordion
             isCompact
@@ -76,7 +76,7 @@ const SideBar: React.FC<{
               key="rainfall-data"
               aria-label="Rainfall Data"
               title="Rainfall Data"
-              classNames={{ title: "font-extrabold text-gray-600" }}
+              classNames={{ title: "font-extrabold text-gray-600", trigger: "" }}
             >
               <Table
                 removeWrapper
@@ -84,8 +84,7 @@ const SideBar: React.FC<{
                 classNames={{ th: "first:rounded-s-md last:rounded-e-md" }}
               >
                 <TableHeader columns={rainfallColumns}>
-                  <TableColumn key="month">Month</TableColumn>
-                  <TableColumn key="data" align="end">Rainfall</TableColumn>
+                  {(column) => <TableColumn key={column.key} align={column.key === 'data' ? 'end' : 'start'}>{column.label}</TableColumn>}
                 </TableHeader>
                 <TableBody items={rainfallRows}>
                   {item => (
@@ -111,7 +110,7 @@ const SideBar: React.FC<{
                 classNames={{ th: "first:rounded-s-md last:rounded-e-md" }}
               >
                 <TableHeader columns={stationColumns}>
-                  {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                  {(column) => <TableColumn key={column.key} align={column.key === 'value' ? 'end' : 'start'}>{column.label}</TableColumn>}
                 </TableHeader>
                 <TableBody items={stationRows}>
                   {item => (
