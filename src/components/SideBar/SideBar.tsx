@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { PlotProps } from '@/components/Plot';
-import { Station } from '@/components/Map';
+import Plot from '@/components/Plot';
+import { Station } from '../maps/Map';
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/table";
 import {getKeyValue} from "@nextui-org/react";
@@ -13,18 +13,6 @@ const SideBar: React.FC<{
   selectedStation: Station | null,
   selectedUnits: "IN" | "MM",
 }> = ({ selectedStation, selectedUnits }) => {
-  const Plot = useMemo(
-    () => dynamic<Partial<PlotProps>>(
-      () => import('../Plot'),
-      {
-        loading: () => (
-          <p>
-            Loading Plotly
-          </p>
-        ),
-        ssr: false,
-      },
-    ), []);
 
   const stationData: number[] = selectedStation ? months.map(month =>
     Math.max(selectedStation[`${month}Avg${selectedUnits}`], 0)

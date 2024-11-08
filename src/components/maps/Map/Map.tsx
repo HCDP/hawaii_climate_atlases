@@ -6,7 +6,7 @@ import { LatLng, Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-import { StationIcon } from "@/components/Map";
+import { StationIcon } from "@/components/maps/Map/index";
 import FitScreenOutlined from "@mui/icons-material/FitScreenOutlined";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
