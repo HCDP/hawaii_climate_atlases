@@ -10,7 +10,7 @@ const fullMonths = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const SideBar: React.FC<{
-  selectedStation: Station | null,
+  selectedStation?: Station,
   selectedUnits: "IN" | "MM",
 }> = ({ selectedStation, selectedUnits }) => {
 
