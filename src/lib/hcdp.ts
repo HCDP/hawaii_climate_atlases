@@ -8,7 +8,11 @@ export async function getDefaultData () {
 }
 
 // files api base url
-const baseUrl = "https:/ikeauth.its.hawaii.edu/files/v2/download/public/system/ikewai-annotated-data/HCDP/production/";
+const filesBaseUrl = "https:/ikeauth.its.hawaii.edu/files/v2/download/public/system/ikewai-annotated-data/HCDP/production";
+const mesonetBaseUrl = "https://api.hcdp.ikewai.org/mesonet";
+const authorization = {
+  "Authorization": `Bearer ${process.env.HCDP_API_KEY}`
+}
 // rainfall/
 // <production>/
 // <period>/
@@ -43,8 +47,7 @@ export async function fetchRainfallFile(
   // const extension = "csv";
 
   // const fileUrl = `${baseUrl}rainfall/${production}/${period}/${extent}/${fill}/${filetype}/${year}/rainfall_${production}_${period}_${extent}_${filetype}_${year}.${extension}`;
-  const fileUrl = `${baseUrl}rainfall/${production}/${period}/${extent}/${fill}/${filetype}/${year}/${month}/rainfall_${production}_${period}_${extent}_${fill}_${filetype}_${year}_${month}.${extension}`;
-  console.log("The URL: " + fileUrl);
+  const fileUrl = `${filesBaseUrl}/rainfall/${production}/${period}/${extent}/${fill}/${filetype}/${year}/${month}/rainfall_${production}_${period}_${extent}_${fill}_${filetype}_${year}_${month}.${extension}`;
   try {
     const response = await fetch(fileUrl);
     if (!response.ok) {
@@ -61,17 +64,53 @@ export async function fetchStations() {
   let fetchedStations;
   try {
     fetchedStations = await fetch(
-      "https://api.hcdp.ikewai.org/mesonet/getStations",
+      `${mesonetBaseUrl}/getStations`,
       {
-        headers: {
-          "Authorization": "Bearer " + process.env.HCDP_API_KEY,
-        }
+        headers: authorization
+      }
+    )
+      .then(response => {
+        return response.json()
+      })
+      .then(data => {
+        return data
+      });
+  } catch (error) {
+    console.error("Error fetching stations:", error);
+  }
+  return fetchedStations;
+}
+
+export async function fetchVariables(station_id: number) {
+  let fetchedVariables;
+  try {
+    fetchedVariables = await fetch(
+      `${mesonetBaseUrl}/getVariables?station_id=${station_id}`,
+      {
+        headers: authorization
       }
     )
       .then(response => response.json())
       .then(data => data);
   } catch (error) {
-    console.error("Error fetching rainfall data:", error);
+    console.error("Error fetching variables:", error);
   }
-  return fetchedStations;
+  return fetchedVariables;
+}
+
+export async function fetchMeasurements(station_id: number, vars: string[]) {
+  let fetchedVariables;
+  try {
+    fetchedVariables = await fetch(
+      `${mesonetBaseUrl}/getMeasurements?station_id=${station_id}&var_ids=${vars.join(",")}&limit=200`,
+      {
+        headers: authorization
+      }
+    )
+      .then(response => response.json())
+      .then(data => data);
+  } catch (error) {
+    console.error("Error fetching measurements:", error);
+  }
+  return fetchedVariables;
 }

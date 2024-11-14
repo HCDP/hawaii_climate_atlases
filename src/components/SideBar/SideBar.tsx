@@ -70,6 +70,7 @@ const SideBar: React.FC<{
                 removeWrapper
                 isCompact
                 classNames={{ th: "first:rounded-s-md last:rounded-e-md" }}
+                aria-label="Rainfall data table"
               >
                 <TableHeader columns={rainfallColumns}>
                   {(column) => <TableColumn key={column.key} align={column.key === 'data' ? 'end' : 'start'}>{column.label}</TableColumn>}
@@ -96,6 +97,7 @@ const SideBar: React.FC<{
                 removeWrapper
                 isCompact
                 classNames={{ th: "first:rounded-s-md last:rounded-e-md" }}
+                aria-label="Station information table"
               >
                 <TableHeader columns={stationColumns}>
                   {(column) => <TableColumn key={column.key} align={column.key === 'value' ? 'end' : 'start'}>{column.label}</TableColumn>}

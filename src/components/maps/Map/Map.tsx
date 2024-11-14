@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {MapContainer, TileLayer, useMapEvents, ZoomControl} from "react-leaflet";
 import { LatLng, Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -94,7 +94,7 @@ const Map: React.FC<Props> = (
       center={position}
       zoom={zoom}
       dragging={true}
-      scrollWheelZoom={false}
+      scrollWheelZoom={true}
       zoomControl={false}
       className="w-full h-full z-10 focus:outline-none"
       ref={setMp}
@@ -159,15 +159,18 @@ const Map: React.FC<Props> = (
                 color="default"
                 radius="sm"
                 placeholder="Location: Latitude, Longitude (degrees)"
-                style={{ width: "20rem" }} />
+                className="shadow-md rounded-lg"
+                style={{ width: "20rem" }}
+              />
             </form>
-            <div>
+            <div className="rounded-full shadow-md">
               <Button
                 onPress={() => mp.getContainer().focus()}
                 radius="full"
                 size="lg"
                 isIconOnly
-                className="bg-white"
+                title="Fit to screen"
+                className="bg-white shadow-md"
               >
                 <FitScreenOutlined />
               </Button>
