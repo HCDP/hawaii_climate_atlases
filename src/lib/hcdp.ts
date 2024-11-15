@@ -1,10 +1,9 @@
-import { promises as fs } from "fs";
-import { Station } from "@/components/maps/Map";
+import {promises as fs} from "fs";
+import {Station} from "@/components/maps/Map";
 
-export async function getDefaultData () {
-  const file = await fs.readFile(process.cwd() + '/public/FinalStationData_Used_json.json', 'utf8');
-  const stations: Station[] = JSON.parse(file);
-  return stations;
+export async function getDefaultData (): Promise<Station[]> {
+  return await fs.readFile(process.cwd() + '/public/FinalStationData_Used_json.json', 'utf8')
+    .then(file => JSON.parse(file));
 }
 
 // files api base url
@@ -24,40 +23,79 @@ const authorization = {
 // rainfall_<production>_<period>_<extent>[_<fill>]_<filetype>_<year>_<month>[_<day>]
 // .<extension>
 
-export async function fetchRainfallFile(
-  {
-    production = "new", // "new" or "legacy"
-    period = "month", // "month" or "day"
-    extent = "statewide", // "statewide", "bi", "ka", "mn", "oa"
-    fill = "partial", // "raw" or "partial"
-    filetype = "station_data", // "data_map", "se", "anom", "anom_se", "metadata", "station_data"
-    year = "2022", // 4-digit year, e.g., "2022
-    month = "03", // 2-digit month, e.g., "03"
-    day = "", // 2-digit day (optional, only for daily data)
-    extension = "csv",
-  }) {
-  // const production = "new"; // "new" or "legacy"
-  // const period = "month"; // "month" or "day"
-  // const extent = "statewide"; // "statewide", "bi", "ka", "mn", "oa"
-  // const fill = "partial"; // "raw" or "partial"
-  // const filetype = "station_data"; // "data_map", "se", "anom", "anom_se", "metadata", "station_data"
-  // const year = "2012"; // 4-digit year, e.g., "2022"
-  // const month = "03"; // 2-digit month, e.g., "03"
-  // const day = ""; // 2-digit day (optional, only for daily data)
-  // const extension = "csv";
+interface rainfallFilesProps {
+  production?: "new" | "legacy",
+  periods?: "month" | "day",
+  extents?: "statewide" | "bi" | "ka" | "mn" | "oa",
+  fill?: "raw" | "partial",
+  filetype?: "data_map" | "se" | "anom" | "anom_se" | "metadata" | "station_data",
+  year?: string,
+  month?: string,
+  day?: string,
+  extnesion?: "tif" | "csv" | "txt",
+}
 
-  // const fileUrl = `${baseUrl}rainfall/${production}/${period}/${extent}/${fill}/${filetype}/${year}/rainfall_${production}_${period}_${extent}_${filetype}_${year}.${extension}`;
-  const fileUrl = `${filesBaseUrl}/rainfall/${production}/${period}/${extent}/${fill}/${filetype}/${year}/${month}/rainfall_${production}_${period}_${extent}_${fill}_${filetype}_${year}_${month}.${extension}`;
+export async function test(
+  production: string = "legacy", // "new" or "legacy"
+  period: string = "month", // "month" or "day"
+  extent: string = "statewide", // "statewide", "bi", "ka", "mn", "oa"
+  fill: string = "partial", // "raw" or "partial"
+  filetype: string = "station_data", // "data_map", "se", "anom", "anom_se", "metadata", "station_data"
+  year: string = "1990", // 4-digit year, e.g., "2022
+  month?: string, // 2-digit month, e.g., "03"
+  day?: string, // 2-digit day (optional, only for daily data)
+  extension: string = "csv",
+) {
+
+}
+
+export async function fetchRainfallData(
+    production: string = "new", // "new" or "legacy"
+    period: string = "month", // "month" or "day"
+    extent: string = "statewide", // "statewide", "bi", "ka", "mn", "oa"
+    fill: string = "partial", // "raw" or "partial"
+    filetype: string = "station_data", // "data_map", "se", "anom", "anom_se", "metadata", "station_data"
+    year: string = "1990", // 4-digit year, e.g., "2022
+    month?: string, // 2-digit month, e.g., "03"
+    day?: string, // 2-digit day (optional, only for daily data)
+    extension: string = "csv",
+  ) {
+
+  if (!process.env.HCDP_API_KEY) {
+    return await getDefaultData();
+  }
+
+  let fetchedFile;
+  const fileUrl: string = `${filesBaseUrl}/rainfall/${production}/${period}/${extent}/${fill}/${filetype}/${year}/${month ? `${month}/` : ''}${day ? `${day}/` : ''}rainfall_${production}_${period}_${extent}_${filetype}_${year}${month ? `_${month}/` : ''}.${extension}`;
+  // const testUrl = `${filesBaseUrl}/rainfall/new/month/statewide/partial/station_data/1990/rainfall_new_month_statewide_station_data_1990.csv`
+  const testUrl = `${filesBaseUrl}/rainfall/legacy/month/statewide/station_data/1990/rainfall_legacy_month_statewide_station_data_1990.csv`;
   try {
-    const response = await fetch(fileUrl);
-    if (!response.ok) {
-      throw new Error("Server did not respond properly.");
-    } else {
-      return response;
-    }
+    fetchedFile = await fetch(testUrl).then(res => {
+      return res.text();
+    }).then(csvString => {
+      console.log("The string: ", csvString);
+      const lines = csvString.split("\n");
+      const columnsString = lines.shift();
+      const columns = columnsString ? columnsString.split(",") : [];
+      // console.log(columnsString);
+      // console.log(columns);
+      const rfData = [];
+      lines.forEach(line => {
+        const parsedLine = line.split(",");
+        // console.log(parsedLine);
+        const rawEntry = {};
+        columns.forEach(column => {
+          rawEntry[column] = parsedLine.shift();
+        });
+        const entry = {};
+        rfData.push(entry);
+      });
+      return rfData;
+    });
   } catch (error) {
     console.error("Error fetching rainfall data:", error);
   }
+  return fetchedFile;
 }
 
 export async function fetchStations() {
