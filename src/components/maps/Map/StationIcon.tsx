@@ -1,6 +1,6 @@
 "use client"
 
-import { Station } from './index'
+import { Station } from "@/lib";
 import { Circle, Polygon, Rectangle } from "react-leaflet";
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 

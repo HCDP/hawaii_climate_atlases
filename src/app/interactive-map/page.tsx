@@ -18,7 +18,7 @@ export default async function InteractiveMap() {
   //   "csv",
   // );
 
-  const fetchedMetaData = await fetchRainfallData();
+  // const fetchedMetaData = await fetchRainfallData();
 
   const ClientInteractiveMap = dynamic<Partial<{ stations: Station[] }>>(
     () => import('./ClientInteractiveMap'),

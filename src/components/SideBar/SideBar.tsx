@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Plot from '@/components/Plot';
-import { Station } from '../maps/Map';
+import { Station, Units } from "@/lib";
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/table";
 import {getKeyValue} from "@nextui-org/react";
@@ -11,7 +11,7 @@ const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 const SideBar: React.FC<{
   selectedStation?: Station,
-  selectedUnits: "IN" | "MM",
+  selectedUnits: Units,
 }> = ({ selectedStation, selectedUnits }) => {
 
   const stationData: number[] = selectedStation ? months.map(month =>
@@ -37,9 +37,14 @@ const SideBar: React.FC<{
   ];
 
   const stationRows = selectedStation ? [
-    { key: "skn", field: "SKN", value: selectedStation["SKN"] },
-    { key: "name", field: "Name", value: selectedStation["Name"] },
-    { key: "observer", field: "Observer", value: selectedStation["Observer"] },
+    { key: "skn", field: "SKN", value: `${selectedStation["SKN"]}` },
+    { key: "name", field: "Name", value: `${selectedStation["Name"]}` },
+    { key: "observer", field: "Observer", value: `${selectedStation["Observer"]}` },
+    { key: "location", field: "Location", value: `${selectedStation["Lat_DD"]}, ${selectedStation["Lon_DD"]}` },
+    { key: "elevation", field: "Elevation", value: `${selectedStation["ElevM"]} meters / ${selectedStation["ElevFT"]} feet` },
+    { key: "period", field: "Record Period", value: `${selectedStation["MinYear"]} - ${selectedStation["MaxYear"]}` },
+    { key: "sources", field: "Data Sources", value: `${selectedStation["DataSources"]}` },
+    { key: "status", field: "Station Status", value: `${selectedStation["StationStatus"]}` },
   ] : [];
 
   return (

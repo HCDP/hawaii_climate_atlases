@@ -1,16 +1,15 @@
 "use client"
 
 import React, { useState } from "react";
-import { Station } from '@/components/maps/Map';
+import { Station, Units } from '@/lib';
 import SideBar from "@/components/SideBar";
 import RainfallMap from "@/components/maps/RainfallMap";
 
 const ClientInteractiveMap: React.FC<{
   stations: Station[],
-  testStations?: any,
-}> = ({ stations, testStations }) => {
+}> = ({ stations }) => {
   const [selectedStation, setSelectedStation] = useState<Station>();
-  const [selectedUnits, setSelectedUnits] = useState<"IN" | "MM">("IN");
+  const [selectedUnits, setSelectedUnits] = useState<Units>("IN");
 
   return (
     <div className="flex font-sans h-screen">

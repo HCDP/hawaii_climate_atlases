@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useRef, useState } from 'react';
-import {MapContainer, TileLayer, useMapEvents, ZoomControl} from "react-leaflet";
+import { MapContainer, TileLayer, useMapEvents, ZoomControl } from "react-leaflet";
 import { LatLng, Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
@@ -10,30 +10,7 @@ import { StationIcon } from "@/components/maps/Map/index";
 import FitScreenOutlined from "@mui/icons-material/FitScreenOutlined";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-
-export interface Station {
-  SKN: number,
-  Name: string,
-  Lat_DD: number,
-  Lon_DD: number,
-  Observer: string,
-  MinYear: number,
-  MaxYear: number,
-  JanAvgIN: number,
-  FebAvgIN: number,
-  MarAvgIN: number,
-  AprAvgIN: number,
-  MayAvgIN: number,
-  JunAvgIN: number,
-  JulAvgIN: number,
-  AugAvgIN: number,
-  SepAvgIN: number,
-  OctAvgIN: number,
-  NovAvgIN: number,
-  DecAvgIN: number,
-  DataSources: string,
-  StationStatus: 'Current' | 'Discontinued' | 'Virtual',
-}
+import { Station, Units } from "@/lib";
 
 const parseLocation = (input: string): LatLng | null => {
   const [lat, lng] = input.split(",").map(s => parseFloat(s));
@@ -60,6 +37,7 @@ export interface Props {
   zoom: number,
   stations: Station[],
   setSelectedStation: (station: Station) => void,
+  setSelectedUnits: (units: Units) => void,
 }
 
 const Map: React.FC<Props> = (
@@ -152,29 +130,32 @@ const Map: React.FC<Props> = (
     <div className="relative w-full h-full">
       <div className="absolute w-full z-20">
         {mp && (
-          <div className="flex justify-between m-4">
-            <form onSubmit={e => handleLocationChange(e, mp)}>
-              <Input
-                name="locationInput"
-                color="default"
-                radius="sm"
-                placeholder="Location: Latitude, Longitude (degrees)"
-                className="shadow-md rounded-lg"
-                style={{ width: "20rem" }}
-              />
-            </form>
-            <div className="rounded-full shadow-md">
-              <Button
-                onPress={() => mp.getContainer().focus()}
-                radius="full"
-                size="lg"
-                isIconOnly
-                title="Fit to screen"
-                className="bg-white shadow-md"
-              >
-                <FitScreenOutlined />
-              </Button>
+          <div className="flex-col">
+            <div className="flex justify-between m-4">
+              <form onSubmit={e => handleLocationChange(e, mp)}>
+                <Input
+                    name="locationInput"
+                    color="default"
+                    radius="sm"
+                    placeholder="Location: Latitude, Longitude (degrees)"
+                    className="shadow-md rounded-lg"
+                    style={{width: "20rem"}}
+                />
+              </form>
+              <div className="rounded-full shadow-md">
+                <Button
+                    onPress={() => mp.getContainer().focus()}
+                    radius="full"
+                    size="lg"
+                    isIconOnly
+                    title="Fit to screen"
+                    className="bg-white shadow-md"
+                >
+                  <FitScreenOutlined/>
+                </Button>
+              </div>
             </div>
+            <div>asdfasdfafd</div>
           </div>
         )}
       </div>

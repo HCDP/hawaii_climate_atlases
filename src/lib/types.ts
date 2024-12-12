@@ -24,3 +24,5 @@ export interface Station {
   DataSources: string,
   StationStatus: 'Current' | 'Discontinued' | 'Virtual',
 }
+
+export type Units = "IN" | "MM";

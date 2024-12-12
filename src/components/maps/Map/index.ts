@@ -1,3 +1,3 @@
-export { default } from './Map.tsx'
+export { default } from './Map'
 export { StationIcon } from './StationIcon'
-export type { Station, Props as MapProps } from './Map.tsx'
+export type { Props as MapProps } from './Map'

@@ -2,6 +2,7 @@
 
 import Plot from 'react-plotly.js';
 import React from 'react';
+import { Station, Units } from "@/lib";
 
 const emptyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -9,7 +10,7 @@ export interface Props {
   stationName?: string,
   xdata: string[],
   ydata?: number[],
-  units: 'IN' | 'MM',
+  units: Units,
 }
 
 const PlotlyPlot: React.FC<Props> = (
