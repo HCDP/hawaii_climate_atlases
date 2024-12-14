@@ -1,36 +1,14 @@
 "use client"
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents, ZoomControl } from "react-leaflet";
-import { LatLng, Map } from "leaflet";
+import { LatLngExpression, Map as LeafletMap } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-import { StationIcon } from "@/components/maps/Map/index";
-import FitScreenOutlined from "@mui/icons-material/FitScreenOutlined";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
+import { StationIcon } from "@/components/maps/Map";
 import { Station, Units } from "@/lib";
-
-const parseLocation = (input: string): LatLng | null => {
-  const [lat, lng] = input.split(",").map(s => parseFloat(s));
-  if (lat && lng) {
-    return new LatLng(lat, lng);
-  } else {
-    return null;
-  }
-}
-
-const handleLocationChange = (e: React.SyntheticEvent, map: Map) => {
-  e.preventDefault();
-  const input: string = new FormData(e.target).get("locationInput") as string;
-  const parsedLatLng = parseLocation(input);
-  if (parsedLatLng !== null) {
-    console.log(parsedLatLng);
-    console.log(map.getCenter());
-    map.setView(parsedLatLng);
-  }
-};
+import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 
 export interface Props {
   position: number[],
@@ -48,11 +26,10 @@ const Map: React.FC<Props> = (
     setSelectedStation
   }: Props
 ) => {
-  const [mp, setMp] = useState<Map>(null);
   const iconRefs = useRef([]);
 
   const ZoomendHandler = () => {
-    const map = useMapEvents({
+    const map: LeafletMap = useMapEvents({
       zoomend: () => {
         const icons = iconRefs.current;
         const zoom = map.getZoom();
@@ -69,13 +46,12 @@ const Map: React.FC<Props> = (
   // this useMemo might be useless because we're already memoizing the map in interactive-map/page.tsx
   const displayMap = (
     <MapContainer
-      center={position}
+      center={position as LatLngExpression}
       zoom={zoom}
       dragging={true}
       scrollWheelZoom={true}
       zoomControl={false}
       className="w-full h-full z-10 focus:outline-none"
-      ref={setMp}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -93,6 +69,9 @@ const Map: React.FC<Props> = (
           key={index}
         />
       ))}
+      <ZoomControl position="bottomright" />
+      <ZoomendHandler />
+      <MapOverlay />
       {/*<StationIcon*/}
       {/*  station={{*/}
       {/*    "SKN": 514,*/}
@@ -121,44 +100,11 @@ const Map: React.FC<Props> = (
       {/*  scale={1}*/}
       {/*  key={"asdfasfasdfasfasfdsafsafasa"}*/}
       {/*/>*/}
-      <ZoomControl position="bottomleft" />
-      <ZoomendHandler />
     </MapContainer>
   );
 
   return (
     <div className="relative w-full h-full">
-      <div className="absolute w-full z-20">
-        {mp && (
-          <div className="flex-col">
-            <div className="flex justify-between m-4">
-              <form onSubmit={e => handleLocationChange(e, mp)}>
-                <Input
-                    name="locationInput"
-                    color="default"
-                    radius="sm"
-                    placeholder="Location: Latitude, Longitude (degrees)"
-                    className="shadow-md rounded-lg"
-                    style={{width: "20rem"}}
-                />
-              </form>
-              <div className="rounded-full shadow-md">
-                <Button
-                    onPress={() => mp.getContainer().focus()}
-                    radius="full"
-                    size="lg"
-                    isIconOnly
-                    title="Fit to screen"
-                    className="bg-white shadow-md"
-                >
-                  <FitScreenOutlined/>
-                </Button>
-              </div>
-            </div>
-            <div>asdfasdfafd</div>
-          </div>
-        )}
-      </div>
       {displayMap}
     </div>
   );

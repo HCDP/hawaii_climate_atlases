@@ -1,7 +1,6 @@
 import React from "react";
-import { Station } from "@/components/maps/Map";
 import dynamic from "next/dynamic";
-import { getDefaultData, fetchRainfallData, test } from "@/lib";
+import { getDefaultData, Station } from "@/lib";
 
 // fetch the stations and passes it to the client-rendered ClientInteractiveMap
 // this is because we want to use useState which can only be used in a client component

@@ -1,11 +1,10 @@
-
-
-
 export interface Station {
   SKN: number,
   Name: string,
   Lat_DD: number,
   Lon_DD: number,
+  ElevFT: number,
+  ElevM: number,
   Observer: string,
   MinYear: number,
   MaxYear: number,
@@ -21,6 +20,20 @@ export interface Station {
   OctAvgIN: number,
   NovAvgIN: number,
   DecAvgIN: number,
+  AnnAvgIN: number,
+  JanAvgMM: number,
+  FebAvgMM: number,
+  MarAvgMM: number,
+  AprAvgMM: number,
+  MayAvgMM: number,
+  JunAvgMM: number,
+  JulAvgMM: number,
+  AugAvgMM: number,
+  SepAvgMM: number,
+  OctAvgMM: number,
+  NovAvgMM: number,
+  DecAvgMM: number,
+  AnnAvgMM: number,
   DataSources: string,
   StationStatus: 'Current' | 'Discontinued' | 'Virtual',
 }
