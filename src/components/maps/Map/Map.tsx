@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useRef } from 'react';
-import { MapContainer, TileLayer, useMapEvents, ZoomControl } from "react-leaflet";
+import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import { LatLngExpression, Map as LeafletMap } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
@@ -16,6 +16,8 @@ export interface Props {
   stations: Station[],
   setSelectedStation: (station: Station) => void,
   setSelectedUnits: (units: Units) => void,
+  mapMaximized: boolean,
+  toggleMapMaximized: () => void,
 }
 
 const Map: React.FC<Props> = (
@@ -23,7 +25,10 @@ const Map: React.FC<Props> = (
     position = [21.344875, -157.908248],
     zoom = 7,
     stations = [],
-    setSelectedStation
+    setSelectedStation,
+    setSelectedUnits,
+    mapMaximized,
+    toggleMapMaximized,
   }: Props
 ) => {
   const iconRefs = useRef([]);
@@ -43,15 +48,14 @@ const Map: React.FC<Props> = (
     return null;
   }
 
-  // this useMemo might be useless because we're already memoizing the map in interactive-map/page.tsx
-  const displayMap = (
+  return (
     <MapContainer
       center={position as LatLngExpression}
       zoom={zoom}
       dragging={true}
       scrollWheelZoom={true}
       zoomControl={false}
-      className="w-full h-full z-10 focus:outline-none"
+      className="w-full h-full focus:outline-none"
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -69,9 +73,11 @@ const Map: React.FC<Props> = (
           key={index}
         />
       ))}
-      <ZoomControl position="bottomright" />
       <ZoomendHandler />
-      <MapOverlay />
+      <MapOverlay
+        mapMaximized={mapMaximized}
+        onToggleMaximize={toggleMapMaximized}
+      />
       {/*<StationIcon*/}
       {/*  station={{*/}
       {/*    "SKN": 514,*/}
@@ -101,12 +107,6 @@ const Map: React.FC<Props> = (
       {/*  key={"asdfasfasdfasfasfdsafsafasa"}*/}
       {/*/>*/}
     </MapContainer>
-  );
-
-  return (
-    <div className="relative w-full h-full">
-      {displayMap}
-    </div>
   );
 }
 

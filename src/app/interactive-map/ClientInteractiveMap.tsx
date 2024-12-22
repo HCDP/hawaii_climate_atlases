@@ -1,34 +1,57 @@
 "use client"
 
 import React, { useState } from "react";
-import { Station, Units } from '@/lib';
-import SideBar from "@/components/SideBar";
-import RainfallMap from "@/components/maps/RainfallMap";
+import { Station } from '@/lib';
+import dynamic from "next/dynamic";
+import NavBar from "@/components/NavBar";
+
+const RainfallMap = dynamic(
+  () => import("@/components/maps/RainfallMap"),
+  {
+    ssr: false,
+    loading: () => <p className="text-center">Loading map...</p>
+  }
+);
 
 const ClientInteractiveMap: React.FC<{
   stations: Station[],
 }> = ({ stations }) => {
-  const [selectedStation, setSelectedStation] = useState<Station>();
-  const [selectedUnits, setSelectedUnits] = useState<Units>("IN");
+  const [mapMaximized, setMapMaximized] = useState<boolean>(false);
+  const toggleMapMaximized = () => setMapMaximized(mapMaximized => !mapMaximized);
 
   return (
-  <div className="flex font-sans h-screen">
-    <div className="min-w-[24rem] max-h-screen">
-      <SideBar selectedStation={selectedStation} selectedUnits={selectedUnits}/>
-    </div>
-    <div className="w-full h-screen bg-gray-200">
-      <div className="w-full h-3/4 flex justify-center">
+    <div className="flex flex-col h-screen min-h-screen">
+      {!mapMaximized && (
+        <NavBar
+          navLinks={[
+            {text: 'Home', path: '/'},
+            {text: 'Interactive Map', path: '/interactive-map'},
+            {text: 'Downloads', path: '/downloads'},
+            {text: 'How to cite', path: '/how-to-cite'},
+            {text: 'History', path: '/history'},
+            {text: 'Methods', path: '/methods'},
+            {text: 'Rainfall', path: '/rainfall'},
+            {text: 'Acknowledgements', path: '/acknowledgements'},
+            {text: 'People', path: '/people'},
+          ]}
+          img="rainfall"
+        />
+      )}
+      <main className="flex-grow overflow-y-hidden max-w-screen h-full">
         <RainfallMap
           position={[21.297, -157.817]}
           zoom={7}
           stations={stations}
-          setSelectedStation={setSelectedStation}
-          setSelectedUnits={setSelectedUnits}
+          mapMaximized={mapMaximized}
+          toggleMapMaximized={toggleMapMaximized}
         />
-      </div>
-      <div className="min-h-24 p-4">Units</div>
+      </main>
+      {!mapMaximized && (
+        <footer className="flex justify-center bg-[#708090] text-white font-bold">
+          Footer
+        </footer>
+      )}
     </div>
-  </div>
   );
 }
 

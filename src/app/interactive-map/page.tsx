@@ -1,6 +1,6 @@
 import React from "react";
-import dynamic from "next/dynamic";
 import { getDefaultData, Station } from "@/lib";
+import ClientInteractiveMap from "./ClientInteractiveMap";
 
 // fetch the stations and passes it to the client-rendered ClientInteractiveMap
 // this is because we want to use useState which can only be used in a client component
@@ -19,19 +19,7 @@ export default async function InteractiveMap() {
 
   // const fetchedMetaData = await fetchRainfallData();
 
-  const ClientInteractiveMap = dynamic<Partial<{ stations: Station[] }>>(
-    () => import('./ClientInteractiveMap'),
-    {
-      loading: () => {
-        return <p className="text-center">
-          Loading map
-        </p>
-      },
-      ssr: false,
-    }
-  );
-
   return (
-      <ClientInteractiveMap stations={stations} />
+    <ClientInteractiveMap stations={stations} />
   );
 }

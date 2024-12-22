@@ -1,5 +1,4 @@
-import React, { useMemo } from 'react';
-import dynamic from 'next/dynamic';
+import React from 'react';
 import Plot from '@/components/Plot';
 import { Station, Units } from "@/lib";
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
@@ -48,7 +47,7 @@ const SideBar: React.FC<{
   ] : [];
 
   return (
-    <div className="flex flex-col max-h-full items-stretch h-full">
+    <div className="flex flex-col max-h-full">
       <div className="h-[300px] p-4 shrink-0">
         <Plot
           stationName={selectedStation && selectedStation.Name}
@@ -57,7 +56,7 @@ const SideBar: React.FC<{
           units={selectedUnits}
         />
       </div>
-      <div className="overflow-y-auto px-4 grow pt-0 mt-0">
+      <div className="overflow-y-auto px-4 pt-0 mt-0">
         {selectedStation && (
           <Accordion
             isCompact
