@@ -19,7 +19,7 @@ const SideBar: React.FC<{
 
   const rainfallColumns=[
     { key: "month", label: "Month" },
-    { key: "data", label: "Rainfall" },
+    { key: "data", label: `Rainfall (${selectedUnits.toLocaleLowerCase()})` },
   ];
 
   const rainfallRows = fullMonths.map((month, index) => {

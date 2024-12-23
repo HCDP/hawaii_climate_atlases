@@ -8,5 +8,3 @@ export const LEAFLET_POSITIONS = {
   topleft: 'leaflet-top leaflet-left',
   topright: 'leaflet-top leaflet-right',
 } as const;
-
-export type LEAFLET_POSITION = keyof typeof LEAFLET_POSITIONS;

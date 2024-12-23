@@ -15,6 +15,7 @@ export interface Props {
   zoom: number,
   stations: Station[],
   setSelectedStation: (station: Station) => void,
+  selectedUnits: Units,
   setSelectedUnits: (units: Units) => void,
   mapMaximized: boolean,
   toggleMapMaximized: () => void,
@@ -26,6 +27,7 @@ const Map: React.FC<Props> = (
     zoom = 7,
     stations = [],
     setSelectedStation,
+    selectedUnits,
     setSelectedUnits,
     mapMaximized,
     toggleMapMaximized,
@@ -75,6 +77,8 @@ const Map: React.FC<Props> = (
       ))}
       <ZoomendHandler />
       <MapOverlay
+        selectedUnits={selectedUnits}
+        setSelectedUnits={setSelectedUnits}
         mapMaximized={mapMaximized}
         onToggleMaximize={toggleMapMaximized}
       />

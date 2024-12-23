@@ -1,9 +1,10 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useEffect } from "react";
 import { LatLng, Map } from "leaflet";
 import { useMap, ZoomControl } from "react-leaflet";
-import LocationField from "../../LocationField";
+import LocationField from "@/components/LocationField";
+import { Units } from "@/lib";
 import { LEAFLET_POSITIONS } from "@/constants";
-import {Button} from "@nextui-org/button";
+import { Button, ButtonGroup } from "@nextui-org/button";
 import Fullscreen from "@mui/icons-material/Fullscreen";
 import FullscreenExit from "@mui/icons-material/FullscreenExit";
 
@@ -18,10 +19,12 @@ const parseLocation = (input: string): LatLng | null => {
 
 const MapOverlay: React.FC<
   {
-    onToggleMaximize: () => void,
+    selectedUnits: Units,
+    setSelectedUnits: (units: Units) => void,
     mapMaximized: boolean,
+    onToggleMaximize: () => void,
   }
-> = ({ onToggleMaximize, mapMaximized }) => {
+> = ({ selectedUnits, setSelectedUnits, mapMaximized, onToggleMaximize }) => {
   const map: Map = useMap();
 
   const handleLocationChange = (input: string) => {
@@ -36,7 +39,7 @@ const MapOverlay: React.FC<
     map.invalidateSize()
   }, [mapMaximized]);
 
-  const overlay = useMemo(() => (
+  return (
     <>
       <div className={LEAFLET_POSITIONS.topleft}>
         <div className="leaflet-control flex">
@@ -58,17 +61,26 @@ const MapOverlay: React.FC<
         </div>
       </div>
       <div className={LEAFLET_POSITIONS.bottomleft}>
-        Units
+        <div className="leaflet-control rounded-full">
+          <ButtonGroup size="sm" className="shadow-md font-bold" radius="sm" color="primary">
+            <Button
+              variant={selectedUnits === "IN" ? "solid" : "ghost"}
+              onPress={() => setSelectedUnits("IN")}
+            >
+              in
+            </Button>
+            <Button
+              variant={selectedUnits === "MM" ? "solid" : "ghost"}
+              onPress={() => setSelectedUnits("MM")}
+            >
+              mm
+            </Button>
+          </ButtonGroup>
+        </div>
       </div>
       <div className={LEAFLET_POSITIONS.bottomright}>
         <ZoomControl position="bottomright" />
       </div>
-    </>
-  ), [mapMaximized]);
-
-  return (
-    <>
-      {overlay}
     </>
   )
 }
