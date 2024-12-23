@@ -1,5 +1,6 @@
 import NavBar from "@/components/NavBar";
 import React from "react";
+import Footer from "@/components/Footer";
 
 export default function MainLayout (
   {
@@ -27,9 +28,7 @@ export default function MainLayout (
       <main className="min-h-screen max-w-screen font-serif">
         {children}
       </main>
-      <footer className="flex justify-center">
-        Footer
-      </footer>
+      <Footer />
     </>
   );
 }

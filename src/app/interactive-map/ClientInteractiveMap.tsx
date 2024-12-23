@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Station } from '@/lib';
 import dynamic from "next/dynamic";
 import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 
 const RainfallMap = dynamic(
   () => import("@/components/maps/RainfallMap"),
@@ -38,18 +39,17 @@ const ClientInteractiveMap: React.FC<{
         />
       )}
       <main className="flex-grow overflow-y-hidden max-w-screen h-full">
+        {/* UH Manoa coordinates: 21.297, -157.817 */}
         <RainfallMap
-          position={[21.297, -157.817]}
-          zoom={7}
+          position={[20.750, -157.317]}
+          zoom={7.75}
           stations={stations}
           mapMaximized={mapMaximized}
           toggleMapMaximized={toggleMapMaximized}
         />
       </main>
       {!mapMaximized && (
-        <footer className="flex justify-center bg-[#708090] text-white font-bold">
-          Footer
-        </footer>
+        <Footer />
       )}
     </div>
   );

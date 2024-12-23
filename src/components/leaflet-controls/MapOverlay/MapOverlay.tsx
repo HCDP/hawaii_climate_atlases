@@ -61,8 +61,8 @@ const MapOverlay: React.FC<
         </div>
       </div>
       <div className={LEAFLET_POSITIONS.bottomleft}>
-        <div className="leaflet-control rounded-full">
-          <ButtonGroup size="sm" className="shadow-md font-bold" radius="sm" color="primary">
+        <div className="leaflet-control rounded-lg shadow-md">
+          <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
             <Button
               variant={selectedUnits === "IN" ? "solid" : "ghost"}
               onPress={() => setSelectedUnits("IN")}

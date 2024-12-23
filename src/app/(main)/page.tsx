@@ -3,7 +3,7 @@
 export default function Home() {
   return (
     <div className="flex justify-center">
-      <p className="w-[48rem] mt-3">
+      <p className="w-[48rem] mt-3 text-base">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque feugiat, diam a ullamcorper pulvinar, magna dui posuere augue, vitae tempor ligula nulla quis dolor. Quisque id tortor ut lectus pulvinar tristique eget ut odio. Vivamus condimentum mi diam, sit amet dignissim enim facilisis sagittis. Quisque vel enim ipsum. Curabitur dictum nunc ac suscipit efficitur. Aliquam erat volutpat. Nunc vehicula maximus erat quis tristique. Vestibulum molestie rutrum metus sed tristique. Nunc commodo quis risus eu suscipit. Cras non faucibus quam, non cursus justo. Donec ex sem, consectetur at nisi vitae, dictum posuere lorem. Morbi condimentum, tortor ac euismod mattis, sem erat condimentum magna, quis dapibus quam tellus ac arcu. Ut quis magna dolor. Nulla sodales feugiat volutpat. Nullam vitae finibus sapien.
 
         Nullam a imperdiet justo. Donec non diam odio. Nulla mi est, egestas sed est at, iaculis faucibus enim. Quisque id neque aliquam, rutrum justo nec, volutpat nisi. Vestibulum pretium dui eu nulla volutpat sagittis. Donec ornare diam eu lacus tempor accumsan. Nullam a magna augue.
