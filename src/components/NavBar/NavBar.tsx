@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import React from "react";
+import React, {useMemo} from "react";
 
 const NavBar: React.FC<{
   navLinks: {
@@ -19,10 +19,13 @@ const NavBar: React.FC<{
     case "evapotranspiration": imgSrc = "/evapotranspiration_banner.jpg"; break;
     case "solarradiation": imgSrc = "/solarradiation_banner.jpg"; break;
   }
+  const banner = useMemo(() => (
+    <img className="mx-auto max-h-none max-w-none" src={imgSrc} alt="Rainfall Atlas of Hawaii banner"/>
+  ), []);
   return (
     <div className="bg-[#708090]">
       <div className="h-[140px] overflow-visible">
-      <img className="mx-auto max-h-none max-w-none" src={imgSrc} alt="Rainfall Atlas of Hawaii banner" />
+      {banner}
       </div>
       <div className="h-[45px] w-full min-w-[972px] bg-[url('/navi_bg.gif')]">
         <nav role="navigation" className="flex justify-center h-full ">

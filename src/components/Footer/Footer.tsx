@@ -5,7 +5,7 @@ const Footer = () => {
     <footer className="flex justify-center bg-[#708090] text-white py-4">
       <div className="flex flex-col text-center text-sm">
         <div>
-          Geography Department - University of Hawaii at Manoa
+          Geography Department -  University of Hawaiʻi at Mānoa
         </div>
         <div>
           Contact us: <a href="mailto:rainfall@hawaii.edu" className="hover:underline">rainfall@hawaii.edu</a>
