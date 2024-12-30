@@ -1,10 +1,9 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { Station } from '@/lib';
 import dynamic from "next/dynamic";
-import NavBar from "@/components/NavBar";
-import Footer from "@/components/Footer";
+import {LayoutContext} from "@/components/LayoutControlContext";
 
 const RainfallMap = dynamic(
   () => import("@/components/maps/RainfallMap"),
@@ -17,41 +16,21 @@ const RainfallMap = dynamic(
 const ClientInteractiveMap: React.FC<{
   stations: Station[],
 }> = ({ stations }) => {
-  const [mapMaximized, setMapMaximized] = useState<boolean>(false);
-  const toggleMapMaximized = () => setMapMaximized(mapMaximized => !mapMaximized);
+  // const [mapMaximized, setMapMaximized] = useState<boolean>(false);
+  // const toggleMapMaximized = () => setMapMaximized(mapMaximized => !mapMaximized);
+
+  const { maximized, setMaximized } = useContext(LayoutContext);
+  const toggleMapMaximized = () => setMaximized(oldMax => !oldMax);
 
   return (
-    <div className="flex flex-col h-screen min-h-screen">
-      {!mapMaximized && (
-        <NavBar
-          navLinks={[
-            {text: 'Home', path: '/'},
-            {text: 'Interactive Map', path: '/interactive-map'},
-            {text: 'Downloads', path: '/downloads'},
-            {text: 'How to cite', path: '/how-to-cite'},
-            {text: 'History', path: '/history'},
-            {text: 'Methods', path: '/methods'},
-            {text: 'Rainfall', path: '/rainfall'},
-            {text: 'Acknowledgements', path: '/acknowledgements'},
-            {text: 'People', path: '/people'},
-          ]}
-          img="rainfall"
-        />
-      )}
-      <main className="flex-grow overflow-y-hidden max-w-screen h-full">
-        {/* UH Manoa coordinates: 21.297, -157.817 */}
-        <RainfallMap
-          position={[20.750, -157.317]}
-          zoom={7.75}
-          stations={stations}
-          mapMaximized={mapMaximized}
-          toggleMapMaximized={toggleMapMaximized}
-        />
-      </main>
-      {!mapMaximized && (
-        <Footer />
-      )}
-    </div>
+    // UH Manoa coordinates: 21.297, -157.817
+    <RainfallMap
+      position={[20.750, -157.317]}
+      zoom={7.75}
+      stations={stations}
+      mapMaximized={maximized}
+      toggleMapMaximized={toggleMapMaximized}
+    />
   );
 }
 

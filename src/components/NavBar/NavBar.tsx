@@ -4,16 +4,18 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import React, {useMemo} from "react";
 
-const NavBar: React.FC<{
+export interface Props {
   navLinks: {
     text: string,
     path: string,
   }[],
-  img: "rainfall" | "climate" | "evapotranspiration" | "solarradiation",
-}> = ({ navLinks, img }) => {
+  navImg: "rainfall" | "climate" | "evapotranspiration" | "solarradiation",
+}
+
+const NavBar: React.FC<Props> = ({ navLinks, navImg }) => {
   const path: string = usePathname();
   let imgSrc: string;
-  switch (img) {
+  switch (navImg) {
     case "rainfall": imgSrc = "/rainfall_banner.png"; break;
     case "climate": imgSrc = "/climate_banner.jpg"; break;
     case "evapotranspiration": imgSrc = "/evapotranspiration_banner.jpg"; break;

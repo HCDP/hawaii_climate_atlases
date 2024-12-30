@@ -2,14 +2,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  console.log(pathname);
+  const { pathname, hostname } = request.nextUrl;
   if (!(
     pathname.endsWith(".png") ||
     pathname.endsWith(".jpg") ||
     pathname.endsWith(".gif")
   )) {
-    switch (request.nextUrl.hostname) {
+    switch (hostname) {
       case "rainfall.geography.hawaii.edu":
         return NextResponse.rewrite(new URL("/rainfall" + pathname, request.url));
       case "localhost":
