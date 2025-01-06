@@ -1,6 +1,6 @@
 "use client"
 
-import {createContext, Dispatch, SetStateAction} from 'react';
+import { createContext, Dispatch, SetStateAction } from 'react';
 
 export const LayoutContext = createContext<{
   maximized: boolean,

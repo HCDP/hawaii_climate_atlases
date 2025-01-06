@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { NextUIProvider } from "@nextui-org/react";
-import { LayoutProvider } from "@/components/LayoutControlContext";
+import { LayoutProvider } from "../components/LayoutContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

@@ -3,7 +3,7 @@
 import React, { useContext } from "react";
 import { Station } from '@/lib';
 import dynamic from "next/dynamic";
-import {LayoutContext} from "@/components/LayoutControlContext";
+import { LayoutContext } from "@/components/LayoutContext";
 
 const RainfallMap = dynamic(
   () => import("@/components/maps/RainfallMap"),
@@ -25,8 +25,8 @@ const ClientInteractiveMap: React.FC<{
   return (
     // UH Manoa coordinates: 21.297, -157.817
     <RainfallMap
-      position={[20.750, -157.317]}
-      zoom={7.75}
+      startPosition={[20.750, -157.317]}
+      startZoom={7.5}
       stations={stations}
       mapMaximized={maximized}
       toggleMapMaximized={toggleMapMaximized}

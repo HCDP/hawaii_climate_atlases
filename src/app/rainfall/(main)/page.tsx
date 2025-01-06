@@ -1,7 +1,6 @@
 // import Image from "next/image";
 
 export default function Home() {
-  console.log("from page")
   return (
     <div className="flex justify-center">
       <p className="w-[48rem] my-3 text-base">

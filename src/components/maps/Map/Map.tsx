@@ -1,18 +1,19 @@
 "use client"
 
-import React, { useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
-import { LatLng, LatLngBounds, LatLngExpression, Map as LeafletMap } from "leaflet";
+import { LatLng, LatLngBounds, LatLngExpression, Map as LeafletMap, Util } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import { StationIcon } from "@/components/maps/Map";
 import { Station, Units } from "@/lib";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
+import formatNum = Util.formatNum;
 
 export interface Props {
-  position: number[],
-  zoom: number,
+  startPosition: number[],
+  startZoom: number,
   stations: Station[],
   setSelectedStation: (station: Station) => void,
   selectedUnits: Units,
@@ -21,37 +22,59 @@ export interface Props {
   toggleMapMaximized: () => void,
 }
 
-const ZoomendHandler = ({ iconRefs }) => {
+const ZoomendHandler = ({ onZoomEnd }: {
+  onZoomEnd: (zoom: number) => void,
+}) => {
   const map: LeafletMap = useMapEvents({
     zoomend: () => {
-      const icons = iconRefs.current;
       const zoom = map.getZoom();
-      const pivotZoom = 13;
-      const scale = zoom > pivotZoom ? map.getZoomScale(pivotZoom, map.getZoom()) : 1;
-      icons.forEach(icon => {
-        icon.reSize(scale);
-      });
+      onZoomEnd(zoom);
+      // console.log(map.getZoomScale(12.75, 12))
+      console.log(zoom);
     }
   });
   return null;
 }
 
-const MaxBoundsSetter = () => {
-  const map: LeafletMap = useMap();
-  const oldBounds: LatLngBounds = map.getBounds(),
-    oldSouthWest = oldBounds.getSouthWest(),
-    oldNorthEast = oldBounds.getNorthEast();
-  const newSouthWest: LatLng = new LatLng(oldSouthWest.lat - 5, oldSouthWest.lng - 5);
-  const newNorthEast: LatLng = new LatLng(oldNorthEast.lat + 5, oldNorthEast.lng + 5);
-  const newBounds: LatLngBounds = new LatLngBounds(newSouthWest, newNorthEast);
-  map.setMaxBounds(newBounds);
-  return null;
-};
+const StationIcons = (
+{
+  stations, setSelectedStation, zoom, zoomDelta
+}: {
+  stations: Station[],
+  setSelectedStation: (station: Station) => void,
+  zoom: number,
+  zoomDelta: number,
+}) => {
+  const map = useMap();
+  // Credit: https://github.com/ikewai/precipitation_application/blob/prod/src/app/components/map/map.component.ts#L656
+  const pivotRadius = 360, pivotZoom = 12, borderPivotZoom = 10.5;
+  const scale = map.getZoomScale(12, zoom);
+  let radius: number;
+  if (zoom >= pivotZoom) {
+    radius = pivotRadius * scale;
+  } else {
+    radius = pivotRadius + (120 * (pivotZoom - zoom) / zoomDelta)
+  }
+  return (
+    <>
+      {stations.map((station, index) => (
+        <StationIcon
+          station={station}
+          onClick={setSelectedStation}
+          center={new LatLng(formatNum(station.Lat_DD, false), formatNum(station.Lon_DD, false))}
+          radius={radius}
+          outline={zoom >= borderPivotZoom}
+          key={index}
+        />
+      ))}
+    </>
+  );
+}
 
 const Map: React.FC<Props> = (
   {
-    position = [21.344875, -157.908248],
-    zoom = 7,
+    startPosition = [21.344875, -157.908248],
+    startZoom = 7.5,
     stations = [],
     setSelectedStation,
     selectedUnits,
@@ -60,18 +83,34 @@ const Map: React.FC<Props> = (
     toggleMapMaximized,
   }: Props
 ) => {
-  const iconRefs = useRef([]);
+  const [map, setMap] = useState<LeafletMap | null>(null);
+  const [zoom, setZoom] = useState<number>(startZoom);
+  const zoomSnap = 0.75, zoomDelta = 0.75, minZoom = 6;
+
+  useEffect(() => {
+    if (map) {
+      const oldBounds: LatLngBounds = map.getBounds(),
+        oldSouthWest = oldBounds.getSouthWest(),
+        oldNorthEast = oldBounds.getNorthEast();
+      const newSouthWest: LatLng = new LatLng(oldSouthWest.lat - 5, oldSouthWest.lng - 5);
+      const newNorthEast: LatLng = new LatLng(oldNorthEast.lat + 5, oldNorthEast.lng + 5);
+      const newBounds: LatLngBounds = new LatLngBounds(newSouthWest, newNorthEast);
+      map.setMaxBounds(newBounds);
+    }
+  }, [map]);
 
   return (
     <MapContainer
-      center={position as LatLngExpression}
+      center={startPosition as LatLngExpression}
       zoom={zoom}
       dragging={true}
       scrollWheelZoom={true}
       zoomControl={false}
-      zoomSnap={0.75}
-      zoomDelta={1}
-      minZoom={5.75}
+      zoomSnap={zoomSnap}
+      zoomDelta={zoomDelta}
+      minZoom={minZoom}
+      maxBoundsViscosity={0.75}
+      ref={map => setMap(map)}
       className="w-full h-full focus:outline-none"
     >
       <TileLayer
@@ -79,19 +118,8 @@ const Map: React.FC<Props> = (
         // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
       />
-      {stations.map((station, index) => (
-        <StationIcon
-          station={station}
-          onClick={setSelectedStation}
-          ref={element => {
-            iconRefs.current[index] = element;
-          }}
-          scale={1}
-          key={index}
-        />
-      ))}
-      <ZoomendHandler iconRefs={iconRefs} />
-      <MaxBoundsSetter />
+      <StationIcons stations={stations} setSelectedStation={setSelectedStation} zoom={zoom} zoomDelta={zoomDelta} />
+      <ZoomendHandler onZoomEnd={setZoom} />
       <MapOverlay
         selectedUnits={selectedUnits}
         setSelectedUnits={setSelectedUnits}

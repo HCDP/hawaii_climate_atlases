@@ -1,5 +1,5 @@
 import React from "react";
-import { LayoutProvider } from "@/components/LayoutControlContext";
+import { LayoutProvider } from "@/components/LayoutContext";
 
 export default function MainLayout (
   {
