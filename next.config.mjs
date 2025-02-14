@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  basePath: "/hawaii_climate_atlases",
+};
 
 export default nextConfig;
