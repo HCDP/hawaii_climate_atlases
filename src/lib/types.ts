@@ -1,4 +1,4 @@
-export interface Station {
+export type Station = {
   SKN: number,
   Name: string,
   Lat_DD: number,
