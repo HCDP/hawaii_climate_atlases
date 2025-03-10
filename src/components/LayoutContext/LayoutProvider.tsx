@@ -13,7 +13,7 @@ interface Props extends NavBarProps {
 export const LayoutProvider: React.FC<Props> = ({ children, navLinks, navImg }) => {
   const [maximized, setMaximized] = useState<boolean>(false);
   const pathname = usePathname();
-  const isMapPage = pathname === '/interactive-map';
+  const isMapPage = pathname === '/rainfall/interactive-map';
 
   const navBar = useMemo(() => <NavBar navLinks={navLinks} navImg={navImg} />, [navLinks, navImg]);
   const footer = useMemo(() => <Footer />, []);
