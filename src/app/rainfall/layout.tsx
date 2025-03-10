@@ -11,7 +11,7 @@ export default function MainLayout (
   return (
     <LayoutProvider
       navLinks={[
-        { text: 'Home', path: '/'},
+        { text: 'Home', path: '/rainfall'},
         { text: 'Interactive Map', path: '/rainfall/interactive-map' },
         { text: 'Downloads', path: '/rainfall/downloads'},
         { text: 'How to cite', path: '/rainfall/how-to-cite' },

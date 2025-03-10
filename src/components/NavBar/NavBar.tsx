@@ -24,10 +24,11 @@ export interface Props {
 const NavBar: React.FC<Props> = ({ navLinks, navImg }) => {
   const path: string = usePathname();
   const imgSrc: string = imagePaths[navImg];
+  console.log(path);
   return (
     <div className="bg-[#708090]">
       <div className="h-[140px] overflow-visible">
-        <img className="mx-auto max-h-none max-w-none" src={imgSrc} alt="Rainfall Atlas of Hawaii banner"/>
+        <img className="mx-auto max-h-none max-w-none" src={`/hawaii_climate_atlases/${imgSrc}`} alt="Rainfall Atlas of Hawaii banner"/>
       </div>
       <div className="h-[45px] w-full min-w-[972px] bg-[url('/navi_bg.gif')]">
         <nav role="navigation" className="flex justify-center h-full ">
