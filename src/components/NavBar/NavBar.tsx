@@ -24,7 +24,6 @@ export interface Props {
 const NavBar: React.FC<Props> = ({ navLinks, navImg }) => {
   const path: string = usePathname();
   const imgSrc: string = imagePaths[navImg];
-  console.log(path);
   return (
     <div className="bg-[#708090]">
       <div className="h-[140px] overflow-visible">
