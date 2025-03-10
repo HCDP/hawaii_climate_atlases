@@ -2,7 +2,7 @@
 
 import Plot from 'react-plotly.js';
 import React from 'react';
-import { Station, Units } from "@/lib";
+import { Units } from "@/lib";
 
 const emptyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -33,10 +33,21 @@ const PlotlyPlot: React.FC<Props> = (
       layout={{
         title: {
           text: 'Mean Monthly Rainfall (' + units.toLocaleLowerCase() + ')',
-          subtitle: {
-            text: stationName ? 'Station: ' + stationName : 'No station selected',
-          }
         },
+        annotations: [
+          {
+            xref: "paper",
+            yref: "paper",
+            x: 0.5,
+            y: 1.025,
+            text: stationName ? 'Station: ' + stationName : 'No station selected',
+            showarrow: false,
+            font: {
+              size: 14,
+              color: "gray",
+            },
+          },
+        ],
         yaxis: {
           rangemode: 'nonnegative',
         },
@@ -48,7 +59,6 @@ const PlotlyPlot: React.FC<Props> = (
           b: 30,
         },
       }}
-      scrollZoom
       useResizeHandler
       config={{
         editable: false,

@@ -14,7 +14,7 @@ const SideBar: React.FC<{
 }> = ({ selectedStation, selectedUnits }) => {
 
   const stationData: number[] = selectedStation ? months.map(month =>
-    Math.max(selectedStation[`${month}Avg${selectedUnits}`], 0)
+    Math.max(selectedStation[`${month}Avg${selectedUnits}` as keyof typeof selectedStation] as number, 0)
   ) : [];
 
   const rainfallColumns=[
