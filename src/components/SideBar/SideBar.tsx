@@ -1,9 +1,8 @@
 import React from 'react';
 import Plot from '@/components/Plot';
 import { Station, Units } from "@/lib";
-import { Accordion, AccordionItem } from "@nextui-org/accordion";
-import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@nextui-org/table";
-import {getKeyValue} from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@heroui/accordion";
+import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, getKeyValue } from "@heroui/table";
 
 const fullMonths = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

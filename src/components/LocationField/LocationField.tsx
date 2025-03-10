@@ -1,5 +1,5 @@
 import React from "react";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 
 const LocationField: React.FC<{
   onLocationChange: (input: string) => void,

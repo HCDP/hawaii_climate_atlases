@@ -4,7 +4,7 @@ import { useMap, ZoomControl } from "react-leaflet";
 import LocationField from "@/components/LocationField";
 import { Units } from "@/lib";
 import { LEAFLET_POSITIONS } from "@/constants";
-import { Button, ButtonGroup } from "@nextui-org/button";
+import { Button, ButtonGroup } from "@heroui/button";
 import Fullscreen from "@mui/icons-material/Fullscreen";
 import FullscreenExit from "@mui/icons-material/FullscreenExit";
 
