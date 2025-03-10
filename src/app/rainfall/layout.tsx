@@ -12,14 +12,14 @@ export default function MainLayout (
     <LayoutProvider
       navLinks={[
         { text: 'Home', path: '/'},
-        { text: 'Interactive Map', path: '/interactive-map' },
-        { text: 'Downloads', path: '/downloads'},
-        { text: 'How to cite', path: '/how-to-cite' },
-        { text: 'History', path: '/history'},
-        { text: 'Methods', path: '/methods' },
-        { text: 'Rainfall', path: '/rainfall' },
-        { text: 'Acknowledgements', path: '/acknowledgements' },
-        { text: 'People', path: '/people' },
+        { text: 'Interactive Map', path: '/rainfall/interactive-map' },
+        { text: 'Downloads', path: '/rainfall/downloads'},
+        { text: 'How to cite', path: '/rainfall/how-to-cite' },
+        { text: 'History', path: '/rainfall/history'},
+        { text: 'Methods', path: '/rainfall/methods' },
+        { text: 'Rainfall', path: '/rainfall/rainfall' },
+        { text: 'Acknowledgements', path: '/rainfall/acknowledgements' },
+        { text: 'People', path: '/rainfall/people' },
       ]}
       navImg="rainfall"
     >
