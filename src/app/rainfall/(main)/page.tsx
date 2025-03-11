@@ -57,9 +57,9 @@ export default function Home() {
           The Rainfall Atlas of Hawaiʻi is a set of maps of the spatial patterns of rainfall for the major Hawaiian Islands. Maps are available for mean monthly and annual rainfall. The maps represent our best estimates of the mean rainfall for the 30-yr base period 1978–2007. However, for many reasons, it is not possible to determine the exact value of mean rainfall for any location. Therefore, for every map of mean rainfall, we provide a corresponding map of uncertainty. Uncertainty tends to be greatest where we have the poorest information about rainfall, for example in remote locations far from the nearest raingage.
         </p>
         <p>
-          This web site was developed to make the rainfall maps, data, and related information easily accessible. The maps depict rainfall patterns by color and/or by isohyets (lines of equal rainfall). The 
-          <a className="text-blue-500 underline" href="/interactive-map">interactive map</a>&nbsp;
-          allows users to see the patterns of mean monthly and annual rainfall and corresponding uncertainty, zoom in on areas of particular interest, navigate to specific locations with the help of a choice of different base maps, and click on any location to get the mean annual rainfall and a graph and table of mean monthly rainfall. The locations of stations can also be shown on the interactive map. Clicking on a station gives both station and mapped estimates of monthly rainfall along with station metadata.
+          This web site was developed to make the rainfall maps, data, and related information easily accessible. The maps depict rainfall patterns by color and/or by isohyets (lines of equal rainfall). The <a className="text-blue-500 underline" href="/interactive-map">
+          interactive map</a>&nbsp;allows 
+          users to see the patterns of mean monthly and annual rainfall and corresponding uncertainty, zoom in on areas of particular interest, navigate to specific locations with the help of a choice of different base maps, and click on any location to get the mean annual rainfall and a graph and table of mean monthly rainfall. The locations of stations can also be shown on the interactive map. Clicking on a station gives both station and mapped estimates of monthly rainfall along with station metadata.
         </p>
       </div>
 
