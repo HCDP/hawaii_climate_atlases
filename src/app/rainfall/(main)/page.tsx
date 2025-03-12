@@ -3,7 +3,7 @@
 export default function Home() {
   return (
     <div className="m-14">
-
+     
       {/* Intro Section */}
       <div className="-mb-4 max-w-[62rem] mx-auto">
         <p className="text-xl font-bold -mt-5">What is the Rainfall Atlas of Hawaiʻi?</p>

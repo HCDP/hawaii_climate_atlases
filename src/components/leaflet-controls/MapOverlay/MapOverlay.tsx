@@ -5,7 +5,9 @@ import LocationField from "@/components/LocationField";
 import { Units } from "@/lib";
 import { LEAFLET_POSITIONS } from "@/constants";
 import { Button, ButtonGroup } from "@heroui/button";
+import { Checkbox } from "@heroui/checkbox";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@heroui/table';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import Fullscreen from "@mui/icons-material/Fullscreen";
 import FullscreenExit from "@mui/icons-material/FullscreenExit";
 
@@ -40,7 +42,27 @@ const MapOverlay: React.FC<
     map.invalidateSize()
   }, [mapMaximized]);
 
+  // For menu and options/fields behavior
   const [showMenu, setShowMenu] = useState<boolean>(false);
+  const [rainfall, setRainfall] = useState<boolean>(false);
+  const [uncertainty, setUncertainty] = useState<boolean>(false);
+  const [selectedMonth, setSelectedMonth] = useState<string>("Select");
+
+  const months = [
+    { key: 'January', name: 'January' },
+    { key: 'February', name: 'February' },
+    { key: 'March', name: 'March' },
+    { key: 'April', name: 'April' },
+    { key: 'May', name: 'May' },
+    { key: 'June', name: 'June' },
+    { key: 'July', name: 'July' },
+    { key: 'August', name: 'August' },
+    { key: 'September', name: 'September' },
+    { key: 'October', name: 'October' },
+    { key: 'November', name: 'November' },
+    { key: 'December', name: 'December' },
+    { key: 'Annual', name: 'Annual' },
+  ];
 
   return (
     <>
@@ -78,6 +100,7 @@ const MapOverlay: React.FC<
                 <TableColumn>Options</TableColumn>
               </TableHeader>
               <TableBody>
+
                 <TableRow key="1">
                   <TableCell><p className="text-base">Units: </p></TableCell>
                   <TableCell>
@@ -99,6 +122,68 @@ const MapOverlay: React.FC<
                     </ButtonGroup>
                   </TableCell>
                 </TableRow>
+
+                <TableRow key="2">
+                  <TableCell><p className="text-base pb-[50px]">Show: </p></TableCell>
+                  <TableCell>
+                    {/* Place in div instead of checkbox group for expected disabling behavior */}
+                    <div className="inline-flex flex-col">
+                      <Checkbox 
+                        value="Rainfall" 
+                        onValueChange={() => setRainfall(!rainfall)}
+                        isDisabled={uncertainty}
+                      >
+                        Rainfall
+                      </Checkbox>
+                      <Checkbox 
+                        value="Uncertainty" 
+                        onValueChange={() => setUncertainty(!uncertainty)}
+                        isDisabled={rainfall}
+                      >
+                        Uncertainty
+                      </Checkbox>
+                      <Checkbox value="Isohyets">Isohyets</Checkbox>
+                    </div>
+                  </TableCell>
+                </TableRow>
+
+                <TableRow key="3">
+                  <TableCell><p className="text-base pb-[24px]">Stations: </p></TableCell>
+                  <TableCell>
+                    <div className="inline-flex flex-col">
+                      <Checkbox value="RFAtlas">RF Atlas Stations</Checkbox>
+                      <Checkbox value="Other">Other Stations</Checkbox>
+                    </div>
+                  </TableCell>
+                </TableRow>
+
+                <TableRow className="pb-[300px]" key="4">
+                  <TableCell><p className="text-base">Month: </p></TableCell>
+                  <TableCell>
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <Button variant="bordered">
+                        <p className="font-bold">{selectedMonth}</p>
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu 
+                      className="max-h-[200px] overflow-y-auto" 
+                      aria-label="Month Selector"
+                      onAction={(key) => setSelectedMonth(key as string)}
+                    >
+                      {months.map((month) => (
+                        <DropdownItem
+                          key={month.key}
+                          className="hover:outline-white hover:bg-gray-100"
+                        >
+                          {month.name}
+                        </DropdownItem>
+                      ))}
+                    </DropdownMenu>
+                  </Dropdown>
+                  </TableCell>
+                </TableRow>
+                
               </TableBody>
             </Table> 
 
@@ -118,8 +203,8 @@ const MapOverlay: React.FC<
               stroke="currentColor" 
               className="size-6"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.867 19.125h.008v.008h-.008v-.008Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
             </svg>
           </Button>
         </div>
