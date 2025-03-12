@@ -46,6 +46,9 @@ const MapOverlay: React.FC<
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [rainfall, setRainfall] = useState<boolean>(false);
   const [uncertainty, setUncertainty] = useState<boolean>(false);
+  const [isohyets, setIsohyets] = useState<boolean>(false);
+  const [rainfallStat, setRainfallStat] = useState<boolean>(false);
+  const [otherStat, setOtherStat] = useState<boolean>(false);
   const [selectedMonth, setSelectedMonth] = useState<string>("Select");
 
   const months = [
@@ -131,6 +134,7 @@ const MapOverlay: React.FC<
                       <Checkbox 
                         value="Rainfall" 
                         onValueChange={() => setRainfall(!rainfall)}
+                        isSelected={rainfall}
                         isDisabled={uncertainty}
                       >
                         Rainfall
@@ -138,11 +142,18 @@ const MapOverlay: React.FC<
                       <Checkbox 
                         value="Uncertainty" 
                         onValueChange={() => setUncertainty(!uncertainty)}
+                        isSelected={uncertainty}
                         isDisabled={rainfall}
                       >
                         Uncertainty
                       </Checkbox>
-                      <Checkbox value="Isohyets">Isohyets</Checkbox>
+                      <Checkbox 
+                        value="Isohyets"
+                        onValueChange={() => setIsohyets(!isohyets)}
+                        isSelected={isohyets}
+                      >
+                        Isohyets
+                      </Checkbox>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -151,8 +162,20 @@ const MapOverlay: React.FC<
                   <TableCell><p className="text-base pb-[24px]">Stations: </p></TableCell>
                   <TableCell>
                     <div className="inline-flex flex-col">
-                      <Checkbox value="RFAtlas">RF Atlas Stations</Checkbox>
-                      <Checkbox value="Other">Other Stations</Checkbox>
+                      <Checkbox 
+                        value="RFAtlas"
+                        onValueChange={() => setRainfallStat(!rainfallStat)}
+                        isSelected={rainfallStat}
+                      >
+                        RF Atlas Stations
+                      </Checkbox>
+                      <Checkbox 
+                        value="Other"
+                        onValueChange={() => setOtherStat(!otherStat)}
+                        isSelected={otherStat}
+                      >
+                        Other Stations
+                      </Checkbox>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -160,27 +183,27 @@ const MapOverlay: React.FC<
                 <TableRow className="pb-[300px]" key="4">
                   <TableCell><p className="text-base">Month: </p></TableCell>
                   <TableCell>
-                  <Dropdown>
-                    <DropdownTrigger>
-                      <Button variant="bordered">
-                        <p className="font-bold">{selectedMonth}</p>
-                      </Button>
-                    </DropdownTrigger>
-                    <DropdownMenu 
-                      className="max-h-[200px] overflow-y-auto" 
-                      aria-label="Month Selector"
-                      onAction={(key) => setSelectedMonth(key as string)}
-                    >
-                      {months.map((month) => (
-                        <DropdownItem
-                          key={month.key}
-                          className="hover:outline-white hover:bg-gray-100"
-                        >
-                          {month.name}
-                        </DropdownItem>
-                      ))}
-                    </DropdownMenu>
-                  </Dropdown>
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <Button variant="bordered">
+                          <p className="font-bold">{selectedMonth}</p>
+                        </Button>
+                      </DropdownTrigger>
+                      <DropdownMenu 
+                        className="max-h-[200px] overflow-y-auto" 
+                        aria-label="Month Selector"
+                        onAction={(key) => setSelectedMonth(key as string)}
+                      >
+                        {months.map((month) => (
+                          <DropdownItem
+                            key={month.key}
+                            className="hover:outline-white hover:bg-gray-100"
+                          >
+                            {month.name}
+                          </DropdownItem>
+                        ))}
+                      </DropdownMenu>
+                    </Dropdown>
                   </TableCell>
                 </TableRow>
                 
