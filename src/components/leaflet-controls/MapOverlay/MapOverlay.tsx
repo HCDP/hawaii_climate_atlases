@@ -127,8 +127,8 @@ const MapOverlay: React.FC<
                 </TableRow>
 
                 <TableRow key="2">
-                  <TableCell><p className="text-base pb-[50px]">Show: </p></TableCell>
-                  <TableCell>
+                  <TableCell><p className="text-base pb-[55px] pt-[2.5vh]">Show: </p></TableCell>
+                  <TableCell className="pt-[2.5vh]">
                     {/* Place in div instead of checkbox group for expected disabling behavior */}
                     <div className="inline-flex flex-col">
                       <Checkbox 
@@ -159,8 +159,8 @@ const MapOverlay: React.FC<
                 </TableRow>
 
                 <TableRow key="3">
-                  <TableCell><p className="text-base pb-[24px]">Stations: </p></TableCell>
-                  <TableCell>
+                  <TableCell><p className="text-base pb-[30px] pt-[1.5vh]">Stations: </p></TableCell>
+                  <TableCell className="pt-[1.5vh]">
                     <div className="inline-flex flex-col">
                       <Checkbox 
                         value="RFAtlas"
@@ -180,9 +180,9 @@ const MapOverlay: React.FC<
                   </TableCell>
                 </TableRow>
 
-                <TableRow className="pb-[300px]" key="4">
-                  <TableCell><p className="text-base">Month: </p></TableCell>
-                  <TableCell>
+                <TableRow key="4">
+                  <TableCell><p className="text-base pt-[1.5vh]">Month: </p></TableCell>
+                  <TableCell className="pt-[2.5vh]">
                     <Dropdown>
                       <DropdownTrigger>
                         <Button variant="bordered">
