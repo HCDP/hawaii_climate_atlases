@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Station } from '@/lib';
 import dynamic from "next/dynamic";
 import { LayoutContext } from "@/components/LayoutContext";
@@ -15,7 +15,8 @@ const RainfallMap = dynamic(
 
 const ClientInteractiveMap: React.FC<{
   stations: Station[],
-}> = ({ stations }) => {
+  geojson: any
+}> = ({ stations, geojson }) => {
   // const [mapMaximized, setMapMaximized] = useState<boolean>(false);
   // const toggleMapMaximized = () => setMapMaximized(mapMaximized => !mapMaximized);
 
@@ -28,6 +29,7 @@ const ClientInteractiveMap: React.FC<{
       startPosition={[20.750, -157.317]}
       startZoom={7.5}
       stations={stations}
+      geojson={geojson}
       mapMaximized={maximized}
       toggleMapMaximized={toggleMapMaximized}
     />

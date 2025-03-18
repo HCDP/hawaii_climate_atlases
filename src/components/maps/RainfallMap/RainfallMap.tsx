@@ -10,6 +10,7 @@ const RainfallMap: React.FC<Props> = (
 ) => {
   const [selectedStation, setSelectedStation] = useState<Station>();
   const [selectedUnits, setSelectedUnits] = useState<Units>("IN");
+  const [showGeoJson, setShowGeoJson] = useState<boolean>(false);
 
   return (
     <div className="flex w-full h-full max-h-full">
@@ -22,6 +23,8 @@ const RainfallMap: React.FC<Props> = (
           setSelectedStation={setSelectedStation}
           selectedUnits={selectedUnits}
           setSelectedUnits={setSelectedUnits}
+          showGeoJson={showGeoJson}
+          setShowGeoJson={setShowGeoJson}
         />
       </div>
     </div>
