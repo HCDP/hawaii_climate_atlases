@@ -1,6 +1,6 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Map, { MapProps } from "../Map";
-import {Station, Units} from "@/lib";
+import { Station, Units } from "@/lib";
 import SideBar from "@/components/SideBar";
 
 type Props = Pick<MapProps,

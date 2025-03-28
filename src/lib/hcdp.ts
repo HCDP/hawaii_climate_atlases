@@ -13,6 +13,14 @@ export async function getIsohyets(): Promise<Isohyets> {
   // For each FeatureCollectionWithFilename array, indices 0-11 is jan-dec and 12 is annual
   const inchesGeojson: FeatureCollectionWithFilename[] = await shp(inchesSHP) as FeatureCollectionWithFilename[];
   const mmGeojson: FeatureCollectionWithFilename[] = await shp(mmSHP) as FeatureCollectionWithFilename[];
+  const sortGeojsons = (a: FeatureCollectionWithFilename, b: FeatureCollectionWithFilename) => {
+    if (!a.fileName || !b.fileName) {
+      return 0;
+    }
+    return a.fileName > b.fileName ? 1 : a.fileName < b.fileName ? -1 : 0;
+  }
+  inchesGeojson.sort(sortGeojsons);
+  mmGeojson.sort(sortGeojsons);
   const isohyets: Isohyets = {
     IN: inchesGeojson,
     MM: mmGeojson,
