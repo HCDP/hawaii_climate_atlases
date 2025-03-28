@@ -43,9 +43,8 @@ const GeoJSONLayer = ({ geojson }: { geojson: FeatureCollectionWithFilename }) =
       data={geojson}
       style={{
         color: 'black',
-        weight: 1,
+        weight: 0.7,
       }}
-
     />
   );
 }
@@ -57,8 +56,6 @@ const ZoomendHandler = ({ onZoomEnd }: {
     zoomend: () => {
       const zoom = map.getZoom();
       onZoomEnd(zoom);
-      // console.log(map.getZoomScale(12.75, 12))
-      console.log(zoom);
     }
   });
   return null;
