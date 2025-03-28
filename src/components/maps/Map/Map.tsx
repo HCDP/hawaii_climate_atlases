@@ -2,13 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap, useMapEvents, GeoJSON } from "react-leaflet";
-import { FeatureCollectionWithFilename } from "shpjs";
 import { LatLng, LatLngBounds, LatLngExpression, Map as LeafletMap, Util } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import { StationIcon } from "@/components/maps/Map";
-import { Station, Units } from "@/lib";
+import { Isohyets, Station, Units } from "@/lib";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import formatNum = Util.formatNum;
 
@@ -19,24 +18,22 @@ export interface Props {
   setSelectedStation: (station: Station) => void,
   selectedUnits: Units,
   setSelectedUnits: (units: Units) => void,
-  isohyets: FeatureCollectionWithFilename[],
+  isohyets: Isohyets,
   showIsohyets: boolean,
   setShowIsohyets: (show: boolean) => void,
   mapMaximized: boolean,
   toggleMapMaximized: () => void,
 }
 
-const GeoJSONLayer = ({ geojson }: { geojson: FeatureCollectionWithFilename }) => {
-  // const map = useMap();
-  // const geoJSON = L.geoJSON(geojson, {
-  //   interactive: false,
-  //   style: {
-  //     color: 'black',
-  //     weight: 1,
-  //   }
-  // });
-  // geoJSON.addTo(map);
-  // return null;
+const IsohyetsLayer = (
+{
+  isohyets,
+  selectedUnits,
+}: {
+  isohyets: Isohyets,
+  selectedUnits: Units,
+}) => {
+  const geojson = isohyets[selectedUnits][12];
   return (
     <GeoJSON
       interactive={false}
@@ -147,7 +144,8 @@ const Map: React.FC<Props> = (
         url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
       />
       <StationIcons stations={stations} setSelectedStation={setSelectedStation} zoom={zoom} zoomDelta={zoomDelta} />
-      {showIsohyets && <GeoJSONLayer geojson={isohyets[12]} />}
+      {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */}
+      {showIsohyets && <IsohyetsLayer key={selectedUnits} isohyets={isohyets} selectedUnits={selectedUnits} />}
       <ZoomendHandler onZoomEnd={setZoom} />
       <MapOverlay
         selectedUnits={selectedUnits}
@@ -157,34 +155,6 @@ const Map: React.FC<Props> = (
         mapMaximized={mapMaximized}
         onToggleMaximize={toggleMapMaximized}
       />
-      {/*<StationIcon*/}
-      {/*  station={{*/}
-      {/*    "SKN": 514,*/}
-      {/*    "Name": "Gage 40",*/}
-      {/*    "Lat_DD": 21.137,*/}
-      {/*    "Lon_DD": -157.20442,*/}
-      {/*    "DataSources": "Fill, State",*/}
-      {/*    "StationStatus": "Current"*/}
-
-      {/*  }}*/}
-      {/*  onClick={setSelectedStation}*/}
-      {/*  scale={1}*/}
-      {/*  key={"asdfasfasdfasfasfdsafsafas"}*/}
-      {/*/>*/}
-      {/*<StationIcon*/}
-      {/*  station={{*/}
-      {/*    "SKN": 514,*/}
-      {/*    "Name": "Gage 40",*/}
-      {/*    "Lat_DD": 21.137,*/}
-      {/*    "Lon_DD": -157.20442,*/}
-      {/*    "DataSources": "Fill, State",*/}
-      {/*    "StationStatus": "Discontinued"*/}
-
-      {/*  }}*/}
-      {/*  onClick={setSelectedStation}*/}
-      {/*  scale={1}*/}
-      {/*  key={"asdfasfasdfasfasfdsafsafasa"}*/}
-      {/*/>*/}
     </MapContainer>
   );
 }

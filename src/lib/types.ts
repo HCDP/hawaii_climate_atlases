@@ -1,3 +1,5 @@
+import { FeatureCollectionWithFilename } from "shpjs";
+
 export interface Station {
   SKN: number,
   Name: string,
@@ -39,3 +41,7 @@ export interface Station {
 }
 
 export type Units = "IN" | "MM";
+
+export type Isohyets = {
+  [key in Units]: FeatureCollectionWithFilename[];
+};

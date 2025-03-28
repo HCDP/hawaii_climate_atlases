@@ -1,10 +1,9 @@
 "use client"
 
 import React, { useContext } from "react";
-import { Station } from '@/lib';
+import { Isohyets, Station } from '@/lib';
 import dynamic from "next/dynamic";
 import { LayoutContext } from "@/components/LayoutContext";
-import { FeatureCollectionWithFilename } from "shpjs";
 
 const RainfallMap = dynamic(
   () => import("@/components/maps/RainfallMap"),
@@ -16,7 +15,7 @@ const RainfallMap = dynamic(
 
 const ClientInteractiveMap: React.FC<{
   stations: Station[],
-  isohyets: FeatureCollectionWithFilename[],
+  isohyets: Isohyets,
 }> = ({ stations, isohyets }) => {
   // const [mapMaximized, setMapMaximized] = useState<boolean>(false);
   // const toggleMapMaximized = () => setMapMaximized(mapMaximized => !mapMaximized);

@@ -1,5 +1,5 @@
 import { promises as fs } from "fs";
-import { Station } from "@/lib";
+import { Isohyets, Station } from "@/lib";
 import shp, { FeatureCollectionWithFilename } from 'shpjs';
 
 export async function getDefaultData(): Promise<Station[]> {
@@ -7,8 +7,15 @@ export async function getDefaultData(): Promise<Station[]> {
     .then(file => JSON.parse(file));
 }
 
-export async function getIsohyets(): Promise<FeatureCollectionWithFilename[]> {
-  const data = await fs.readFile(process.cwd() + '/public/data/StateIsohyetsSHP_inches.zip');
-  const geojson: FeatureCollectionWithFilename[] = await shp(data) as FeatureCollectionWithFilename[];
-  return geojson; // indices 0-11 is jan-dec, 12 is annual
+export async function getIsohyets(): Promise<Isohyets> {
+  const inchesSHP = await fs.readFile(process.cwd() + '/public/data/StateIsohyetsSHP_inches.zip');
+  const mmSHP = await fs.readFile(process.cwd() + '/public/data/StateIsohyetsSHP_mm.zip');
+  // For each FeatureCollectionWithFilename array, indices 0-11 is jan-dec and 12 is annual
+  const inchesGeojson: FeatureCollectionWithFilename[] = await shp(inchesSHP) as FeatureCollectionWithFilename[];
+  const mmGeojson: FeatureCollectionWithFilename[] = await shp(mmSHP) as FeatureCollectionWithFilename[];
+  const isohyets: Isohyets = {
+    IN: inchesGeojson,
+    MM: mmGeojson,
+  }
+  return isohyets;
 }
