@@ -7,13 +7,8 @@ export async function getDefaultData(): Promise<Station[]> {
     .then(file => JSON.parse(file));
 }
 
-export async function getSHP(): Promise<FeatureCollectionWithFilename | FeatureCollectionWithFilename[]> {
-  const data = await fs.readFile(process.cwd() + '/public/data/OahuIsohyetsSHP_mm.zip');
-  const geojson = await shp(data);
-  console.log(typeof geojson);
-  return geojson;
-  // const geojsons: FeatureCollectionWithFilename[] = [];
-  // const oahuGeojson: FeatureCollectionWithFilename = await shp(data);
-  // geojsons.push(oahuGeojson);
-  // return geojsons;
+export async function getIsohyets(): Promise<FeatureCollectionWithFilename[]> {
+  const data = await fs.readFile(process.cwd() + '/public/data/StateIsohyetsSHP_inches.zip');
+  const geojson: FeatureCollectionWithFilename[] = await shp(data) as FeatureCollectionWithFilename[];
+  return geojson; // indices 0-11 is jan-dec, 12 is annual
 }

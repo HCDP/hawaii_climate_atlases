@@ -1,12 +1,12 @@
 import React from "react";
-import { getDefaultData, getSHP, Station } from "@/lib";
+import { getDefaultData, getIsohyets, Station } from "@/lib";
 import ClientInteractiveMap from "./ClientInteractiveMap";
 
 // fetch the stations and passes it to the client-rendered ClientInteractiveMap
 // this is because we want to use useState which can only be used in a client component
 export default async function InteractiveMap() {
   const stations: Station[] = await getDefaultData();
-  const geojson = await getSHP();
+  const isohyets = await getIsohyets();
 
   // const fetchedStations = await fetchRainfallData(
   //   "new", // "new" or "legacy"
@@ -21,6 +21,6 @@ export default async function InteractiveMap() {
   // const fetchedMetaData = await fetchRainfallData();
 
   return (
-    <ClientInteractiveMap stations={stations} geojson={geojson} />
+    <ClientInteractiveMap stations={stations} isohyets={isohyets} />
   );
 }

@@ -20,14 +20,16 @@ const parseLocation = (input: string): LatLng | null => {
   }
 }
 
-const MapOverlay: React.FC<
-  {
-    selectedUnits: Units,
-    setSelectedUnits: (units: Units) => void,
-    mapMaximized: boolean,
-    onToggleMaximize: () => void,
-  }
-> = ({ selectedUnits, setSelectedUnits, mapMaximized, onToggleMaximize }) => {
+interface Props {
+  selectedUnits: Units,
+  setSelectedUnits: (units: Units) => void,
+  showIsohyets: boolean,
+  setShowIsohyets: (show: boolean) => void,
+  mapMaximized: boolean,
+  onToggleMaximize: () => void,
+};
+
+const MapOverlay: React.FC<Props> = ({ selectedUnits, setSelectedUnits, showIsohyets, setShowIsohyets, mapMaximized, onToggleMaximize }) => {
   const map: Map = useMap();
 
   const handleLocationChange = (input: string) => {
@@ -46,7 +48,6 @@ const MapOverlay: React.FC<
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [rainfall, setRainfall] = useState<boolean>(false);
   const [uncertainty, setUncertainty] = useState<boolean>(false);
-  const [isohyets, setIsohyets] = useState<boolean>(false);
   const [rainfallStat, setRainfallStat] = useState<boolean>(false);
   const [otherStat, setOtherStat] = useState<boolean>(false);
   const [selectedMonth, setSelectedMonth] = useState<string>("Select");
@@ -149,8 +150,8 @@ const MapOverlay: React.FC<
                       </Checkbox>
                       <Checkbox 
                         value="Isohyets"
-                        onValueChange={() => setIsohyets(!isohyets)}
-                        isSelected={isohyets}
+                        onValueChange={() => setShowIsohyets(!showIsohyets)}
+                        isSelected={showIsohyets}
                       >
                         Isohyets
                       </Checkbox>

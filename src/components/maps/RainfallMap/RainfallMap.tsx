@@ -3,14 +3,21 @@ import Map, { MapProps } from "../Map";
 import {Station, Units} from "@/lib";
 import SideBar from "@/components/SideBar";
 
-type Props = Omit<MapProps, "setSelectedStation" | "selectedUnits" | "setSelectedUnits">;
+type Props = Pick<MapProps,
+  "startPosition" |
+  "startZoom" |
+  "stations" |
+  "isohyets" |
+  "mapMaximized" |
+  "toggleMapMaximized"
+>;
 
 const RainfallMap: React.FC<Props> = (
   props: Props
 ) => {
   const [selectedStation, setSelectedStation] = useState<Station>();
   const [selectedUnits, setSelectedUnits] = useState<Units>("IN");
-  const [showGeoJson, setShowGeoJson] = useState<boolean>(false);
+  const [showIsohyets, setShowIsohyets] = useState<boolean>(false);
 
   return (
     <div className="flex w-full h-full max-h-full">
@@ -23,8 +30,8 @@ const RainfallMap: React.FC<Props> = (
           setSelectedStation={setSelectedStation}
           selectedUnits={selectedUnits}
           setSelectedUnits={setSelectedUnits}
-          showGeoJson={showGeoJson}
-          setShowGeoJson={setShowGeoJson}
+          showIsohyets={showIsohyets}
+          setShowIsohyets={setShowIsohyets}
         />
       </div>
     </div>

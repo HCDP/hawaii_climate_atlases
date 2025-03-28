@@ -16,17 +16,17 @@ export interface Props {
   startPosition: number[],
   startZoom: number,
   stations: Station[],
-  geojson: FeatureCollectionWithFilename,
-  showGeoJson: boolean,
-  setShowGeoJson: (show: boolean) => void,
   setSelectedStation: (station: Station) => void,
   selectedUnits: Units,
   setSelectedUnits: (units: Units) => void,
+  isohyets: FeatureCollectionWithFilename[],
+  showIsohyets: boolean,
+  setShowIsohyets: (show: boolean) => void,
   mapMaximized: boolean,
   toggleMapMaximized: () => void,
 }
 
-const GeoJSONLayer = ({ geojson }) => {
+const GeoJSONLayer = ({ geojson }: { geojson: FeatureCollectionWithFilename }) => {
   // const map = useMap();
   // const geoJSON = L.geoJSON(geojson, {
   //   interactive: false,
@@ -42,7 +42,7 @@ const GeoJSONLayer = ({ geojson }) => {
       interactive={false}
       data={geojson}
       style={{
-        color: 'green',
+        color: 'black',
         weight: 1,
       }}
 
@@ -104,7 +104,9 @@ const Map: React.FC<Props> = (
     startPosition = [21.344875, -157.908248],
     startZoom = 7.5,
     stations = [],
-    geojson,
+    isohyets,
+    showIsohyets,
+    setShowIsohyets,
     setSelectedStation,
     selectedUnits,
     setSelectedUnits,
@@ -148,11 +150,13 @@ const Map: React.FC<Props> = (
         url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
       />
       <StationIcons stations={stations} setSelectedStation={setSelectedStation} zoom={zoom} zoomDelta={zoomDelta} />
-      <GeoJSONLayer geojson={geojson} />
+      {showIsohyets && <GeoJSONLayer geojson={isohyets[12]} />}
       <ZoomendHandler onZoomEnd={setZoom} />
       <MapOverlay
         selectedUnits={selectedUnits}
         setSelectedUnits={setSelectedUnits}
+        showIsohyets={showIsohyets}
+        setShowIsohyets={setShowIsohyets}
         mapMaximized={mapMaximized}
         onToggleMaximize={toggleMapMaximized}
       />

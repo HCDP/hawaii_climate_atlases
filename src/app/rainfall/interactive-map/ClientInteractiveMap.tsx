@@ -1,9 +1,10 @@
 "use client"
 
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { Station } from '@/lib';
 import dynamic from "next/dynamic";
 import { LayoutContext } from "@/components/LayoutContext";
+import { FeatureCollectionWithFilename } from "shpjs";
 
 const RainfallMap = dynamic(
   () => import("@/components/maps/RainfallMap"),
@@ -15,8 +16,8 @@ const RainfallMap = dynamic(
 
 const ClientInteractiveMap: React.FC<{
   stations: Station[],
-  geojson: any
-}> = ({ stations, geojson }) => {
+  isohyets: FeatureCollectionWithFilename[],
+}> = ({ stations, isohyets }) => {
   // const [mapMaximized, setMapMaximized] = useState<boolean>(false);
   // const toggleMapMaximized = () => setMapMaximized(mapMaximized => !mapMaximized);
 
@@ -29,7 +30,7 @@ const ClientInteractiveMap: React.FC<{
       startPosition={[20.750, -157.317]}
       startZoom={7.5}
       stations={stations}
-      geojson={geojson}
+      isohyets={isohyets}
       mapMaximized={maximized}
       toggleMapMaximized={toggleMapMaximized}
     />
