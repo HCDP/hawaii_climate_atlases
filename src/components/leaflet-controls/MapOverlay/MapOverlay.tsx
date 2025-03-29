@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { LatLng, Map } from "leaflet";
 import { useMap, ZoomControl } from "react-leaflet";
 import LocationField from "@/components/LocationField";
-import { Units } from "@/lib";
+import { Period, Units } from "@/lib";
 import { LEAFLET_POSITIONS } from "@/constants";
 import { Button, ButtonGroup } from "@heroui/button";
 import { Checkbox } from "@heroui/checkbox";
@@ -23,6 +23,8 @@ const parseLocation = (input: string): LatLng | null => {
 interface Props {
   selectedUnits: Units,
   setSelectedUnits: (units: Units) => void,
+  selectedPeriod: Period,
+  setSelectedPeriod: (period: Period) => void,
   showRFStations: boolean,
   setShowRFStations: (show: boolean) => void,
   showOtherStations: boolean,
@@ -35,16 +37,18 @@ interface Props {
 
 const MapOverlay: React.FC<Props> = (
   { 
-    selectedUnits, 
-    setSelectedUnits, 
+    selectedUnits,
+    setSelectedUnits,
+    selectedPeriod,
+    setSelectedPeriod,
     showRFStations,
     setShowRFStations,
     showOtherStations,
     setShowOtherStations,
-    showIsohyets, 
-    setShowIsohyets, 
-    mapMaximized, 
-    onToggleMaximize 
+    showIsohyets,
+    setShowIsohyets,
+    mapMaximized,
+    onToggleMaximize,
   }
 ) => {
   const map: Map = useMap();
@@ -65,23 +69,9 @@ const MapOverlay: React.FC<Props> = (
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [rainfall, setRainfall] = useState<boolean>(false);
   const [uncertainty, setUncertainty] = useState<boolean>(false);
-  const [selectedMonth, setSelectedMonth] = useState<string>("Select");
 
-  const months = [
-    { key: 'January', name: 'January' },
-    { key: 'February', name: 'February' },
-    { key: 'March', name: 'March' },
-    { key: 'April', name: 'April' },
-    { key: 'May', name: 'May' },
-    { key: 'June', name: 'June' },
-    { key: 'July', name: 'July' },
-    { key: 'August', name: 'August' },
-    { key: 'September', name: 'September' },
-    { key: 'October', name: 'October' },
-    { key: 'November', name: 'November' },
-    { key: 'December', name: 'December' },
-    { key: 'Annual', name: 'Annual' },
-  ];
+  // Array of the string keys of the Period enum ("January", "February", etc.)
+  const periodNames: string[] = Object.keys(Period).filter(period => isNaN(parseInt(period)));
 
   return (
     <>
@@ -200,25 +190,25 @@ const MapOverlay: React.FC<Props> = (
                 </TableRow>
 
                 <TableRow key="4">
-                  <TableCell><p className="text-base pt-[1.5vh]">Month: </p></TableCell>
+                  <TableCell><p className="text-base pt-[1.5vh]">Period: </p></TableCell>
                   <TableCell className="pt-[2.5vh]">
                     <Dropdown>
                       <DropdownTrigger>
                         <Button variant="bordered">
-                          <p className="font-bold">{selectedMonth}</p>
+                          <p className="font-bold">{periodNames[selectedPeriod]}</p>
                         </Button>
                       </DropdownTrigger>
-                      <DropdownMenu 
+                      <DropdownMenu
                         className="max-h-[200px] overflow-y-auto" 
                         aria-label="Month Selector"
-                        onAction={(key) => setSelectedMonth(key as string)}
+                        onAction={(key) => setSelectedPeriod(key as Period)}
                       >
-                        {months.map((month) => (
+                        {periodNames.map((period: string) => (
                           <DropdownItem
-                            key={month.key}
+                            key={Period[period as keyof typeof Period]}
                             className="hover:outline-white hover:bg-gray-100"
                           >
-                            {month.name}
+                            {period}
                           </DropdownItem>
                         ))}
                       </DropdownMenu>

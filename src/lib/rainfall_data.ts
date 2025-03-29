@@ -23,12 +23,12 @@ async function fetchStations(url: string): Promise<Station[]> {
         header: true, // treats top line of CSV as names for columns
         skipEmptyLines: true,
         complete: (result) => resolve(result.data as Station[]),
-        error: (error: any) => reject(error),
+        error: (error: never) => reject(error),
       });
     })
     
   } catch (error) {
-    console.error("Error fetching CSV data");
+    console.error("Error fetching CSV data", error);
     return [];
   }
 }

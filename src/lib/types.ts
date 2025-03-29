@@ -45,3 +45,19 @@ export type Units = "IN" | "MM";
 export type Isohyets = {
   [key in Units]: FeatureCollectionWithFilename[];
 };
+
+export enum Period {
+  January = 0,
+  February,
+  March,
+  April,
+  May,
+  June,
+  July,
+  August,
+  September,
+  October,
+  November,
+  December,
+  Annual,
+}

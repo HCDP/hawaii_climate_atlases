@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import { StationIcon } from "@/components/maps/Map";
-import { Isohyets, Station, Units } from "@/lib";
+import { Isohyets, Station, Units, Period } from "@/lib";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import formatNum = Util.formatNum;
 
@@ -19,6 +19,8 @@ export interface Props {
   setSelectedStation: (station: Station) => void,
   selectedUnits: Units,
   setSelectedUnits: (units: Units) => void,
+  selectedPeriod: Period,
+  setSelectedPeriod: (period: Period) => void,
   isohyets: Isohyets,
   showIsohyets: boolean,
   setShowIsohyets: (show: boolean) => void,
@@ -34,11 +36,13 @@ const IsohyetsLayer = (
 {
   isohyets,
   selectedUnits,
+  selectedPeriod,
 }: {
   isohyets: Isohyets,
   selectedUnits: Units,
+  selectedPeriod: Period,
 }) => {
-  const geojson = isohyets[selectedUnits][12];
+  const geojson = isohyets[selectedUnits][selectedPeriod];
   return (
     <GeoJSON
       interactive={false}
@@ -104,16 +108,18 @@ const Map: React.FC<Props> = (
     startZoom = 7.5,
     rfStations = [],
     otherStations = [],
+    setSelectedStation,
+    selectedUnits,
+    setSelectedUnits,
+    selectedPeriod,
+    setSelectedPeriod,
+    isohyets,
+    showIsohyets,
+    setShowIsohyets,
     showRFStations,
     setShowRFStations,
     showOtherStations,
     setShowOtherStations,
-    isohyets,
-    showIsohyets,
-    setShowIsohyets,
-    setSelectedStation,
-    selectedUnits,
-    setSelectedUnits,
     mapMaximized,
     toggleMapMaximized,
   }: Props
@@ -156,11 +162,19 @@ const Map: React.FC<Props> = (
       {showRFStations && <StationIcons stations={rfStations} setSelectedStation={setSelectedStation} zoom={zoom} zoomDelta={zoomDelta} />}
       {showOtherStations && <StationIcons stations={otherStations} setSelectedStation={setSelectedStation} zoom={zoom} zoomDelta={zoomDelta} />}
       {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */}
-      {showIsohyets && <IsohyetsLayer key={selectedUnits} isohyets={isohyets} selectedUnits={selectedUnits} />}
+      {showIsohyets && (
+        <IsohyetsLayer
+          key={`${selectedUnits}${selectedPeriod}`}
+          isohyets={isohyets} selectedUnits={selectedUnits}
+          selectedPeriod={selectedPeriod}
+        />
+      )}
       <ZoomendHandler onZoomEnd={setZoom} />
       <MapOverlay
         selectedUnits={selectedUnits}
         setSelectedUnits={setSelectedUnits}
+        selectedPeriod={selectedPeriod}
+        setSelectedPeriod={setSelectedPeriod}
         showRFStations={showRFStations}
         setShowRFStations={setShowRFStations}
         showOtherStations={showOtherStations}
