@@ -5,8 +5,8 @@ import ClientInteractiveMap from "./ClientInteractiveMap";
 // fetch the stations and passes it to the client-rendered ClientInteractiveMap
 // this is because we want to use useState which can only be used in a client component
 export default async function InteractiveMap() {
-  const stations: Station[] = await getStationData('https://atlas.uhtapis.org/rainfall/assets/files/Tabular/FinalStationData_Used_csv.csv');
-  //const stations: Station[] = await getOtherStationData('https://atlas.uhtapis.org/rainfall/assets/files/Tabular/FinalStations_NotUsed_csv.csv');
+  const rfStations: Station[] = await getStationData('https://atlas.uhtapis.org/rainfall/assets/files/Tabular/FinalStationData_Used_csv.csv');
+  const otherStations: Station[] = await getStationData('https://atlas.uhtapis.org/rainfall/assets/files/Tabular/FinalStations_NotUsed_csv.csv');
   const isohyets: Isohyets = await getIsohyets();
 
   // const fetchedStations = await fetchRainfallData(
@@ -22,6 +22,6 @@ export default async function InteractiveMap() {
   // const fetchedMetaData = await fetchRainfallData();
 
   return (
-    <ClientInteractiveMap stations={stations} isohyets={isohyets} />
+    <ClientInteractiveMap rfStations={rfStations} otherStations={otherStations} isohyets={isohyets} />
   );
 }

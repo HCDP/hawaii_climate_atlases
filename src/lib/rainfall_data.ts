@@ -8,12 +8,10 @@ export async function getStationData(url: string): Promise<Station[]> {
 
     return new Promise((resolve, reject) => {
       Papa.parse(dataAsText, {
+        worker: true,
         header: true, // treats top line of CSV as names for columns
         skipEmptyLines: true,
-        complete: (result) => {
-        // console.log(result.data);
-          resolve(result.data as Station[]);
-        },
+        complete: (result) => resolve(result.data as Station[]),
         error: (error: any) => reject(error),
       });
     })

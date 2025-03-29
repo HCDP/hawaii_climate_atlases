@@ -14,13 +14,18 @@ import formatNum = Util.formatNum;
 export interface Props {
   startPosition: number[],
   startZoom: number,
-  stations: Station[],
+  rfStations: Station[],
+  otherStations: Station[],
   setSelectedStation: (station: Station) => void,
   selectedUnits: Units,
   setSelectedUnits: (units: Units) => void,
   isohyets: Isohyets,
   showIsohyets: boolean,
   setShowIsohyets: (show: boolean) => void,
+  showRFStations: boolean,
+  setShowRFStations: (show: boolean) => void,
+  showOtherStations: boolean,
+  setShowOtherStations: (show: boolean) => void,
   mapMaximized: boolean,
   toggleMapMaximized: () => void,
 }
@@ -97,7 +102,12 @@ const Map: React.FC<Props> = (
   {
     startPosition = [21.344875, -157.908248],
     startZoom = 7.5,
-    stations = [],
+    rfStations = [],
+    otherStations = [],
+    showRFStations,
+    setShowRFStations,
+    showOtherStations,
+    setShowOtherStations,
     isohyets,
     showIsohyets,
     setShowIsohyets,
@@ -143,13 +153,18 @@ const Map: React.FC<Props> = (
         // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
       />
-      <StationIcons stations={stations} setSelectedStation={setSelectedStation} zoom={zoom} zoomDelta={zoomDelta} />
+      {showRFStations && <StationIcons stations={rfStations} setSelectedStation={setSelectedStation} zoom={zoom} zoomDelta={zoomDelta} />}
+      {showOtherStations && <StationIcons stations={otherStations} setSelectedStation={setSelectedStation} zoom={zoom} zoomDelta={zoomDelta} />}
       {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */}
       {showIsohyets && <IsohyetsLayer key={selectedUnits} isohyets={isohyets} selectedUnits={selectedUnits} />}
       <ZoomendHandler onZoomEnd={setZoom} />
       <MapOverlay
         selectedUnits={selectedUnits}
         setSelectedUnits={setSelectedUnits}
+        showRFStations={showRFStations}
+        setShowRFStations={setShowRFStations}
+        showOtherStations={showOtherStations}
+        setShowOtherStations={setShowOtherStations}
         showIsohyets={showIsohyets}
         setShowIsohyets={setShowIsohyets}
         mapMaximized={mapMaximized}

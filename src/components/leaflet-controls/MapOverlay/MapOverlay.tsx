@@ -23,13 +23,30 @@ const parseLocation = (input: string): LatLng | null => {
 interface Props {
   selectedUnits: Units,
   setSelectedUnits: (units: Units) => void,
+  showRFStations: boolean,
+  setShowRFStations: (show: boolean) => void,
+  showOtherStations: boolean,
+  setShowOtherStations: (show: boolean) => void,
   showIsohyets: boolean,
   setShowIsohyets: (show: boolean) => void,
   mapMaximized: boolean,
   onToggleMaximize: () => void,
 };
 
-const MapOverlay: React.FC<Props> = ({ selectedUnits, setSelectedUnits, showIsohyets, setShowIsohyets, mapMaximized, onToggleMaximize }) => {
+const MapOverlay: React.FC<Props> = (
+  { 
+    selectedUnits, 
+    setSelectedUnits, 
+    showRFStations,
+    setShowRFStations,
+    showOtherStations,
+    setShowOtherStations,
+    showIsohyets, 
+    setShowIsohyets, 
+    mapMaximized, 
+    onToggleMaximize 
+  }
+) => {
   const map: Map = useMap();
 
   const handleLocationChange = (input: string) => {
@@ -44,12 +61,10 @@ const MapOverlay: React.FC<Props> = ({ selectedUnits, setSelectedUnits, showIsoh
     map.invalidateSize()
   }, [mapMaximized]);
 
-  // For menu and options/fields behavior
+  // For menu and options/fields behavior (temp)
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [rainfall, setRainfall] = useState<boolean>(false);
   const [uncertainty, setUncertainty] = useState<boolean>(false);
-  const [rainfallStat, setRainfallStat] = useState<boolean>(false);
-  const [otherStat, setOtherStat] = useState<boolean>(false);
   const [selectedMonth, setSelectedMonth] = useState<string>("Select");
 
   const months = [
@@ -91,8 +106,7 @@ const MapOverlay: React.FC<Props> = ({ selectedUnits, setSelectedUnits, showIsoh
       </div>
       <div className={LEAFLET_POSITIONS.bottomleft}>
         <div className="leaflet-control">
-          {
-            showMenu ?
+          { showMenu ?
 
             <Table
               hideHeader
@@ -165,15 +179,19 @@ const MapOverlay: React.FC<Props> = ({ selectedUnits, setSelectedUnits, showIsoh
                     <div className="inline-flex flex-col">
                       <Checkbox 
                         value="RFAtlas"
-                        onValueChange={() => setRainfallStat(!rainfallStat)}
-                        isSelected={rainfallStat}
+                        onValueChange={() => setShowRFStations(!showRFStations)}
+                        isSelected={showRFStations}
                       >
                         RF Atlas Stations
                       </Checkbox>
                       <Checkbox 
                         value="Other"
-                        onValueChange={() => setOtherStat(!otherStat)}
-                        isSelected={otherStat}
+                        onValueChange={() => {
+                            setShowOtherStations(!showOtherStations);
+                            console.log(showOtherStations);
+                          }
+                        }
+                        isSelected={showOtherStations}
                       >
                         Other Stations
                       </Checkbox>

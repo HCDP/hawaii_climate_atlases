@@ -14,9 +14,10 @@ const RainfallMap = dynamic(
 );
 
 const ClientInteractiveMap: React.FC<{
-  stations: Station[],
+  rfStations: Station[],
+  otherStations: Station[],
   isohyets: Isohyets,
-}> = ({ stations, isohyets }) => {
+}> = ({ rfStations, otherStations, isohyets }) => {
   // const [mapMaximized, setMapMaximized] = useState<boolean>(false);
   // const toggleMapMaximized = () => setMapMaximized(mapMaximized => !mapMaximized);
 
@@ -28,7 +29,8 @@ const ClientInteractiveMap: React.FC<{
     <RainfallMap
       startPosition={[20.750, -157.317]}
       startZoom={7.5}
-      stations={stations}
+      rfStations={rfStations}
+      otherStations={otherStations}
       isohyets={isohyets}
       mapMaximized={maximized}
       toggleMapMaximized={toggleMapMaximized}
