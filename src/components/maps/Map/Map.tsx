@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, useMap, useMapEvents, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, useMapEvents, GeoJSON, Popup, useMapEvent } from "react-leaflet";
 import { LatLng, LatLngBounds, LatLngExpression, Map as LeafletMap, Util } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
@@ -102,6 +102,24 @@ const StationIcons = (
   );
 }
 
+const PopupOnClick = () => {
+  // const map = useMapEvent("click", (e) => {
+  //   L.popup()
+  //     .setContent("<p>this is a popup</p>")
+  //     .setLatLng(e.latlng).
+  //   openOn(map);
+  // });
+  const [location, setLocation] = useState<LatLng>();
+  useMapEvent("click", (e) => {
+    setLocation(e.latlng);
+  });
+  return location && (
+    <Popup position={location}>
+      The location: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+    </Popup>
+  );
+}
+
 const Map: React.FC<Props> = (
   {
     startPosition = [21.344875, -157.908248],
@@ -184,6 +202,7 @@ const Map: React.FC<Props> = (
         mapMaximized={mapMaximized}
         onToggleMaximize={toggleMapMaximized}
       />
+      <PopupOnClick />
     </MapContainer>
   );
 }
