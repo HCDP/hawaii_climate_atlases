@@ -1,9 +1,8 @@
 "use client"
 
-import React, { useContext } from "react";
+import React from "react";
 import { Isohyets, Station } from '@/lib';
 import dynamic from "next/dynamic";
-import { LayoutContext } from "@/components/LayoutContext";
 
 const RainfallMap = dynamic(
   () => import("@/components/maps/RainfallMap"),
@@ -21,9 +20,6 @@ const ClientInteractiveMap: React.FC<{
   // const [mapMaximized, setMapMaximized] = useState<boolean>(false);
   // const toggleMapMaximized = () => setMapMaximized(mapMaximized => !mapMaximized);
 
-  const { maximized, setMaximized } = useContext(LayoutContext);
-  const toggleMapMaximized = () => setMaximized(oldMax => !oldMax);
-
   return (
     // UH Manoa coordinates: 21.297, -157.817
     <RainfallMap
@@ -32,8 +28,6 @@ const ClientInteractiveMap: React.FC<{
       rfStations={rfStations}
       otherStations={otherStations}
       isohyets={isohyets}
-      mapMaximized={maximized}
-      toggleMapMaximized={toggleMapMaximized}
     />
   );
 }
