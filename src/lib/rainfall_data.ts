@@ -1,5 +1,6 @@
-import { Isohyets, Station } from "@/lib";
+import { Isohyets, Station, AsciiData, AsciiGrids } from "@/lib";
 import Papa from "papaparse";
+import JSZip from "jszip";
 import shp, { FeatureCollectionWithFilename } from "shpjs";
 
 const baseURL = 'https://atlas.uhtapis.org/rainfall/assets/files';
@@ -53,4 +54,65 @@ export async function getIsohyets(): Promise<Isohyets> {
     MM: mmGeojson,
   }
   return isohyets;
+}
+
+export async function getInchesAsciiGrids(): Promise<AsciiGrids> {
+  return fetchAsciiGridData(`${baseURL}/GISLayers/StateASCIIGrids_inches.zip`);
+}
+
+export async function getMMAsciiGrids(): Promise<AsciiGrids> {
+  return fetchAsciiGridData(`${baseURL}/GISLayers/StateASCIIGrids_mm.zip`);
+}
+
+export async function fetchAsciiGridData(url: string): Promise<AsciiGrids> {
+  const asciiZip = await fetch(url)
+    .then(res => res.arrayBuffer())
+    .then(res => JSZip.loadAsync(res));
+
+  const asciiGrids: AsciiGrids = {};
+  
+  for (let fileName in asciiZip.files) {
+    const file = asciiZip.files[fileName];
+
+    if(file.name.endsWith(".txt")) {
+      const dataAsText = await file.async("string");
+      const textToParsedData = grabAsciiData(dataAsText);
+      asciiGrids[file.name] = textToParsedData;
+    }
+  }
+
+  return asciiGrids;
+}   
+
+//helper func
+function grabAsciiData(dataAsText: string): AsciiData {
+  const lines = dataAsText.split('\n');
+  // Grab only values from metadata/header
+  let asciiData: AsciiData = {
+    ncols: parseInt(lines[0].split(/\s+/)[1]),
+    nrows: parseInt(lines[1].split(/\s+/)[1]),
+    xllcorner: parseFloat(lines[2].split(/\s+/)[1]),
+    yllcorner: parseFloat(lines[3].split(/\s+/)[1]),
+    cellsize: parseFloat(lines[4].split(/\s+/)[1]),
+    NODATA_value: parseInt(lines[5].split(/\s+/)[1]),
+    gridLocValPair: [],
+  }
+ 
+  let i;
+  let dataIndex = 0; // Curr grid location, increment for each grid that's parsed
+  // Iterate over each line, and each value of all lines
+  for(i = 6; i < lines.length; i++) {
+    const lineValues = lines[i].trim().split(/\s+/);
+
+    let j;
+    for(j = 0; j < lineValues.length; j++) {
+      const currGridVal = parseFloat(lineValues[j]);
+      if(currGridVal !== asciiData.NODATA_value && !isNaN(currGridVal)) {
+        asciiData.gridLocValPair.push([dataIndex, currGridVal]); // [grid loc, value (from range min to max)]
+      }
+      dataIndex++;
+    }
+  }
+
+  return asciiData;
 }

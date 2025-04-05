@@ -46,6 +46,22 @@ export type Isohyets = {
   [key in Units]: FeatureCollectionWithFilename[];
 };
 
+export interface AsciiData {
+  metadata: {
+    ncols: number,
+    nrows: number,
+    xllcorner: number,
+    yllcorner: number,
+    cellsize: number,
+    NODATA_value: number,
+  },
+  gridLocValPair: [number, number][],
+}
+
+export interface AsciiGrids {
+  [fileName: string]: AsciiData
+}
+
 export enum Period {
   January = 0,
   February,
