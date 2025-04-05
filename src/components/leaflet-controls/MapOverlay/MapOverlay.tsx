@@ -176,11 +176,7 @@ const MapOverlay: React.FC<Props> = (
                       </Checkbox>
                       <Checkbox 
                         value="Other"
-                        onValueChange={() => {
-                            setShowOtherStations(!showOtherStations);
-                            console.log(showOtherStations);
-                          }
-                        }
+                        onValueChange={() => setShowOtherStations(!showOtherStations)}
                         isSelected={showOtherStations}
                       >
                         Other Stations

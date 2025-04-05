@@ -1,4 +1,4 @@
-import { Isohyets, Station, AsciiData, AsciiGrids } from "@/lib";
+import { Isohyets, Station, Grids, AsciiGrid } from "@/lib";
 import Papa from "papaparse";
 import JSZip from "jszip";
 import shp, { FeatureCollectionWithFilename } from "shpjs";
@@ -56,48 +56,51 @@ export async function getIsohyets(): Promise<Isohyets> {
   return isohyets;
 }
 
-export async function getInchesAsciiGrids(): Promise<AsciiGrids> {
-  return fetchAsciiGridData(`${baseURL}/GISLayers/StateASCIIGrids_inches.zip`);
+export async function getGrids(): Promise<Grids> {
+  const inchesAsciiGrids: AsciiGrid[] = await fetchAsciiGridData(`${baseURL}/GISLayers/StateASCIIGrids_inches.zip`);
+  const mmAsciiGrids: AsciiGrid[] = await fetchAsciiGridData(`${baseURL}/GISLayers/StateASCIIGrids_mm.zip`);
+  const grids = {
+    IN: inchesAsciiGrids,
+    MM: mmAsciiGrids,
+  }
+  return grids;
 }
 
-export async function getMMAsciiGrids(): Promise<AsciiGrids> {
-  return fetchAsciiGridData(`${baseURL}/GISLayers/StateASCIIGrids_mm.zip`);
-}
-
-export async function fetchAsciiGridData(url: string): Promise<AsciiGrids> {
+export async function fetchAsciiGridData(url: string): Promise<AsciiGrid[]> {
   const asciiZip = await fetch(url)
     .then(res => res.arrayBuffer())
     .then(res => JSZip.loadAsync(res));
 
-  const asciiGrids: AsciiGrids = {};
-  
-  for (let fileName in asciiZip.files) {
+  const asciiGrids: AsciiGrid[] = [];
+  const fileNames = Object.keys(asciiZip.files)
+    .filter(fileName => fileName.endsWith(".txt"))
+    .sort();
+  for (const fileName of fileNames) {
     const file = asciiZip.files[fileName];
-
-    if(file.name.endsWith(".txt")) {
-      const dataAsText = await file.async("string");
-      const textToParsedData = grabAsciiData(dataAsText);
-      asciiGrids[file.name] = textToParsedData;
-    }
+    const dataAsText = await file.async("string");
+    const textToParsedData = grabAsciiData(dataAsText);
+    asciiGrids.push(textToParsedData);
   }
 
   return asciiGrids;
 }   
 
 //helper func
-function grabAsciiData(dataAsText: string): AsciiData {
+function grabAsciiData(dataAsText: string): AsciiGrid {
   const lines = dataAsText.split('\n');
   // Grab only values from metadata/header
-  let asciiData: AsciiData = {
-    ncols: parseInt(lines[0].split(/\s+/)[1]),
-    nrows: parseInt(lines[1].split(/\s+/)[1]),
-    xllcorner: parseFloat(lines[2].split(/\s+/)[1]),
-    yllcorner: parseFloat(lines[3].split(/\s+/)[1]),
-    cellsize: parseFloat(lines[4].split(/\s+/)[1]),
-    NODATA_value: parseInt(lines[5].split(/\s+/)[1]),
-    gridLocValPair: [],
+  const asciiGrid: AsciiGrid = {
+    header: {
+      ncols: parseInt(lines[0].split(/\s+/)[1]),
+      nrows: parseInt(lines[1].split(/\s+/)[1]),
+      xllcorner: parseFloat(lines[2].split(/\s+/)[1]),
+      yllcorner: parseFloat(lines[3].split(/\s+/)[1]),
+      cellsize: parseFloat(lines[4].split(/\s+/)[1]),
+      NODATA_value: parseInt(lines[5].split(/\s+/)[1]),
+    },
+    values: new Map<number, number>(),
   }
- 
+
   let i;
   let dataIndex = 0; // Curr grid location, increment for each grid that's parsed
   // Iterate over each line, and each value of all lines
@@ -107,12 +110,12 @@ function grabAsciiData(dataAsText: string): AsciiData {
     let j;
     for(j = 0; j < lineValues.length; j++) {
       const currGridVal = parseFloat(lineValues[j]);
-      if(currGridVal !== asciiData.NODATA_value && !isNaN(currGridVal)) {
-        asciiData.gridLocValPair.push([dataIndex, currGridVal]); // [grid loc, value (from range min to max)]
+      if(currGridVal !== asciiGrid.header.NODATA_value && !isNaN(currGridVal)) {
+        asciiGrid.values.set(dataIndex, currGridVal); // [grid loc, value (from range min to max)]
       }
       dataIndex++;
     }
   }
 
-  return asciiData;
+  return asciiGrid;
 }

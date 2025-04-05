@@ -1,5 +1,23 @@
 import { FeatureCollectionWithFilename } from "shpjs";
 
+export type Units = "IN" | "MM";
+
+export enum Period {
+  January = 0,
+  February,
+  March,
+  April,
+  May,
+  June,
+  July,
+  August,
+  September,
+  October,
+  November,
+  December,
+  Annual,
+}
+
 export interface Station {
   SKN: number,
   Name: string,
@@ -40,14 +58,12 @@ export interface Station {
   StationStatus: 'Current' | 'Discontinued' | 'Virtual',
 }
 
-export type Units = "IN" | "MM";
-
 export type Isohyets = {
   [key in Units]: FeatureCollectionWithFilename[];
 };
 
-export interface AsciiData {
-  metadata: {
+export type AsciiGrid = {
+  header: {
     ncols: number,
     nrows: number,
     xllcorner: number,
@@ -55,25 +71,9 @@ export interface AsciiData {
     cellsize: number,
     NODATA_value: number,
   },
-  gridLocValPair: [number, number][],
+  values: Map<number, number>,
 }
 
-export interface AsciiGrids {
-  [fileName: string]: AsciiData
-}
-
-export enum Period {
-  January = 0,
-  February,
-  March,
-  April,
-  May,
-  June,
-  July,
-  August,
-  September,
-  October,
-  November,
-  December,
-  Annual,
+export type Grids = {
+  [key in Units]: AsciiGrid[];
 }
