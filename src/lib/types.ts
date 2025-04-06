@@ -71,7 +71,9 @@ export type AsciiGrid = {
     cellsize: number,
     NODATA_value: number,
   },
-  values: Map<number, number>,
+  values: {
+    [gridIndex: number]: number,
+  },
 }
 
 export type Grids = {

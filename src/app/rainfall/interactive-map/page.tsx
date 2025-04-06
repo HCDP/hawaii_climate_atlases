@@ -17,8 +17,7 @@ export default async function InteractiveMap() {
   const otherStations: Station[] = await getOtherStations();
   const isohyets: Isohyets = await getIsohyets();
   const asciiGrids: Grids = await getGrids();
-  console.log("The grids:", asciiGrids);
   return (
-    <ClientInteractiveMap rfStations={rfStations} otherStations={otherStations} isohyets={isohyets} />
+    <ClientInteractiveMap rfStations={rfStations} otherStations={otherStations} isohyets={isohyets} grids={asciiGrids} />
   );
 }

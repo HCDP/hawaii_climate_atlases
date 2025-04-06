@@ -1,15 +1,11 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, useMap, useMapEvents, GeoJSON, Popup, useMapEvent } from "react-leaflet";
-import { LatLng, LatLngBounds, LatLngExpression, Map as LeafletMap, Util } from "leaflet";
+import { MapContainer } from "react-leaflet";
+import { LatLng, LatLngBounds, LatLngExpression, Map as LeafletMap } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-import { StationIcon } from "@/components/maps/Map";
-import { Isohyets, Station, Units, Period } from "@/lib";
-import MapOverlay from "@/components/leaflet-controls/MapOverlay";
-import formatNum = Util.formatNum;
 
 export interface Props {
   startPosition?: LatLngExpression,

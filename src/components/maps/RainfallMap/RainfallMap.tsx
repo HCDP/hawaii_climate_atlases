@@ -31,6 +31,63 @@ const IsohyetsLayer = (
   );
 }
 
+const PopupOnClick = (
+  {
+    selectedUnits,
+    // selectedPeriod,
+    grids,
+  }: {
+    selectedUnits: Units,
+    selectedPeriod: Period,
+    grids: Grids,
+  }) => {
+
+  const [location, setLocation] = useState<LatLng>();
+  const [gridValue, setGridValue] = useState<number | null>(null);
+  useMapEvent("click", (e) => {
+    // Credit: https://github.com/ikewai/precipitation_application/blob/prod/src/app/services/util/data-retreiver.service.ts#L34
+    // const grid = grids[selectedUnits][selectedPeriod];
+    const grid = grids[selectedUnits][0];
+    const location = e.latlng;
+    setLocation(location);
+    const { ncols, nrows, xllcorner, yllcorner, cellsize } = grid.header;
+    const offset = new LatLng(location.lat - yllcorner, location.lng - xllcorner);
+
+    let coords = null;
+    const x = Math.floor(offset.lng / cellsize);
+    const y = Math.floor(nrows - offset.lat / cellsize);
+    //check if in grid range, if not return null (otherwise will provide erroneous results when flattened)
+    const xValid: boolean = x >= 0 && x < ncols;
+    const yValid = y >= 0 && y < nrows;
+    if (!xValid || !yValid) {
+      setGridValue(null);
+    } else {
+      coords = {
+        x: x,
+        y: y,
+      }
+    }
+    let index: number;
+    if (coords !== null) {
+      index = ncols * coords.y + coords.x;
+      const value: number | undefined = grid.values[index];
+      if (value) {
+        setGridValue(value);
+      } else {
+        setGridValue(null);
+      }
+    } else {
+      setGridValue(null);
+    }
+  });
+
+  return location ? (
+    <Popup position={location}>
+      {gridValue ? `Mean annual rainfall: ${gridValue.toFixed(3)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
+    </Popup>
+  ) : null;
+}
+
 const ZoomendHandler = ({ onZoomEnd }: {
   onZoomEnd: (zoom: number) => void,
 }) => {
@@ -76,24 +133,6 @@ const StationIcons = (
         />
       ))}
     </>
-  );
-}
-
-const PopupOnClick = () => {
-  // const map = useMapEvent("click", (e) => {
-  //   L.popup()
-  //     .setContent("<p>this is a popup</p>")
-  //     .setLatLng(e.latlng).
-  //   openOn(map);
-  // });
-  const [location, setLocation] = useState<LatLng>();
-  useMapEvent("click", (e) => {
-    setLocation(e.latlng);
-  });
-  return location && (
-    <Popup position={location}>
-      The location: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-    </Popup>
   );
 }
 
@@ -171,6 +210,11 @@ const RainfallMap: React.FC<Props> = (
               selectedPeriod={selectedPeriod}
             />
           )}
+          <PopupOnClick
+            selectedUnits={selectedUnits}
+            selectedPeriod={selectedPeriod}
+            grids={grids}
+          />
           <ZoomendHandler onZoomEnd={setZoom}/>
           <MapOverlay
             selectedUnits={selectedUnits}
@@ -186,7 +230,6 @@ const RainfallMap: React.FC<Props> = (
             mapMaximized={maximized}
             onToggleMaximize={toggleMapMaximized}
           />
-          <PopupOnClick/>
         </Map>
       </div>
     </div>

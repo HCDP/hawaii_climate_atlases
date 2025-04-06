@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react";
-import { Isohyets, Station } from '@/lib';
+import { Grids, Isohyets, Station } from '@/lib';
 import dynamic from "next/dynamic";
 
 const RainfallMap = dynamic(
@@ -16,7 +16,8 @@ const ClientInteractiveMap: React.FC<{
   rfStations: Station[],
   otherStations: Station[],
   isohyets: Isohyets,
-}> = ({ rfStations, otherStations, isohyets }) => {
+  grids: Grids,
+}> = ({ rfStations, otherStations, isohyets, grids }) => {
   // const [mapMaximized, setMapMaximized] = useState<boolean>(false);
   // const toggleMapMaximized = () => setMapMaximized(mapMaximized => !mapMaximized);
 
@@ -28,6 +29,7 @@ const ClientInteractiveMap: React.FC<{
       rfStations={rfStations}
       otherStations={otherStations}
       isohyets={isohyets}
+      grids={grids}
     />
   );
 }
