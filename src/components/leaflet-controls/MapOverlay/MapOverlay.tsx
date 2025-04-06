@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { LatLng, Map } from "leaflet";
-import { useMap, ZoomControl } from "react-leaflet";
+import React, { useEffect, useRef, useState } from "react";
+import L, { LatLng, Map } from "leaflet";
+import { useMap, ZoomControl, useMapEvent } from "react-leaflet";
 import LocationField from "@/components/LocationField";
 import { Period, Units } from "@/lib";
 import { LEAFLET_POSITIONS } from "@/constants";
@@ -53,6 +53,13 @@ const MapOverlay: React.FC<Props> = (
 ) => {
   const map: Map = useMap();
 
+  const overlayRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if(overlayRef.current) {
+      L.DomEvent.disableClickPropagation(overlayRef.current);
+    }
+  });
+
   const handleLocationChange = (input: string) => {
       const parsedLatLng = parseLocation(input);
       if (parsedLatLng !== null) {
@@ -74,7 +81,7 @@ const MapOverlay: React.FC<Props> = (
   const periodNames: string[] = Object.keys(Period).filter(period => isNaN(parseInt(period)));
 
   return (
-    <>
+    <div ref={overlayRef}>
       <div className={LEAFLET_POSITIONS.topleft}>
         <div className="leaflet-control flex">
           <LocationField onLocationChange={handleLocationChange}/>
@@ -240,7 +247,7 @@ const MapOverlay: React.FC<Props> = (
       <div className={LEAFLET_POSITIONS.bottomright}>
         <ZoomControl position="bottomright" />
       </div>
-    </>
+    </div>
   )
 }
 
