@@ -3,10 +3,11 @@ import Map, { MapProps, StationIcon } from "../Map";
 import { Station, Units, Period, Isohyets, Grids } from "@/lib";
 import SideBar from "@/components/SideBar";
 import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, useMapEvents } from "react-leaflet";
-import { LatLng, LatLngExpression, Map as LeafletMap, Util } from "leaflet";
+import L, { LatLng, LatLngExpression, Map as LeafletMap, Util } from "leaflet";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import formatNum = Util.formatNum;
 import { LayoutContext } from "@/components/LayoutContext";
+import { RasterOptions, ColorScale, RainfallColorLayer } from "./RainfallColorLayer";
 
 const IsohyetsLayer = (
   {
@@ -168,6 +169,15 @@ const RainfallMap: React.FC<Props> = (
     minZoom = 6;
   const [zoom, setZoom] = useState<number>(startZoom);
 
+  const rasterOptions: RasterOptions = {
+    cacheEmpty: true,
+    colorScale: {
+      colors: [],
+      range: [8, 404.4],
+    },
+    asciiGrid: grids[selectedUnits][0],
+  };
+
   return (
     <div className="flex w-full h-full max-h-full">
       <div className="min-w-[24rem]">
@@ -186,6 +196,7 @@ const RainfallMap: React.FC<Props> = (
             // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
           />
+          <RainfallColorLayer options={rasterOptions} />
           {showRFStations && (
             <StationIcons
               stations={rfStations}
