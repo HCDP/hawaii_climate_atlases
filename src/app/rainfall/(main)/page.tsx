@@ -6,7 +6,7 @@ export default function Home() {
      
       {/* Intro Section */}
       <div className="-mb-4 max-w-[62rem] mx-auto">
-        <p className="text-xl font-bold -mt-5">What is the Rainfall Atlas of Hawaiʻi?</p>
+        <h1 className="text-xl font-bold -mt-5">What is the Rainfall Atlas of Hawaiʻi?</h1>
         <table className="float-right mt-3">
             <caption>
               <img className="" src="/ModisImg.jpg" alt="MODIS Image" width="308" height="217"/>
@@ -19,7 +19,7 @@ export default function Home() {
         </table>
         <div>
           <p className="pb-2 pt-3 text-blue-500 underline">
-            <em><a href="howtocite.html">How to cite the Rainfall Atlas</a>&nbsp;</em>
+            <em><a href="how-to-cite">How to cite the Rainfall Atlas</a>&nbsp;</em>
           </p>
           <p>
             The Hawaiian Islands have one of the most diverse rainfall patterns on earth. The mountainous terrain, persistent trade winds, heating and cooling of the land, and the regular presence of a stable atmospheric layer at an elevation of around 7,000 ft. interact to produce areas of uplift in distinct spatial patterns anchored to the topography. The resulting clouds and rainfall produced by this uplift lead to dramatic differences in mean rainfall over short distances. Knowledge of the mean rainfall patterns is critically important for a variety of resource management issues, including ground water and surface water development and protection, controlling and eradicating invasive species, protecting and restoring native ecosystems, and planning for the effects of global warming.
