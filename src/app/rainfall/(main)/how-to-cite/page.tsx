@@ -28,6 +28,8 @@ export default function Home() {
         Frazier, A. G., and Giambelluca, T. W. (2017), Spatial trend analysis of Hawaiian rainfall from 1920 to 2012.
         <i>Int. J. Climatol.</i>, 37(5), 2522–2531. doi: 10.1002/joc.4862
       </p>
+      {/* TODO: conditions of use modal */}
+      <p className="my-3">Complete information can be found in the <a href="#" className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">Conditions of Use.</a></p>
     </div>
   );
 }
