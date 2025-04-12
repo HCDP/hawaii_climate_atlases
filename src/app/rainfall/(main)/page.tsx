@@ -1,5 +1,3 @@
-// import Image from "next/image";
-
 export default function Home() {
   return (
     <div className="m-14">
@@ -9,7 +7,7 @@ export default function Home() {
         <h1 className="text-xl font-bold -mt-5">What is the Rainfall Atlas of Hawaiʻi?</h1>
         <table className="float-right mt-3">
             <caption>
-              <img className="" src="/ModisImg.jpg" alt="MODIS Image" width="308" height="217"/>
+              <img className="" src="/images/ModisImg.jpg" alt="MODIS Image" width="308" height="217"/>
             </caption>
             <tbody>
               <tr>
@@ -19,7 +17,7 @@ export default function Home() {
         </table>
         <div>
           <p className="pb-2 pt-3 text-blue-500 underline">
-            <em><a href="how-to-cite">How to cite the Rainfall Atlas</a>&nbsp;</em>
+            <em><a href="/how-to-cite">How to cite the Rainfall Atlas</a>&nbsp;</em>
           </p>
           <p>
             The Hawaiian Islands have one of the most diverse rainfall patterns on earth. The mountainous terrain, persistent trade winds, heating and cooling of the land, and the regular presence of a stable atmospheric layer at an elevation of around 7,000 ft. interact to produce areas of uplift in distinct spatial patterns anchored to the topography. The resulting clouds and rainfall produced by this uplift lead to dramatic differences in mean rainfall over short distances. Knowledge of the mean rainfall patterns is critically important for a variety of resource management issues, including ground water and surface water development and protection, controlling and eradicating invasive species, protecting and restoring native ecosystems, and planning for the effects of global warming.
@@ -51,7 +49,7 @@ export default function Home() {
 
       <div className="max-w-[62rem] mx-auto mt-16">
         <p className="float-left mr-6">
-          <img src="/mean_ann_rf_statemm.jpg" alt="Mean Annual Rainfall Image" width="379" height="293"/>
+          <img src="/images/mean_ann_rf_statemm.jpg" alt="Mean Annual Rainfall Image" width="379" height="293"/>
         </p>
         <p className="pb-4">
           The Rainfall Atlas of Hawaiʻi is a set of maps of the spatial patterns of rainfall for the major Hawaiian Islands. Maps are available for mean monthly and annual rainfall. The maps represent our best estimates of the mean rainfall for the 30-yr base period 1978–2007. However, for many reasons, it is not possible to determine the exact value of mean rainfall for any location. Therefore, for every map of mean rainfall, we provide a corresponding map of uncertainty. Uncertainty tends to be greatest where we have the poorest information about rainfall, for example in remote locations far from the nearest raingage.
@@ -66,7 +64,7 @@ export default function Home() {
       <div className="max-w-[62rem] mx-auto mt-10 mb-20">
         <p>&nbsp;</p>
         <p className="float-right ml-6">
-          <img src="/rainfall_map.jpg" alt="Pixel Size" width="280" height="235"/>
+          <img src="/images/rainfall_map.jpg" alt="Pixel Size" width="280" height="235"/>
         </p>
         <p>&nbsp;</p>
         <p>&nbsp;</p>
@@ -78,7 +76,7 @@ export default function Home() {
 
       <div className="max-w-[62rem] mx-auto">
         <table className="float-left mt-4 ml-12 mr-4">
-            <caption><img src="/raingagejpg.jpg" alt="Raingage Maui" width="309" height="232"></img></caption>
+            <caption><img src="/images/raingagejpg.jpg" alt="Raingage Maui" width="309" height="232"></img></caption>
             <tbody>
               <tr>
                   <td><em>Raingage in Haleakalā, Maui. Photo credit: John DeLay<br/></em></td>

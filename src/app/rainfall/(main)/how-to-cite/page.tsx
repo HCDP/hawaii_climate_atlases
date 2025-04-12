@@ -1,6 +1,4 @@
-// import Image from "next/image";
-
-export default function Home() {
+export default function HowToCite() {
   return (
     <div className="mt-14 -mb-4 max-w-[62rem] mx-auto">
       <h1 className="text-xl font-bold -mt-5">How do I cite material from this website?</h1>
