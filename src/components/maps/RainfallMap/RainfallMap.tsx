@@ -138,10 +138,10 @@ const StationIcons = (
 }
 
 interface Props extends MapProps {
-  rfStations: Station[],
-  otherStations: Station[],
-  isohyets: Isohyets,
-  grids: Grids,
+  rfStations: Station[] | null,
+  otherStations: Station[] | null,
+  isohyets: Isohyets | null,
+  grids: Grids | null,
 }
 
 const RainfallMap: React.FC<Props> = (
@@ -169,6 +169,11 @@ const RainfallMap: React.FC<Props> = (
     minZoom = 6;
   const [zoom, setZoom] = useState<number>(startZoom);
 
+
+  if(!grids) {
+    return <></>;
+  }
+  
   const rasterOptions: RasterOptions = {
     cacheEmpty: true,
     colorScale: {
@@ -177,6 +182,7 @@ const RainfallMap: React.FC<Props> = (
     },
     asciiGrid: grids[selectedUnits][0],
   };
+
 
   return (
     <div className="flex w-full h-full max-h-full">
@@ -196,8 +202,10 @@ const RainfallMap: React.FC<Props> = (
             // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
           />
-          <RainfallColorLayer options={rasterOptions} />
-          {showRFStations && (
+
+          {<RainfallColorLayer options={rasterOptions} />}
+
+          {showRFStations && rfStations && (
             <StationIcons
               stations={rfStations}
               setSelectedStation={setSelectedStation}
@@ -205,7 +213,8 @@ const RainfallMap: React.FC<Props> = (
               zoomDelta={zoomDelta}
             />
           )}
-          {showOtherStations && (
+
+          {showOtherStations && otherStations && (
             <StationIcons
               stations={otherStations}
               setSelectedStation={setSelectedStation}
@@ -213,19 +222,22 @@ const RainfallMap: React.FC<Props> = (
               zoomDelta={zoomDelta}
             />
           )}
+
           {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */}
-          {showIsohyets && (
+          {showIsohyets && isohyets && (
             <IsohyetsLayer
               key={`${selectedUnits}${selectedPeriod}`}
               isohyets={isohyets} selectedUnits={selectedUnits}
               selectedPeriod={selectedPeriod}
             />
           )}
-          <PopupOnClick
+
+          {<PopupOnClick
             selectedUnits={selectedUnits}
             selectedPeriod={selectedPeriod}
             grids={grids}
-          />
+          />}
+
           <ZoomendHandler onZoomEnd={setZoom}/>
           <MapOverlay
             selectedUnits={selectedUnits}

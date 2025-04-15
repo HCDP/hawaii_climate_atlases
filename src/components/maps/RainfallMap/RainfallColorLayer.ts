@@ -56,10 +56,6 @@ function geoPosToColor(asciiGrid: AsciiGrid, geoPos: LatLng, colorScale: ColorSc
   return colors[actualPosition];
 }
 
-R.gridLayer.RasterLayer = function(options: RasterOptions) {
-  return new R.GridLayer.RasterLayer(options);
-};
-
 R.GridLayer.RasterLayer = L.GridLayer.extend({
   initialize: function(options: RasterOptions) {
     let rasterOptions: RasterOptions = {
@@ -110,7 +106,6 @@ R.GridLayer.RasterLayer = L.GridLayer.extend({
       let color: Color = {r: 0, g: 0, b: 0, a: 0};
       let channels = colorScale(value);
       let [r, g, b, a] = channels.rgba();
-      console.log("The alpha value:", a);
       color.r = Math.round(r);
       color.g = Math.round(g);
       color.b = Math.round(b);
@@ -175,6 +170,10 @@ R.GridLayer.RasterLayer = L.GridLayer.extend({
     return tile;
   }
 });
+
+R.gridLayer.RasterLayer = function(options: RasterOptions) {
+  return new R.GridLayer.RasterLayer(options);
+};
 
 const createRainfallComponent = (props: any, context: any) => {
   let rasterLayer = R.gridLayer.RasterLayer(props.options);
