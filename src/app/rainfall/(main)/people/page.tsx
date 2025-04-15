@@ -28,7 +28,7 @@ export default function People() {
     <div className="mt-14 max-w-[62rem] mx-auto">
       <h1 className="text-xl font-bold -mt-5">People</h1>
       <p className="my-3">
-        Citation information can be found here:
+        Citation information can be found here:&nbsp;
         <a href="/how-to-cite" className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">
           How to Cite
         </a>.
