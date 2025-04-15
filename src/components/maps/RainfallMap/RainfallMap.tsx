@@ -156,6 +156,7 @@ const RainfallMap: React.FC<Props> = (
   const [selectedUnits, setSelectedUnits] = useState<Units>("IN");
   const [selectedPeriod, setSelectedPeriod] = useState<Period>(Period.Annual);
   const [showIsohyets, setShowIsohyets] = useState<boolean>(false);
+  const [showGrids, setShowGrids] = useState<boolean>(true);
   const [showRFStations, setShowRFStations] = useState<boolean>(true);
   const [showOtherStations, setShowOtherStations] = useState<boolean>(false);
 
@@ -168,21 +169,15 @@ const RainfallMap: React.FC<Props> = (
     zoomDelta = 0.75,
     minZoom = 6;
   const [zoom, setZoom] = useState<number>(startZoom);
-
-
-  if(!grids) {
-    return <></>;
-  }
   
-  const rasterOptions: RasterOptions = {
+  /*const rasterOptions: RasterOptions = {
     cacheEmpty: true,
     colorScale: {
       colors: [],
       range: [8, 404.4],
     },
     asciiGrid: grids[selectedUnits][0],
-  };
-
+  };*/
 
   return (
     <div className="flex w-full h-full max-h-full">
@@ -203,7 +198,16 @@ const RainfallMap: React.FC<Props> = (
             url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
           />
 
-          {<RainfallColorLayer options={rasterOptions} />}
+          {showGrids && grids && <RainfallColorLayer options={
+            {
+              cacheEmpty: true,
+              colorScale: {
+                colors: [],
+                range: [8, 404.4],
+              },
+              asciiGrid: grids[selectedUnits][0],
+            }
+          } />}
 
           {showRFStations && rfStations && (
             <StationIcons
@@ -232,7 +236,7 @@ const RainfallMap: React.FC<Props> = (
             />
           )}
 
-          {<PopupOnClick
+          {grids && <PopupOnClick
             selectedUnits={selectedUnits}
             selectedPeriod={selectedPeriod}
             grids={grids}
@@ -250,6 +254,8 @@ const RainfallMap: React.FC<Props> = (
             setShowOtherStations={setShowOtherStations}
             showIsohyets={showIsohyets}
             setShowIsohyets={setShowIsohyets}
+            showGrids={showGrids}
+            setShowGrids={setShowGrids}
             mapMaximized={maximized}
             onToggleMaximize={toggleMapMaximized}
           />

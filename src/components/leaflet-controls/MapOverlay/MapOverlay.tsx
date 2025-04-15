@@ -31,6 +31,8 @@ interface Props {
   setShowOtherStations: (show: boolean) => void,
   showIsohyets: boolean,
   setShowIsohyets: (show: boolean) => void,
+  showGrids: boolean,
+  setShowGrids: (show: boolean) => void,
   mapMaximized: boolean,
   onToggleMaximize: () => void,
 };
@@ -47,6 +49,8 @@ const MapOverlay: React.FC<Props> = (
     setShowOtherStations,
     showIsohyets,
     setShowIsohyets,
+    showGrids,
+    setShowGrids,
     mapMaximized,
     onToggleMaximize,
   }
@@ -74,7 +78,7 @@ const MapOverlay: React.FC<Props> = (
 
   // For menu and options/fields behavior (temp)
   const [showMenu, setShowMenu] = useState<boolean>(false);
-  const [rainfall, setRainfall] = useState<boolean>(false);
+  //const [rainfall, setRainfall] = useState<boolean>(false);
   const [uncertainty, setUncertainty] = useState<boolean>(false);
 
   // Array of the string keys of the Period enum ("January", "February", etc.)
@@ -145,8 +149,8 @@ const MapOverlay: React.FC<Props> = (
                     <div className="inline-flex flex-col">
                       <Checkbox 
                         value="Rainfall" 
-                        onValueChange={() => setRainfall(!rainfall)}
-                        isSelected={rainfall}
+                        onValueChange={() => setShowGrids(!showGrids)}
+                        isSelected={showGrids}
                         isDisabled={uncertainty}
                       >
                         Rainfall
@@ -155,7 +159,7 @@ const MapOverlay: React.FC<Props> = (
                         value="Uncertainty" 
                         onValueChange={() => setUncertainty(!uncertainty)}
                         isSelected={uncertainty}
-                        isDisabled={rainfall}
+                        isDisabled={showGrids}
                       >
                         Uncertainty
                       </Checkbox>
