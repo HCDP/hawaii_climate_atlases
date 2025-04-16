@@ -98,7 +98,7 @@ const MapOverlay: React.FC<Props> = (
             radius="full"
             size="lg"
             isIconOnly
-            title="Maximize map(hide header and footer)"
+            title="Maximize map (hide header and footer)"
             className="bg-white shadow-md"
           >
             {mapMaximized ? <FullscreenExit /> : <Fullscreen />}

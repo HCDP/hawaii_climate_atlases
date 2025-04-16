@@ -1,6 +1,6 @@
 export default function HowToCite() {
   return (
-    <div className="mt-14 -mb-4 max-w-[62rem] mx-auto">
+    <div className="mt-14 max-w-[62rem] mx-auto">
       <h1 className="text-xl font-bold -mt-5">How do I cite material from this website?</h1>
       <p className="my-3">
         Please cite any products used from this website (including screen shots, copied data, saved graphs, downloaded
