@@ -21,7 +21,7 @@ const Person = ({
   </div>
 );
 
-const imgBaseUrl = "/images";
+const imgBaseUrl = "/images/people";
 
 export default function People() {
   return (
