@@ -2,12 +2,59 @@ import React, { useContext, useState } from "react";
 import Map, { MapProps, StationIcon } from "../Map";
 import { Station, Units, Period, Isohyets, Grids } from "@/lib";
 import SideBar from "@/components/SideBar";
-import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, useMapEvents } from "react-leaflet";
+import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, useMapEvents, Marker } from "react-leaflet";
 import L, { LatLng, LatLngExpression, Map as LeafletMap, Util } from "leaflet";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import formatNum = Util.formatNum;
 import { LayoutContext } from "@/components/LayoutContext";
-import { RasterOptions, ColorScale, RainfallColorLayer } from "./RainfallColorLayer";
+import { RainfallColorLayer } from "./RainfallColorLayer";
+
+const IsohyetLabels = ({ features }: { features: any[] }) => {
+  const map = useMap();
+  const zoom = map.getZoom();
+
+  // to prevent cluttered view, only show at certain zoom levels
+  if (zoom < 10) return null; 
+
+  return (
+    <>
+      {features.map((feature, index) => {
+        const value = feature.properties.CONTOUR;
+        
+        if (feature.geometry.type === 'LineString') {
+          const coords = feature.geometry.coordinates;
+          const mid = Math.floor(coords.length / 2);
+          const [lng, lat] = coords[mid];
+
+          return (
+            <Marker
+              key={`label-${index}`}
+              position={[lat, lng]}
+              icon={
+                L.divIcon({
+                  html: `<div style="
+                    font-size: 10px;
+                    font-weight: bold;
+                    color: white;
+                    text-shadow:
+                      -1px -1px 0 black,
+                      1px -1px 0 black,
+                      -1px  1px 0 black,
+                      1px  1px 0 black;
+                    white-space: nowrap;
+                  ">${value}</div>`,
+                  className: '', // prevent default Leaflet styles
+                  iconSize: [20, 10], // box containing the value label
+                  iconAnchor: [7, 7], // position of label in box (middle)
+              })}
+            />
+          );
+        }
+        return null;
+      })} 
+    </>
+  );
+};
 
 const IsohyetsLayer = (
   {
@@ -20,15 +67,19 @@ const IsohyetsLayer = (
     selectedPeriod: Period,
   }) => {
   const geojson = isohyets[selectedUnits][selectedPeriod];
+  //console.log(JSON.stringify(geojson, null, 2));
   return (
-    <GeoJSON
+    <>
+      <GeoJSON
       interactive={false}
       data={geojson}
       style={{
         color: 'black',
         weight: 0.7,
       }}
-    />
+      />
+      <IsohyetLabels features={geojson.features} />
+    </>
   );
 }
 
@@ -169,15 +220,6 @@ const RainfallMap: React.FC<Props> = (
     zoomDelta = 0.75,
     minZoom = 6;
   const [zoom, setZoom] = useState<number>(startZoom);
-  
-  /*const rasterOptions: RasterOptions = {
-    cacheEmpty: true,
-    colorScale: {
-      colors: [],
-      range: [8, 404.4],
-    },
-    asciiGrid: grids[selectedUnits][0],
-  };*/
 
   return (
     <div className="flex w-full h-full max-h-full">
@@ -198,16 +240,18 @@ const RainfallMap: React.FC<Props> = (
             url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
           />
 
-          {showGrids && grids && <RainfallColorLayer options={
-            {
-              cacheEmpty: true,
-              colorScale: {
-                colors: [],
-                range: [8, 404.4],
-              },
-              asciiGrid: grids[selectedUnits][0],
-            }
-          } />}
+          {showGrids && grids && (
+            <RainfallColorLayer 
+              options={{
+                cacheEmpty: true,
+                colorScale: {
+                  colors: [],
+                  range: [8, 404.4],
+                },
+                asciiGrid: grids[selectedUnits][0],
+              }}
+            />
+          )}
 
           {showRFStations && rfStations && (
             <StationIcons
