@@ -1,13 +1,4 @@
 import React from "react";
-import {
-  Station,
-  Isohyets,
-  Grids,
-  getStations,
-  getOtherStations,
-  getIsohyets,
-  getGrids
-} from "@/lib";
 import ClientInteractiveMap from "./ClientInteractiveMap";
 
 // fetch the stations and passes it to the client-rendered ClientInteractiveMap

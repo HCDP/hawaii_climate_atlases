@@ -15,12 +15,12 @@ export default function Rainfall() {
       <div>
         <div className="border border-black p-[2px] float-left ml-4 mr-5">
           <div className="border border-black w-[450px] px-6 py-4 text-center">
-            <h2 className="text-xl font-bold pb-4">Why "Rainfall" instead of "Precipitation"? </h2>
+            <h2 className="text-xl font-bold pb-4">Why &#34;Rainfall&#34; instead of &#34;Precipitation&#34;? </h2>
               <p>
                 Precipitation in Hawai‘i includes rain, various types of frozen precipitation (such as snow, sleet, hail, and freezing 
                 rain), and fog drip. Frozen precipitation is a minor contributor overall. However, fog drip, derived from direct 
-                interception of cloud droplets by vegetation, is a major source of water in the middle-elevation fog zones of Hawai‘i's 
-                mountains. We use the term "rainfall" here instead of "precipitation" because, although we include frozen precipitation as 
+                interception of cloud droplets by vegetation, is a major source of water in the middle-elevation fog zones of Hawai‘i&#39;s 
+                mountains. We use the term &#34;rainfall&#34; here instead of &#34;precipitation&#34; because, although we include frozen precipitation as 
                 a minor component, the other major precipitation component, fog drip, is not included.
               </p>
           </div>
@@ -142,7 +142,7 @@ export default function Rainfall() {
         size to eventually become raindrops.
         <br/>
         <br/>
-        Check out the "Rainfall Trend Maps 1920-2012" tab on the&nbsp;
+        Check out the &#34;Rainfall Trend Maps 1920-2012&#34; tab on the&nbsp;
         <a className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600" href="/downloads">downloads</a> 
         &nbsp;page for historical trend analysis results by island.
         <br/>

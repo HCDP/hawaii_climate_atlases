@@ -146,7 +146,7 @@ export default function Methods() {
       <div className="border border-black p-[2px] float-left ml-2 mr-5 mt-5">
         <div className="border border-black w-[450px] px-6 py-4 text-center">
           <h2 className="text-xl font-bold pb-4">
-            Why didn't we use all of the raingage stations?
+            Why didn&#39;t we use all of the raingage stations?
           </h2>
           <p>
             We started the analysis by assembling all the rainfall data we could find for Hawai‘i. We attempted to fill gaps for as many stations 
