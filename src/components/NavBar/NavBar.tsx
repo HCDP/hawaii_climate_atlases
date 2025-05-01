@@ -48,7 +48,7 @@ const NavBar: React.FC<Props> = ({ navLinks, navImg }) => {
       </div>
       <div
         className="h-[45px] w-full min-w-[972px]"
-        style={{ background: `url('${bgSrc}')` }}
+        style={{ background: `url('/hawaii_climate_atlases/${bgSrc}')` }}
       >
         <nav role="navigation" className="flex justify-center h-full ">
           <ul className="space-x-4 font-bold text-white mt-3">

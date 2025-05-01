@@ -6,11 +6,11 @@ import shp, { FeatureCollectionWithFilename } from "shpjs";
 // const baseURL = 'https://atlas.uhtapis.org/rainfall/assets/files';
 
 export async function getStations(): Promise<Station[]> {
-  return fetchStations(`/rainfall/api/stations`);
+  return fetchStations(`/hawaii_climate_atlases/rainfall/api/stations`);
 }
 
 export async function getOtherStations(): Promise<Station[]> {
-  return fetchStations(`/rainfall/api/otherStations`);
+  return fetchStations(`/hawaii_climate_atlases/rainfall/api/otherStations`);
 }
 
 async function fetchStations(url: string): Promise<Station[]> {
@@ -35,9 +35,9 @@ async function fetchStations(url: string): Promise<Station[]> {
 }
 
 export async function getIsohyets(): Promise<Isohyets> {
-  const inchesSHP = await fetch(`/rainfall/api/in_isohyets`)
+  const inchesSHP = await fetch(`/hawaii_climate_atlases/rainfall/api/in_isohyets`)
     .then(res => res.arrayBuffer());
-  const mmSHP = await fetch(`/rainfall/api/mm_isohyets`)
+  const mmSHP = await fetch(`/hawaii_climate_atlases/rainfall/api/mm_isohyets`)
     .then(res => res.arrayBuffer());
   const inchesGeojson: FeatureCollectionWithFilename[] = await shp(inchesSHP) as FeatureCollectionWithFilename[];
   const mmGeojson: FeatureCollectionWithFilename[] = await shp(mmSHP) as FeatureCollectionWithFilename[];
@@ -57,8 +57,8 @@ export async function getIsohyets(): Promise<Isohyets> {
 }
 
 export async function getGrids(): Promise<Grids> {
-  const inchesAsciiGrids: AsciiGrid[] = await fetchAsciiGridData(`/rainfall/api/in_grids`);
-  const mmAsciiGrids: AsciiGrid[] = await fetchAsciiGridData(`/rainfall/api/mm_grids`);
+  const inchesAsciiGrids: AsciiGrid[] = await fetchAsciiGridData(`/hawaii_climate_atlases/rainfall/api/in_grids`);
+  const mmAsciiGrids: AsciiGrid[] = await fetchAsciiGridData(`/hawaii_climate_atlases/rainfall/api/mm_grids`);
   const grids = {
     IN: inchesAsciiGrids,
     MM: mmAsciiGrids,
