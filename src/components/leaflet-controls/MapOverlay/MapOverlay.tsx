@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import L, { LatLng, Map } from "leaflet";
-import { useMap, ZoomControl, useMapEvent } from "react-leaflet";
+import { useMap, ZoomControl } from "react-leaflet";
 import LocationField from "@/components/LocationField";
 import { Period, Units } from "@/lib";
 import { LEAFLET_POSITIONS } from "@/constants";

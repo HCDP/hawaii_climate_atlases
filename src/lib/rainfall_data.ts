@@ -3,7 +3,7 @@ import Papa from "papaparse";
 import JSZip from "jszip";
 import shp, { FeatureCollectionWithFilename } from "shpjs";
 
-const baseURL = 'https://atlas.uhtapis.org/rainfall/assets/files';
+// const baseURL = 'https://atlas.uhtapis.org/rainfall/assets/files';
 
 export async function getStations(): Promise<Station[]> {
   return fetchStations(`/api/stations`);
