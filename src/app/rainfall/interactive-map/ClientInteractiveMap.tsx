@@ -10,17 +10,17 @@ import {
   getIsohyets,
   getGrids 
 } from '@/lib';
-import RainfallMap from "@/components/maps/RainfallMap";
-//import dynamic from "next/dynamic";
+// import RainfallMap from "@/components/maps/RainfallMap";
+import dynamic from "next/dynamic";
 
 
-/*const RainfallMap = dynamic(
+const RainfallMap = dynamic(
   () => import("@/components/maps/RainfallMap"),
   {
     ssr: false,
     loading: () => <p className="text-center">Loading map...</p>
   }
-);*/
+);
 
 
 const ClientInteractiveMap = () => {
