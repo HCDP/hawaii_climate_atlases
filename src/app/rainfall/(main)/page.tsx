@@ -1,45 +1,133 @@
-// import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="flex justify-center">
-      <p className="w-[48rem] my-3 text-base">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque feugiat, diam a ullamcorper pulvinar, magna dui posuere augue, vitae tempor ligula nulla quis dolor. Quisque id tortor ut lectus pulvinar tristique eget ut odio. Vivamus condimentum mi diam, sit amet dignissim enim facilisis sagittis. Quisque vel enim ipsum. Curabitur dictum nunc ac suscipit efficitur. Aliquam erat volutpat. Nunc vehicula maximus erat quis tristique. Vestibulum molestie rutrum metus sed tristique. Nunc commodo quis risus eu suscipit. Cras non faucibus quam, non cursus justo. Donec ex sem, consectetur at nisi vitae, dictum posuere lorem. Morbi condimentum, tortor ac euismod mattis, sem erat condimentum magna, quis dapibus quam tellus ac arcu. Ut quis magna dolor. Nulla sodales feugiat volutpat. Nullam vitae finibus sapien.
+    <div className="m-14">
+     
+      {/* Intro Section */}
+      <div className="-mb-4 max-w-[62rem] mx-auto">
+        <h1 className="text-xl font-bold -mt-5">What is the Rainfall Atlas of Hawaiʻi?</h1>
+        <table className="float-right mt-3">
+            <caption>
+              <img className="" src="/images/ModisImg.jpg" alt="MODIS Image" width="308" height="217"/>
+            </caption>
+            <tbody>
+              <tr>
+                  <td><em>MODIS Image of Hawai‘i, NASA Earth Observatory</em></td>
+              </tr>
+            </tbody>
+        </table>
+        <div>
+          <p className="pb-2 pt-3 text-blue-500 underline">
+            <em><a href="/how-to-cite">How to cite the Rainfall Atlas</a>&nbsp;</em>
+          </p>
+          <p>
+            The Hawaiian Islands have one of the most diverse rainfall patterns on earth. The mountainous terrain, persistent trade winds, heating and cooling of the land, and the regular presence of a stable atmospheric layer at an elevation of around 7,000 ft. interact to produce areas of uplift in distinct spatial patterns anchored to the topography. The resulting clouds and rainfall produced by this uplift lead to dramatic differences in mean rainfall over short distances. Knowledge of the mean rainfall patterns is critically important for a variety of resource management issues, including ground water and surface water development and protection, controlling and eradicating invasive species, protecting and restoring native ecosystems, and planning for the effects of global warming.
+          </p>
+          <p className="pt-3">Be sure to check out the&nbsp;
+            <a className="text-blue-500 underline" href="/interactive-map">interactive map</a>!&nbsp;
+            It may need a few minutes to load on your first visit.&nbsp;
+          </p>
+        </div>
+      </div>
 
-        Nullam a imperdiet justo. Donec non diam odio. Nulla mi est, egestas sed est at, iaculis faucibus enim. Quisque id neque aliquam, rutrum justo nec, volutpat nisi. Vestibulum pretium dui eu nulla volutpat sagittis. Donec ornare diam eu lacus tempor accumsan. Nullam a magna augue.
+      {/* Updates Section */}
+      <div className="mt-16 px-10 flex justify-center">
+        <div className="border border-black px-6 py-4 max-w-3xl text-center">
+          <p>
+            <em><b>Updates:</b><br /> 
+            Seasonal Rainfall Trend Maps from 1920-2012 and 1983-2012 available for&nbsp;
+            <a className="text-blue-500 underline" href="/downloads">download</a>&nbsp; (10/2018)<br />
+            Month-Year Rainfall Maps from 1920-2012 are available for&nbsp;
+            <a className="text-blue-500 underline" href="/downloads">download</a>&nbsp; (08/2015)<br />
+            Raingage data&nbsp;<a className="text-blue-500 underline" href="/downloads">(tabular)</a>&nbsp;
+            have been updated through 2012 (04/2015)<br />
+            All Moloka‘i maps have been updated (07/2014)
+            </em>
+          </p>
+        </div>
+      </div>
 
-        Aenean molestie purus ac turpis vulputate, et eleifend mauris lobortis. Donec malesuada urna nisl, in facilisis libero sodales vel. In orci massa, mollis sollicitudin massa vel, facilisis sagittis quam. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Duis placerat vestibulum risus eget suscipit. Ut vel sodales leo, vel rhoncus arcu. Nulla facilisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
 
-        Donec consequat diam sit amet pulvinar facilisis. Maecenas blandit tincidunt bibendum. Proin ac iaculis dui, vitae sagittis sem. Vivamus rutrum lectus suscipit risus accumsan, vel gravida augue commodo. Curabitur eget orci molestie, auctor eros eu, pulvinar elit. Mauris sodales id arcu at eleifend. Duis pulvinar sit amet mauris in vehicula. Ut ac lobortis risus. Aenean vel nisl accumsan, aliquam mauris ut, pellentesque orci. Vestibulum porta consectetur tellus vitae commodo.
+      <div className="max-w-[62rem] mx-auto mt-16">
+        <p className="float-left mr-6">
+          <img src="/images/mean_ann_rf_statemm.jpg" alt="Mean Annual Rainfall Image" width="379" height="293"/>
+        </p>
+        <p className="pb-4">
+          The Rainfall Atlas of Hawaiʻi is a set of maps of the spatial patterns of rainfall for the major Hawaiian Islands. Maps are available for mean monthly and annual rainfall. The maps represent our best estimates of the mean rainfall for the 30-yr base period 1978–2007. However, for many reasons, it is not possible to determine the exact value of mean rainfall for any location. Therefore, for every map of mean rainfall, we provide a corresponding map of uncertainty. Uncertainty tends to be greatest where we have the poorest information about rainfall, for example in remote locations far from the nearest raingage.
+        </p>
+        <p>
+          This web site was developed to make the rainfall maps, data, and related information easily accessible. The maps depict rainfall patterns by color and/or by isohyets (lines of equal rainfall). The <a className="text-blue-500 underline" href="/interactive-map">
+          interactive map</a>&nbsp;allows 
+          users to see the patterns of mean monthly and annual rainfall and corresponding uncertainty, zoom in on areas of particular interest, navigate to specific locations with the help of a choice of different base maps, and click on any location to get the mean annual rainfall and a graph and table of mean monthly rainfall. The locations of stations can also be shown on the interactive map. Clicking on a station gives both station and mapped estimates of monthly rainfall along with station metadata.
+        </p>
+      </div>
 
-        Maecenas tellus velit, venenatis et fermentum in, fringilla eget ipsum. Quisque purus nunc, imperdiet in felis in, sodales pulvinar erat. Proin eget ipsum a lorem porta convallis vitae nec dolor. Vivamus ullamcorper eu nunc vel vulputate. Donec vulputate urna arcu, eget sollicitudin enim varius a. Aenean rutrum, lorem sed pellentesque tincidunt, purus est aliquet urna, quis facilisis libero ligula vel ante. Proin semper ultrices augue. Phasellus at fringilla quam, vitae sodales libero. Vestibulum ut neque nulla. Sed auctor sollicitudin diam sit amet facilisis. Pellentesque euismod luctus ex non hendrerit.
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque feugiat, diam a ullamcorper pulvinar, magna dui posuere augue, vitae tempor ligula nulla quis dolor. Quisque id tortor ut lectus pulvinar tristique eget ut odio. Vivamus condimentum mi diam, sit amet dignissim enim facilisis sagittis. Quisque vel enim ipsum. Curabitur dictum nunc ac suscipit efficitur. Aliquam erat volutpat. Nunc vehicula maximus erat quis tristique. Vestibulum molestie rutrum metus sed tristique. Nunc commodo quis risus eu suscipit. Cras non faucibus quam, non cursus justo. Donec ex sem, consectetur at nisi vitae, dictum posuere lorem. Morbi condimentum, tortor ac euismod mattis, sem erat condimentum magna, quis dapibus quam tellus ac arcu. Ut quis magna dolor. Nulla sodales feugiat volutpat. Nullam vitae finibus sapien.
+      <div className="max-w-[62rem] mx-auto mt-10 mb-20">
+        <p>&nbsp;</p>
+        <p className="float-right ml-6">
+          <img src="/images/rainfall_map.jpg" alt="Pixel Size" width="280" height="235"/>
+        </p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p className="">Rainfall maps can also be&nbsp;
+          <a className="text-blue-500 underline" href="/downloads">downloaded</a>
+          &nbsp;in various forms. Our analysis produced digital maps called rasters or grids. On these maps, the islands are divided into 8.1-arcsecond spatial units, or approximately 234 × 250 m (770 × 820 ft). Rainfall and uncertainty are estimated for each spatial unit. GIS (Geographic Information System) users can obtain mean and uncertainty maps as raster files. Alternatively, image files showing rainfall patterns by color and/or by isohyets can be downloaded.
+        </p>
+      </div>
 
-        Nullam a imperdiet justo. Donec non diam odio. Nulla mi est, egestas sed est at, iaculis faucibus enim. Quisque id neque aliquam, rutrum justo nec, volutpat nisi. Vestibulum pretium dui eu nulla volutpat sagittis. Donec ornare diam eu lacus tempor accumsan. Nullam a magna augue.
+      <div className="max-w-[62rem] mx-auto">
+        <table className="float-left mt-4 ml-12 mr-4">
+            <caption><img src="/images/raingagejpg.jpg" alt="Raingage Maui" width="309" height="232"></img></caption>
+            <tbody>
+              <tr>
+                  <td><em>Raingage in Haleakalā, Maui. Photo credit: John DeLay<br/></em></td>
+              </tr>
+            </tbody>
+        </table>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p className="mt-4">
+          Rainfall measurements taken at over 1,000 stations were used as the principal source of information in the development of the rainfall maps. Files containing estimated mean monthly and annual rainfall and uncertainty for each station used in the analysis are available for&nbsp;
+          <a className="text-blue-500 underline" href="/downloads">download</a>. 
+          A file with information on each station, including the name, observer, location, elevation, and period of record, is also available.
+        </p>      
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+      </div>
 
-        Aenean molestie purus ac turpis vulputate, et eleifend mauris lobortis. Donec malesuada urna nisl, in facilisis libero sodales vel. In orci massa, mollis sollicitudin massa vel, facilisis sagittis quam. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Duis placerat vestibulum risus eget suscipit. Ut vel sodales leo, vel rhoncus arcu. Nulla facilisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+      {/* Other websites */}
+      <div className="max-w-[62rem] mx-auto -mb-5">
+        <div className="">
+          <p>This website is part of a family of websites providing data on the climate of Hawai&lsquo;i. The Rainfall Atlas of Hawai&lsquo;i covers only rainfall. The other three websites each provide data for many other variables including evapotranspiration, solar radiation, albedo, cloud frequency, temperature, relative humidity, etc.  These other three websites contain the <em>same</em> variables, but each is presented with a particular focus.</p>
+          <div className="flex flex-col items-center gap-4 mt-6">  
+            <p>
+              <a href="https://web.archive.org/web/20221210024735/http://rainfall.geography.hawaii.edu/" target="blank">
+                <img src="https://web.archive.org/web/20221210024735im/http://evapotranspiration.geography.hawaii.edu/assets/images/rf_banner.jpg" alt="Rainfall Atlas of Hawaii" width="605" height="95"/>
+              </a>
+            </p>
+            <p>
+              <a href="https://web.archive.org/web/20221210024735/http://evapotranspiration.geography.hawaii.edu/" target="blank">
+                <img src="https://web.archive.org/web/20221210024735im/http://evapotranspiration.geography.hawaii.edu/assets/images/et_banner.jpg" alt="Evapotranspiration of Hawaii" width="605" height="95"/>
+              </a>
+            </p>
+            <p>
+              <a href="https://web.archive.org/web/20221210024735/http://solar.geography.hawaii.edu/" target="blank">
+                <img src="https://web.archive.org/web/20221210024735im/http://evapotranspiration.geography.hawaii.edu/assets/images/solar_banner.jpg" alt="Solar Radiation of Hawaii" width="605" height="95"/>
+              </a>
+            </p>
+            <p>
+              <a href="https://web.archive.org/web/20221210024735/http://climate.geography.hawaii.edu/" target="blank">
+                <img src="https://web.archive.org/web/20221210024735im/http://evapotranspiration.geography.hawaii.edu/assets/images/climate_banner.jpg" alt="Climate of Hawaii" width="605" height="95"/>
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
 
-        Donec consequat diam sit amet pulvinar facilisis. Maecenas blandit tincidunt bibendum. Proin ac iaculis dui, vitae sagittis sem. Vivamus rutrum lectus suscipit risus accumsan, vel gravida augue commodo. Curabitur eget orci molestie, auctor eros eu, pulvinar elit. Mauris sodales id arcu at eleifend. Duis pulvinar sit amet mauris in vehicula. Ut ac lobortis risus. Aenean vel nisl accumsan, aliquam mauris ut, pellentesque orci. Vestibulum porta consectetur tellus vitae commodo.
-
-        Maecenas tellus velit, venenatis et fermentum in, fringilla eget ipsum. Quisque purus nunc, imperdiet in felis in, sodales pulvinar erat. Proin eget ipsum a lorem porta convallis vitae nec dolor. Vivamus ullamcorper eu nunc vel vulputate. Donec vulputate urna arcu, eget sollicitudin enim varius a. Aenean rutrum, lorem sed pellentesque tincidunt, purus est aliquet urna, quis facilisis libero ligula vel ante. Proin semper ultrices augue. Phasellus at fringilla quam, vitae sodales libero. Vestibulum ut neque nulla. Sed auctor sollicitudin diam sit amet facilisis. Pellentesque euismod luctus ex non hendrerit.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque feugiat, diam a ullamcorper pulvinar, magna dui posuere augue, vitae tempor ligula nulla quis dolor. Quisque id tortor ut lectus pulvinar tristique eget ut odio. Vivamus condimentum mi diam, sit amet dignissim enim facilisis sagittis. Quisque vel enim ipsum. Curabitur dictum nunc ac suscipit efficitur. Aliquam erat volutpat. Nunc vehicula maximus erat quis tristique. Vestibulum molestie rutrum metus sed tristique. Nunc commodo quis risus eu suscipit. Cras non faucibus quam, non cursus justo. Donec ex sem, consectetur at nisi vitae, dictum posuere lorem. Morbi condimentum, tortor ac euismod mattis, sem erat condimentum magna, quis dapibus quam tellus ac arcu. Ut quis magna dolor. Nulla sodales feugiat volutpat. Nullam vitae finibus sapien.
-
-        Nullam a imperdiet justo. Donec non diam odio. Nulla mi est, egestas sed est at, iaculis faucibus enim. Quisque id neque aliquam, rutrum justo nec, volutpat nisi. Vestibulum pretium dui eu nulla volutpat sagittis. Donec ornare diam eu lacus tempor accumsan. Nullam a magna augue.
-
-        Aenean molestie purus ac turpis vulputate, et eleifend mauris lobortis. Donec malesuada urna nisl, in facilisis libero sodales vel. In orci massa, mollis sollicitudin massa vel, facilisis sagittis quam. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Duis placerat vestibulum risus eget suscipit. Ut vel sodales leo, vel rhoncus arcu. Nulla facilisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-
-        Donec consequat diam sit amet pulvinar facilisis. Maecenas blandit tincidunt bibendum. Proin ac iaculis dui, vitae sagittis sem. Vivamus rutrum lectus suscipit risus accumsan, vel gravida augue commodo. Curabitur eget orci molestie, auctor eros eu, pulvinar elit. Mauris sodales id arcu at eleifend. Duis pulvinar sit amet mauris in vehicula. Ut ac lobortis risus. Aenean vel nisl accumsan, aliquam mauris ut, pellentesque orci. Vestibulum porta consectetur tellus vitae commodo.
-
-        Maecenas tellus velit, venenatis et fermentum in, fringilla eget ipsum. Quisque purus nunc, imperdiet in felis in, sodales pulvinar erat. Proin eget ipsum a lorem porta convallis vitae nec dolor. Vivamus ullamcorper eu nunc vel vulputate. Donec vulputate urna arcu, eget sollicitudin enim varius a. Aenean rutrum, lorem sed pellentesque tincidunt, purus est aliquet urna, quis facilisis libero ligula vel ante. Proin semper ultrices augue. Phasellus at fringilla quam, vitae sodales libero. Vestibulum ut neque nulla. Sed auctor sollicitudin diam sit amet facilisis. Pellentesque euismod luctus ex non hendrerit.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque feugiat, diam a ullamcorper pulvinar, magna dui posuere augue, vitae tempor ligula nulla quis dolor. Quisque id tortor ut lectus pulvinar tristique eget ut odio. Vivamus condimentum mi diam, sit amet dignissim enim facilisis sagittis. Quisque vel enim ipsum. Curabitur dictum nunc ac suscipit efficitur. Aliquam erat volutpat. Nunc vehicula maximus erat quis tristique. Vestibulum molestie rutrum metus sed tristique. Nunc commodo quis risus eu suscipit. Cras non faucibus quam, non cursus justo. Donec ex sem, consectetur at nisi vitae, dictum posuere lorem. Morbi condimentum, tortor ac euismod mattis, sem erat condimentum magna, quis dapibus quam tellus ac arcu. Ut quis magna dolor. Nulla sodales feugiat volutpat. Nullam vitae finibus sapien.
-
-        Nullam a imperdiet justo. Donec non diam odio. Nulla mi est, egestas sed est at, iaculis faucibus enim. Quisque id neque aliquam, rutrum justo nec, volutpat nisi. Vestibulum pretium dui eu nulla volutpat sagittis. Donec ornare diam eu lacus tempor accumsan. Nullam a magna augue.
-
-        Aenean molestie purus ac turpis vulputate, et eleifend mauris lobortis. Donec malesuada urna nisl, in facilisis libero sodales vel. In orci massa, mollis sollicitudin massa vel, facilisis sagittis quam. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Duis placerat vestibulum risus eget suscipit. Ut vel sodales leo, vel rhoncus arcu. Nulla facilisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-
-        Donec consequat diam sit amet pulvinar facilisis. Maecenas blandit tincidunt bibendum. Proin ac iaculis dui, vitae sagittis sem. Vivamus rutrum lectus suscipit risus accumsan, vel gravida augue commodo. Curabitur eget orci molestie, auctor eros eu, pulvinar elit. Mauris sodales id arcu at eleifend. Duis pulvinar sit amet mauris in vehicula. Ut ac lobortis risus. Aenean vel nisl accumsan, aliquam mauris ut, pellentesque orci. Vestibulum porta consectetur tellus vitae commodo.
-
-        Maecenas tellus velit, venenatis et fermentum in, fringilla eget ipsum. Quisque purus nunc, imperdiet in felis in, sodales pulvinar erat. Proin eget ipsum a lorem porta convallis vitae nec dolor. Vivamus ullamcorper eu nunc vel vulputate. Donec vulputate urna arcu, eget sollicitudin enim varius a. Aenean rutrum, lorem sed pellentesque tincidunt, purus est aliquet urna, quis facilisis libero ligula vel ante. Proin semper ultrices augue. Phasellus at fringilla quam, vitae sodales libero. Vestibulum ut neque nulla. Sed auctor sollicitudin diam sit amet facilisis. Pellentesque euismod luctus ex non hendrerit.
-      </p>
     </div>
+
     // <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
     //   <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
     //     <Image

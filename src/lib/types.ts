@@ -1,4 +1,24 @@
-export type Station = {
+import { FeatureCollectionWithFilename } from "shpjs";
+
+export type Units = "IN" | "MM";
+
+export enum Period {
+  January = 0,
+  February,
+  March,
+  April,
+  May,
+  June,
+  July,
+  August,
+  September,
+  October,
+  November,
+  December,
+  Annual,
+}
+
+export interface Station {
   SKN: number,
   Name: string,
   Lat_DD: number,
@@ -38,4 +58,24 @@ export type Station = {
   StationStatus: 'Current' | 'Discontinued' | 'Virtual',
 }
 
-export type Units = "IN" | "MM";
+export type Isohyets = {
+  [key in Units]: FeatureCollectionWithFilename[];
+};
+
+export type AsciiGrid = {
+  header: {
+    ncols: number,
+    nrows: number,
+    xllcorner: number,
+    yllcorner: number,
+    cellsize: number,
+    NODATA_value: number,
+  },
+  values: {
+    [gridIndex: number]: number,
+  },
+}
+
+export type Grids = {
+  [key in Units]: AsciiGrid[];
+}

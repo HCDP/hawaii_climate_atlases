@@ -33,20 +33,19 @@ const PlotlyPlot: React.FC<Props> = (
       layout={{
         title: {
           text: 'Mean Monthly Rainfall (' + units.toLocaleLowerCase() + ')',
-          // subtitle: {
-          //   text: stationName ? 'Station: ' + stationName : 'No station selected',
-          // },
         },
         annotations: [
           {
             xref: "paper",
             yref: "paper",
             x: 0.5,
-            y: 0.95,
-            xanchor: "center",
-            yanchor: "bottom",
+            y: 1.025,
             text: stationName ? 'Station: ' + stationName : 'No station selected',
             showarrow: false,
+            font: {
+              size: 14,
+              color: "gray",
+            },
           },
         ],
         yaxis: {

@@ -12,22 +12,24 @@ interface Props extends NavBarProps {
 
 export const LayoutProvider: React.FC<Props> = ({ children, navLinks, navImg }) => {
   const [maximized, setMaximized] = useState<boolean>(false);
-  const pathname = usePathname();
-  const isMapPage = pathname === '/rainfall/interactive-map';
+  const pathname: string = usePathname();
+  const isMapPage: boolean = pathname === '/rainfall/interactive-map';
 
   const navBar = useMemo(() => <NavBar navLinks={navLinks} navImg={navImg} />, [navLinks, navImg]);
   const footer = useMemo(() => <Footer />, []);
+  // Show the navbar and footer on all other pages. If we're on the map page, show it if maximized is false.
+  const show: boolean = !maximized || !isMapPage;
 
   return (
     <LayoutContext.Provider value={{ maximized, setMaximized }}>
       <div className={isMapPage ? 'flex flex-col min-h-screen h-screen max-h-screen' : ''}>
-        {!maximized && navBar}
+        {show && navBar}
         <main
           className={isMapPage ? 'flex-grow overflow-y-hidden h-full max-w-screen font-sans' : 'min-h-screen h-full max-w-screen font-serif'}
         >
           {children}
         </main>
-        {!maximized && footer}
+        {show && footer}
       </div>
     </LayoutContext.Provider>
   );
