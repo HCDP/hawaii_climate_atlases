@@ -50,7 +50,7 @@ export default function Downloads() {
               includes the islands of Maui, Moloka‘i, Lāna‘i and Kaho‘olawe).
             </p>
             <div className="space-y-2">
-              <h2 className="font-bold">Isohyets:</h2>
+              <p><strong>Isohyets:</strong></p>
               <div className="flex">
                 <img
                   width="277"
@@ -162,7 +162,7 @@ export default function Downloads() {
               </div>
             </div>
             <div className="space-y-2">
-              <h2 className="font-bold">Color Maps:</h2>
+              <p><strong>Color Maps:</strong></p>
               <div className="flex">
                 <img
                   width="277"
@@ -327,7 +327,7 @@ export default function Downloads() {
               </a>.
             </p>
             <div className="space-y-2">
-              <h2 className="font-bold">Rainfall Grids:</h2>
+              <p><strong>Rainfall Grids:</strong></p>
               <p>
                 Raster files are available at 250m resolution (0.00225 x 0.00225 cell size) for each island and for the
                 state. These are available in inches or millimeters, and can be downloaded in ESRI grid format or ASCII
@@ -679,6 +679,190 @@ export default function Downloads() {
                   </tbody>
                 </table>
               </div>
+            </div>
+            <div className="space-y-2">
+              <p><strong>Rainfall Isohyets:</strong></p>
+              <p>
+                Rainfall isohyet files are available as polyline shapefiles for each island and for the state. These are
+                available in inches or millimeters, and the &#34;Contour&#34; column in the attribute table contains the
+                isohyet
+                labels. Both sets of isohyets (inches and mm) were created at appropriate intervals for their units, and
+                therefore are not direct conversions of each other, though they are derived from the same data.
+              </p>
+              <ul className="ml-16 list-disc list-inside">
+                <li>
+                  <a className="link" href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFIsohyets.pdf">
+                    Isohyet Metadata
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <div className="px-3">
+                <table className="bordered-table">
+                  <thead>
+                  <tr>
+                    <th>Coverage</th>
+                    <th>Inches</th>
+                    <th>Millimeters</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td>State</td>
+                    <td><a className="link"
+                           href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateIsohyetsSHP_inches.zip"
+                    >
+                      StateIsohyetsSHP_inches.zip
+                    </a>
+                    </td>
+                    <td><a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateIsohyetsSHP_mm.zip"
+                    >
+                      StateIsohyetsSHP_mm.zip
+                    </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Hawai‘i</td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/HawaiiIsohyetsSHP_inches.zip"
+                      >
+                        HawaiiIsohyetsSHP_inches.zip
+                      </a>
+                    </td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/HawaiiIsohyetsSHP_mm.zip"
+                      >
+                        HawaiiIsohyetsSHP_mm.zip
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Kaua‘i</td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/KauaiIsohyetsSHP_inches.zip"
+                      >
+                        KauaiIsohyetsSHP_inches.zip
+                      </a>
+                    </td>
+                    <td>
+                      <a
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/KauaiIsohyetsSHP_mm.zip"
+                      >
+                        KauaiIsohyetsSHP_mm.zip
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Maui Nui</td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiNuiIsohyetsSHP_inches.zip"
+                      >
+                        MauiNuiIsohyetsSHP_inches.zip
+                      </a>
+                    </td>
+                    <td>
+                      <a
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiNuiIsohyetsSHP_mm.zip"
+                      >
+                        MauiNuiIsohyetsSHP_mm.zip
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>O‘ahu</td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/OahuIsohyetsSHP_inches.zip"
+                      >
+                        OahuIsohyetsSHP_inches.zip
+                      </a>
+                    </td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/OahuIsohyetsSHP_mm.zip"
+                      >
+                        OahuIsohyetsSHP_mm.zip
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Maui</td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiIsohyetsSHP_inches.zip"
+                      >
+                        MauiIsohyetsSHP_inches.zip
+                      </a>
+                    </td>
+                    <td>
+                      <a
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiIsohyetsSHP_mm.zip"
+                      >
+                        MauiIsohyetsSHP_mm.zip
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Lāna‘i</td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/LanaiIsohyetsSHP_inches.zip"
+                      >
+                        LanaiIsohyetsSHP_inches.zip
+                      </a>
+                    </td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/LanaiIsohyetsSHP_mm.zip"
+                      >
+                        LanaiIsohyetsSHP_mm.zip
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Moloka‘i</td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MolokaiIsohyetsSHP_inches.zip"
+                      >
+                        MolokaiIsohyetsSHP_inches.zip
+                      </a>
+                    </td>
+                    <td>
+                      <a
+                        className="link"
+                        href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MolokaiIsohyetsSHP_mm.zip"
+                      >
+                        MolokaiIsohyetsSHP_mm.zip
+                      </a>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p><strong>Raingage Stations:</strong></p>
+              <p>
+
+              </p>
             </div>
           </div>
         </AccordionItem>
