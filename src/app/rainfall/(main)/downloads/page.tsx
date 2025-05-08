@@ -3,7 +3,9 @@
 import { Accordion, AccordionItem } from "@heroui/accordion";
 
 export default function Downloads() {
-
+  const itemClasses = {
+    title: "font-bold text-lg"
+  }
   const defaultContent =
     "Lorem ipsum dolor s"
   return (
@@ -12,9 +14,10 @@ export default function Downloads() {
       <p>
         Click on the underlined links below to download the files. All data files with a “.zip” or “.rar” at the end
         need to be unzipped after downloading (using WinZIP, WinRAR, 7-Zip, or a similar program). Please regard <a
-        href="#" className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">Conditions
-        of Use</a> for all Rainfall Atlas products and refer to our <a href="/how-to-cite" className="underline
-        text-blue-600 hover:text-blue-800 visited:text-purple-600">How To Cite</a> page for citation information.
+        className="link" href="#">Conditions
+        of Use</a> for all Rainfall Atlas products and refer to our <a className="link" href="/how-to-cite">How To
+        Cite</a> page for
+        citation information.
       </p>
       <p>All mean map products use the 30 year base period 1978-2007.</p>
       <p><span className="underline">*Added October, 2018:</span> Rainfall Trend Maps from 1920-2012 &
@@ -32,6 +35,7 @@ export default function Downloads() {
         vegetation data, we have a produced improved maps of mean rainfall for the island of Moloka‘i. All files below
         have been updated with these new maps.**</p>
       <Accordion
+        itemClasses={itemClasses}
         selectionMode="multiple"
         variant="bordered"
         defaultExpandedKeys="all"
@@ -67,34 +71,90 @@ export default function Downloads() {
             </div>
             <div className="space-y-2">
               <p>Files for download:</p>
-              <table className="border-1 border-collapse mx-3">
+              <table className="bordered-table">
                 <thead>
                 <tr>
-                  <th className="p-1 border-1 border-gray-300">Coverage</th>
-                  <th className="p-1 border-1 border-gray-300">Inches</th>
-                  <th className="p-1 border-1 border-gray-300">Millimeters</th>
+                  <th>Coverage</th>
+                  <th>Inches</th>
+                  <th>Millimeters</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                  <td className="p-1 border-1 border-gray-300">Hawai‘i</td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/HawaiiIsohyetTIFs_inches.zip">HawaiiIsohyetTIFs_inches.zip</a></td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/HawaiiIsohyetTIFs_mm.zip">HawaiiIsohyetTIFs_mm.zip</a></td>
+                  <td>Hawai‘i</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/HawaiiIsohyetTIFs_inches.zip"
+                    >
+                      HawaiiIsohyetTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/HawaiiIsohyetTIFs_mm.zip"
+                    >
+                      HawaiiIsohyetTIFs_mm.zip
+                    </a>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="p-1 border-1 border-gray-300">Kaua‘i</td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/KauaiIsohyetTIFs_inches.zip">KauaiIsohyetTIFs_inches.zip</a></td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/KauaiIsohyetTIFs_mm.zip">KauaiIsohyetTIFs_mm.zip</a></td>
+                  <td>Kaua‘i</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/KauaiIsohyetTIFs_inches.zip"
+                    >
+                      KauaiIsohyetTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/KauaiIsohyetTIFs_mm.zip"
+                    >
+                      KauaiIsohyetTIFs_mm.zip
+                    </a>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="p-1 border-1 border-gray-300">Maui Nui</td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/MauiNuiIsohyetTIFs_inches.zip">MauiNuiIsohyetTIFs_inches.zip</a></td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/MauiNuiIsohyetTIFs_mm.zip">MauiNuiIsohyetTIFs_mm.zip</a></td>
+                  <td>Maui Nui</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/MauiNuiIsohyetTIFs_inches.zip"
+                    >
+                      MauiNuiIsohyetTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/MauiNuiIsohyetTIFs_mm.zip"
+                    >
+                      MauiNuiIsohyetTIFs_mm.zip
+                    </a>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="p-1 border-1 border-gray-300">O‘ahu</td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/OahuIsohyetTIFs_inches.zip">OahuIsohyetTIFs_inches.zip</a></td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/OahuIsohyetTIFs_mm.zip">OahuIsohyetTIFs_mm.zip</a></td>
+                  <td>O‘ahu</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/OahuIsohyetTIFs_inches.zip"
+                    >
+                      OahuIsohyetTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/OahuIsohyetTIFs_mm.zip"
+                    >
+                      OahuIsohyetTIFs_mm.zip
+                    </a>
+                  </td>
                 </tr>
                 </tbody>
               </table>
@@ -120,39 +180,109 @@ export default function Downloads() {
             </div>
             <div className="space-y-2">
               <p>Files for download:</p>
-              <table className="border-1 border-collapse mx-3">
+              <table className="bordered-table">
                 <thead>
                 <tr>
-                  <th className="p-1 border-1 border-gray-300">Coverage</th>
-                  <th className="p-1 border-1 border-gray-300">Inches</th>
-                  <th className="p-1 border-1 border-gray-300">Millimeters</th>
+                  <th>Coverage</th>
+                  <th>Inches</th>
+                  <th>Millimeters</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                  <td className="p-1 border-1 border-gray-300">State</td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/StateMapTIFs_inches.zip">StateMapTIFs_inches.zip</a></td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/StateMapTIFs_mm.zip">StateMapTIFs_mm.zip</a></td>
+                  <td>State</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/StateMapTIFs_inches.zip"
+                    >
+                      StateMapTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/StateMapTIFs_mm.zip"
+                    >
+                      StateMapTIFs_mm.zip
+                    </a>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="p-1 border-1 border-gray-300">Hawai‘i</td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/HawaiiMapTIFs_inches.zip">HawaiiMapTIFs_inches.zip</a></td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/HawaiiMapTIFs_mm.zip">HawaiiMapTIFs_mm.zip</a></td>
+                  <td>Hawai‘i</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/HawaiiMapTIFs_inches.zip"
+                    >
+                      HawaiiMapTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/HawaiiMapTIFs_mm.zip"
+                    >
+                      HawaiiMapTIFs_mm.zip
+                    </a>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="p-1 border-1 border-gray-300">Kaua‘i</td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/KauaiMapTIFs_inches.zip">KauaiMapTIFs_inches.zip</a></td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/KauaiMapTIFs_mm.zip">KauaiMapTIFs_mm.zip</a></td>
+                  <td>Kaua‘i</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/KauaiMapTIFs_inches.zip"
+                    >
+                      KauaiMapTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/KauaiMapTIFs_mm.zip"
+                    >
+                      KauaiMapTIFs_mm.zip
+                    </a>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="p-1 border-1 border-gray-300">Maui Nui</td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/MauiNuiMapTIFs_inches.zip">MauiNuiMapTIFs_inches.zip</a></td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/MauiNuiMapTIFs_mm.zip">MauiNuiMapTIFs_mm.zip</a></td>
+                  <td>Maui Nui</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/MauiNuiMapTIFs_inches.zip"
+                    >
+                      MauiNuiMapTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/MauiNuiMapTIFs_mm.zip"
+                    >
+                      MauiNuiMapTIFs_mm.zip
+                    </a>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="p-1 border-1 border-gray-300">O‘ahu</td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/OahuMapTIFs_inches.zip">OahuMapTIFs_inches.zip</a></td>
-                  <td className="p-1 border-1 border-gray-300"><a className="underline" href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/OahuMapTIFs_mm.zip">OahuMapTIFs_mm.zip</a></td>
+                  <td>O‘ahu</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/OahuMapTIFs_inches.zip"
+                    >
+                      OahuMapTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/OahuMapTIFs_mm.zip"
+                    >
+                      OahuMapTIFs_mm.zip
+                    </a>
+                  </td>
                 </tr>
                 </tbody>
               </table>
@@ -160,21 +290,188 @@ export default function Downloads() {
           </div>
         </AccordionItem>
         <AccordionItem key="gis-layers" aria-label="GIS Layers" title="GIS Layers">
-          {defaultContent}
+          <div className="flex flex-col gap-10 mb-2">
+            <p>
+              GIS layers of the rainfall isohyets, rainfall grids, raingage stations, and uncertainty have been made
+              available for download. Users can download the isohyets and stations as shapefiles, and the rainfall and
+              uncertainty grids have been made available in ESRI and ASCII grid formats. These are available in either
+              inches or millimeters, and each compressed *.zip file contains all 12 months plus the annual map. Rainfall
+              isohyets and grids are available for the entire state or users can choose to download individual
+              islands (Maui Nui includes the islands of Maui, Moloka‘i, Lāna‘i and Kaho‘olawe). Two station shapefiles
+              are
+              available (the same station information used in the interactive map), and the uncertainty grids are only
+              available at the statewide extent. All files use geographic coordinates, WGS84 datum.
+              <br />
+              <br />
+              For more information about GIS, how to use GIS layers, or to obtain more Hawai‘i layers, please refer to
+              the
+              Hawai‘i State GIS page,&nbsp;
+              <a
+                className="link"
+                href="http://www.state.hi.us/dbedt/gis/download.htm"
+              >
+                http://www.state.hi.us/dbedt/gis/download.htm
+              </a>.
+              After
+              downloading, users can upload layers to ArcGIS Online to make their own maps as an alternative to using a
+              desktop GIS program,&nbsp;
+              <a
+                className="link"
+                href="http://www.arcgis.com/home/"
+              >
+                http://www.arcgis.com/home/
+              </a>.
+            </p>
+            <div className="space-y-2">
+              <h2 className="font-bold">Rainfall Grids:</h2>
+              <p>
+                Raster files are available at 250m resolution (0.00225 x 0.00225 cell size) for each island and for the
+                state. These are available in inches or millimeters, and can be downloaded in ESRI grid format or ASCII
+                grid format. These are the main output of this project, with the isohyets and other products being
+                produced from these grids.
+              </p>
+              <ul className="ml-16 list-disc list-inside">
+                <li>
+                  <a
+                    className="link"
+                    href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFGrids.pdf"
+                  >
+                    Rainfall Grid Metadata
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <p>ESRI Grid Format:</p>
+              <table className="bordered-table">
+                <thead>
+                <tr>
+                  <th>Coverage</th>
+                  <th>Inches</th>
+                  <th>Millimeters</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>State</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateRFGrids_inches.zip"
+                    >
+                      StateRFGrids_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateRFGrids_mm.zip"
+                    >
+                      StateRFGrids_mm.zip
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Hawai‘i</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/HawaiiRFGrids_inches.zip"
+                    >
+                      HawaiiRFGrids_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/HawaiiIsohyetTIFs_mm.zip"
+                    >
+                      HawaiiIsohyetTIFs_mm.zip
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Kaua‘i</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/KauaiIsohyetTIFs_inches.zip"
+                    >
+                      KauaiIsohyetTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/KauaiIsohyetTIFs_mm.zip"
+                    >
+                      KauaiIsohyetTIFs_mm.zip
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Maui Nui</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/MauiNuiIsohyetTIFs_inches.zip"
+                    >
+                      MauiNuiIsohyetTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/MauiNuiIsohyetTIFs_mm.zip"
+                    >
+                      MauiNuiIsohyetTIFs_mm.zip
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>O‘ahu</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/OahuIsohyetTIFs_inches.zip"
+                    >
+                      OahuIsohyetTIFs_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/MapImages/OahuIsohyetTIFs_mm.zip"
+                    >
+                      OahuIsohyetTIFs_mm.zip
+                    </a>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="space-y-2">
+              <p>ASCII Grid Format:</p>
+              <table className="bordered-table">
+
+              </table>
+            </div>
+          </div>
         </AccordionItem>
         <AccordionItem key="google-earth-files" aria-label="Google Earth Files" title="Google Earth Files">
           {defaultContent}
         </AccordionItem>
-        <AccordionItem key="tabular" aria-label="Google Earth Files" title="Google Earth Files">
+        <AccordionItem key="tabular" aria-label="Tabular" title="Tabular">
           {defaultContent}
         </AccordionItem>
-        <AccordionItem key="report" aria-label="Google Earth Files" title="Google Earth Files">
+        <AccordionItem key="report" aria-label="Report" title="Report">
           {defaultContent}
         </AccordionItem>
-        <AccordionItem key="Month-Year Maps 1920-2012" aria-label="Google Earth Files" title="Google Earth Files">
+        <AccordionItem key="month-year-maps" aria-label="Month-Year Maps 1920-2012" title="Month-Year Maps 1920-2012">
           {defaultContent}
         </AccordionItem>
-        <AccordionItem key="Rainfall Trend Maps 1920-2012" aria-label="Google Earth Files" title="Google Earth Files">
+        <AccordionItem key="rainfall-trend-maps" aria-label="Rainfall Trend Maps 1920-2012"
+                       title="Rainfall Trend Maps 1920-2012">
           {defaultContent}
         </AccordionItem>
       </Accordion>
