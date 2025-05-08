@@ -31,7 +31,7 @@ body {
 }
 
 .bordered-table {
-  @apply border-1 border-collapse mx-3
+  @apply border-1 border-collapse w-full
 }
 
 .bordered-table th {
