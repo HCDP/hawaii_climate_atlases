@@ -11,6 +11,7 @@ export default function GoogleEarthFiles() {
       </p>
       <p>&nbsp;</p>
       <img
+        className="mx-auto my-4"
         decoding="async"
         loading="lazy"
         src="https://atlas.uhtapis.org/rainfall/assets/images/download4_s.jpg"
@@ -19,19 +20,31 @@ export default function GoogleEarthFiles() {
         height="335"
       />
       <p>&nbsp;</p>
-      <p><img decoding="async" loading="lazy" className="imgfloatright"
-              src="https://atlas.uhtapis.org/rainfall/assets/images/download5_s.jpg" alt="Station Legend"
-              width="102" height="147" /></p>
+      <img
+        className="float-right"
+        decoding="async"
+        loading="lazy"
+        src="https://atlas.uhtapis.org/rainfall/assets/images/download5_s.jpg" alt="Station Legend"
+        width="102" height="147"
+      />
       <p>&nbsp;</p>
-      <p><br />The StationsKML.zip file contains two station files: “RFAtlas Stations” refers to the stations used
+      <p>
+        <br />
+        The StationsKML.zip file contains two station files: “RFAtlas Stations” refers to the stations used
         to create the final rainfall atlas maps. “Other Stations” refers to all the other stations that have
         operated in Hawai‘i, but for various reasons could not be included in the final analysis. Click on a
         station for more information. The symbols are set automatically for these stations to be the same as on
-        the interactive map:</p>
+        the interactive map:
+      </p>
       <p>&nbsp;</p>
-      <ul>
-        <li><a
-          href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/StationKMLs.zip">StationsKMLs.zip</a>
+      <ul className="ml-16 list-disc list-inside">
+        <li>
+          <a
+            className="link"
+            href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/StationKMLs.zip"
+          >
+            StationsKMLs.zip
+          </a>
         </li>
       </ul>
       <p>&nbsp;</p>
@@ -52,11 +65,21 @@ export default function GoogleEarthFiles() {
         <tbody>
         <tr>
           <td>State</td>
-          <td><a
-            href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/IsohyetsKML_inches.zip">IsohyetsKML_inches.zip</a>
+          <td>
+            <a
+              className="link"
+              href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/IsohyetsKML_inches.zip"
+            >
+              IsohyetsKML_inches.zip
+            </a>
           </td>
-          <td><a
-            href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/IsohyetsKML_mm.zip">IsohyetsKML_mm.zip</a>
+          <td>
+            <a
+              className="link"
+              href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/IsohyetsKML_mm.zip"
+            >
+              IsohyetsKML_mm.zip
+            </a>
           </td>
         </tr>
         </tbody>
@@ -65,18 +88,38 @@ export default function GoogleEarthFiles() {
       <p>Color Map KMLs are available by island: (use transparency in Google Earth for best viewing, as no legend
         is available at this time for these layers):</p>
       <p>&nbsp;</p>
-      <ul>
-        <li><a
-          href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/HawaiiRainfall_KML.zip">HawaiiRainfall_KML.zip</a>
+      <ul className="ml-16 list-disc list-inside">
+        <li>
+          <a
+            className="link"
+            href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/HawaiiRainfall_KML.zip"
+          >
+            HawaiiRainfall_KML.zip
+          </a>
         </li>
-        <li><a
-          href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/OahuRainfall_KML.zip">OahuRainfall_KML.zip</a>
+        <li>
+          <a
+            className="link"
+            href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/OahuRainfall_KML.zip"
+          >
+            OahuRainfall_KML.zip
+          </a>
         </li>
-        <li><a
-          href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/MauiNuiRainfall_KML.zip">MauiNuiRainfall_KML.zip</a>
+        <li>
+          <a
+            className="link"
+            href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/MauiNuiRainfall_KML.zip"
+          >
+            MauiNuiRainfall_KML.zip
+          </a>
         </li>
-        <li><a
-          href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/KauaiRainfall_KML.zip">KauaiRainfall_KML.zip</a>
+        <li>
+          <a
+            className="link"
+            href="https://atlas.uhtapis.org/rainfall/assets/files/KMLFiles/KauaiRainfall_KML.zip"
+          >
+            KauaiRainfall_KML.zip
+          </a>
         </li>
       </ul>
     </div>
