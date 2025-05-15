@@ -1,0 +1,710 @@
+export default function GISLayers() {
+  return (
+    <div className="flex flex-col gap-10 mb-2">
+      <p>
+        GIS layers of the rainfall isohyets, rainfall grids, raingage stations, and uncertainty have been made
+        available for download. Users can download the isohyets and stations as shapefiles, and the rainfall and
+        uncertainty grids have been made available in ESRI and ASCII grid formats. These are available in either
+        inches or millimeters, and each compressed *.zip file contains all 12 months plus the annual map. Rainfall
+        isohyets and grids are available for the entire state or users can choose to download individual
+        islands (Maui Nui includes the islands of Maui, Moloka‘i, Lāna‘i and Kaho‘olawe). Two station shapefiles
+        are
+        available (the same station information used in the interactive map), and the uncertainty grids are only
+        available at the statewide extent. All files use geographic coordinates, WGS84 datum.
+        <br />
+        <br />
+        For more information about GIS, how to use GIS layers, or to obtain more Hawai‘i layers, please refer to
+        the
+        Hawai‘i State GIS page,&nbsp;
+        <a
+          className="link"
+          href="http://www.state.hi.us/dbedt/gis/download.htm"
+        >
+          http://www.state.hi.us/dbedt/gis/download.htm
+        </a>.
+        After
+        downloading, users can upload layers to ArcGIS Online to make their own maps as an alternative to using a
+        desktop GIS program,&nbsp;
+        <a
+          className="link"
+          href="http://www.arcgis.com/home/"
+        >
+          http://www.arcgis.com/home/
+        </a>.
+      </p>
+      <div className="space-y-2">
+        <p><strong>Rainfall Grids:</strong></p>
+        <p>
+          Raster files are available at 250m resolution (0.00225 x 0.00225 cell size) for each island and for the
+          state. These are available in inches or millimeters, and can be downloaded in ESRI grid format or ASCII
+          grid format. These are the main output of this project, with the isohyets and other products being
+          produced from these grids.
+        </p>
+        <ul className="ml-16 list-disc list-inside">
+          <li>
+            <a
+              className="link"
+              href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFGrids.pdf"
+            >
+              Rainfall Grid Metadata
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div className="space-y-2">
+        <p>ESRI Grid Format:</p>
+        <div className="px-3">
+          <table className="bordered-table">
+            <thead>
+            <tr>
+              <th>Coverage</th>
+              <th>Inches</th>
+              <th>Millimeters</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>State</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateRFGrids_inches.zip"
+                >
+                  StateRFGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateRFGrids_mm.zip"
+                >
+                  StateRFGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Hawai‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/HawaiiRFGrids_inches.zip"
+                >
+                  HawaiiRFGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/HawaiiRFGrids_mm.zip"
+                >
+                  HawaiiRFGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Kaua‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/KauaiRFGrids_inches.zip"
+                >
+                  KauaiRFGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/KauaiRFGrids_mm.zip"
+                >
+                  KauaiRFGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Maui Nui</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiNuiRFGrids_inches.zip"
+                >
+                  MauiNuiRFGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiNuiRFGrids_mm.zip"
+                >
+                  MauiNuiRFGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>O‘ahu</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/OahuRFGrids_inches.zip"
+                >
+                  OahuRFGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/OahuRFGrids_mm.zip"
+                >
+                  OahuRFGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Maui</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiRFGrids_inches.zip"
+                >
+                  MauiRFGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiRFGrids_mm.zip"
+                >
+                  MauiRFGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Lāna‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/LanaiRFGrids_inches.zip"
+                >
+                  LanaiRFGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/LanaiRFGrids_mm.zip"
+                >
+                  LanaiRFGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Moloka‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MolokaiRFGrids_inches.zip"
+                >
+                  MolokaiRFGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MolokaiRFGrids_mm.zip"
+                >
+                  MolokaiRFGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <p>ASCII Grid Format:</p>
+        <div className="px-3">
+          <table className="bordered-table">
+            <thead>
+            <tr>
+              <th>Coverage</th>
+              <th>Inches</th>
+              <th>Millimeters</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>State</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateASCIIGrids_inches.zip"
+                >
+                  StateASCIIGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateASCIIGrids_mm.zip"
+                >
+                  StateASCIIGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Hawai‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/HawaiiASCIIGrids_inches.zip"
+                >
+                  HawaiiASCIIGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/HawaiiASCIIGrids_mm.zip"
+                >
+                  HawaiiASCIIGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Kaua‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/KauaiASCIIGrids_inches.zip"
+                >
+                  KauaiASCIIGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/KauaiASCIIGrids_mm.zip"
+                >
+                  KauaiASCIIGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Maui Nui</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiNuiASCIIGrids_inches.zip"
+                >
+                  MauiNuiASCIIGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiNuiASCIIGrids_mm.zip"
+                >
+                  MauiNuiASCIIGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>O‘ahu</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/OahuASCIIGrids_inches.zip"
+                >
+                  OahuASCIIGrids_inches.zip
+                </a>
+              </td>
+              <td><a
+                className="link"
+                href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/OahuASCIIGrids_mm.zip"
+              >
+                OahuASCIIGrids_mm.zip
+              </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Maui</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiASCIIGrids_inches.zip"
+                >
+                  MauiASCIIGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiASCIIGrids_mm.zip"
+                >
+                  MauiASCIIGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Lāna‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/LanaiASCIIGrids_inches.zip"
+                >
+                  LanaiASCIIGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/LanaiASCIIGrids_mm.zip"
+                >
+                  LanaiASCIIGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Moloka‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MolokaiASCIIGrids_inches.zip"
+                >
+                  MolokaiASCIIGrids_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MolokaiASCIIGrids_mm.zip"
+                >
+                  MolokaiASCIIGrids_mm.zip
+                </a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <p><strong>Rainfall Isohyets:</strong></p>
+        <p>
+          Rainfall isohyet files are available as polyline shapefiles for each island and for the state. These are
+          available in inches or millimeters, and the &#34;Contour&#34; column in the attribute table contains the
+          isohyet
+          labels. Both sets of isohyets (inches and mm) were created at appropriate intervals for their units, and
+          therefore are not direct conversions of each other, though they are derived from the same data.
+        </p>
+        <ul className="ml-16 list-disc list-inside">
+          <li>
+            <a className="link"
+               href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFIsohyets.pdf">
+              Isohyet Metadata
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div className="space-y-2">
+        <div className="px-3">
+          <table className="bordered-table">
+            <thead>
+            <tr>
+              <th>Coverage</th>
+              <th>Inches</th>
+              <th>Millimeters</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>State</td>
+              <td><a className="link"
+                     href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateIsohyetsSHP_inches.zip"
+              >
+                StateIsohyetsSHP_inches.zip
+              </a>
+              </td>
+              <td><a
+                className="link"
+                href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateIsohyetsSHP_mm.zip"
+              >
+                StateIsohyetsSHP_mm.zip
+              </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Hawai‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/HawaiiIsohyetsSHP_inches.zip"
+                >
+                  HawaiiIsohyetsSHP_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/HawaiiIsohyetsSHP_mm.zip"
+                >
+                  HawaiiIsohyetsSHP_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Kaua‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/KauaiIsohyetsSHP_inches.zip"
+                >
+                  KauaiIsohyetsSHP_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/KauaiIsohyetsSHP_mm.zip"
+                >
+                  KauaiIsohyetsSHP_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Maui Nui</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiNuiIsohyetsSHP_inches.zip"
+                >
+                  MauiNuiIsohyetsSHP_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiNuiIsohyetsSHP_mm.zip"
+                >
+                  MauiNuiIsohyetsSHP_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>O‘ahu</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/OahuIsohyetsSHP_inches.zip"
+                >
+                  OahuIsohyetsSHP_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/OahuIsohyetsSHP_mm.zip"
+                >
+                  OahuIsohyetsSHP_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Maui</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiIsohyetsSHP_inches.zip"
+                >
+                  MauiIsohyetsSHP_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiIsohyetsSHP_mm.zip"
+                >
+                  MauiIsohyetsSHP_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Lāna‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/LanaiIsohyetsSHP_inches.zip"
+                >
+                  LanaiIsohyetsSHP_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/LanaiIsohyetsSHP_mm.zip"
+                >
+                  LanaiIsohyetsSHP_mm.zip
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Moloka‘i</td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MolokaiIsohyetsSHP_inches.zip"
+                >
+                  MolokaiIsohyetsSHP_inches.zip
+                </a>
+              </td>
+              <td>
+                <a
+                  className="link"
+                  href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MolokaiIsohyetsSHP_mm.zip"
+                >
+                  MolokaiIsohyetsSHP_mm.zip
+                </a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <p><strong>Raingage Stations:</strong></p>
+        <p>
+          Two point shapefiles containing station information are available for
+          download. &#34;RFAtlasStations&#34; refers
+          to the stations used to create the final rainfall atlas maps. &#34;OtherStations&#34; refers to all
+          other
+          stations that have operated in Hawai‘i, but for various reasons could not be included in the final
+          analysis. The data available in the attribute table can also be downloaded as a *.csv or Microsoft Excel
+          *.xslx file (see Tabular Downloads).
+        </p>
+      </div>
+      <div className="space-y-2">
+        <table className="bordered-table">
+          <thead>
+          <tr>
+            <th>Coverage</th>
+            <th>Shapefile</th>
+            <th>Metadata</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>State</td>
+            <td>
+              <a
+                className="link"
+                href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/RFAtlasStationsSHP.zip"
+              >
+                RFAtlasStationsSHP.zip
+              </a>
+            </td>
+            <td><a
+              className="link"
+              href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFAtlasStns.pdf"
+            >
+              RFAtlasStations_Metadata
+            </a>
+            </td>
+          </tr>
+          <tr>
+            <td>State</td>
+            <td>
+              <a
+                className="link"
+                href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/OtherStationsSHP.zip"
+              >
+                OtherStationsSHP.zip
+              </a>
+            </td>
+            <td>
+              <a
+                className="link"
+                href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_OtherStns.pdf"
+              >
+                OtherStations_Metadata
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div className="space-y-2">
+        <p><strong>Uncertainty</strong></p>
+        <p>
+          The uncertainty grids are available at 250m resolution (0.00225 x 0.00225 cell size) for the state.
+          These are available in inches or millimeters, and can be downloaded in ESRI grid format or ASCII grid
+          format. These layers contain the combined standard error from all input sources to the final maps - see
+          <a className="link" href="/methods">&nbsp;Methods</a> for more information.
+        </p>
+      </div>
+      <div className="space-y-2">
+        <p>ESRI Grid Format:</p>
+        <table className="bordered-table">
+          <thead>
+          <tr>
+            <th>Coverage</th>
+            <th>Inches</th>
+            <th>Millimeters</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>State</td>
+            <td>
+              <a
+                className="link"
+                href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/UncertaintyGrids_inches.zip"
+              >
+                UncertaintyGrids_inches.zip
+              </a>
+            </td>
+            <td>
+              <a
+                className="link"
+                href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/UncertaintyGrids_mm.zip"
+              >
+                UncertaintyGrids_mm.zip
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div className="space-y-2">
+        <p>ASCII Grid Format:</p>
+        <table className="bordered-table">
+          <thead>
+          <tr>
+            <th>Coverage</th>
+            <th>Inches</th>
+            <th>Millimeters</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>State</td>
+            <td>
+              <a
+                className="link"
+                href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/UncertaintyASCIIGrids_inches.zip"
+              >
+                UncertaintyASCIIGrids_inches.zip
+              </a>
+            </td>
+            <td>
+              <a
+                className="link"
+                href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/UncertaintyASCIIGrids_mm.zip"
+              >
+                UncertaintyASCIIGrids_mm.zip
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
