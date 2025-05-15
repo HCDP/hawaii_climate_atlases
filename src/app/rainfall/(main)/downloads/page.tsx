@@ -691,7 +691,8 @@ export default function Downloads() {
               </p>
               <ul className="ml-16 list-disc list-inside">
                 <li>
-                  <a className="link" href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFIsohyets.pdf">
+                  <a className="link"
+                     href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFIsohyets.pdf">
                     Isohyet Metadata
                   </a>
                 </li>
@@ -755,6 +756,7 @@ export default function Downloads() {
                     </td>
                     <td>
                       <a
+                        className="link"
                         href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/KauaiIsohyetsSHP_mm.zip"
                       >
                         KauaiIsohyetsSHP_mm.zip
@@ -773,6 +775,7 @@ export default function Downloads() {
                     </td>
                     <td>
                       <a
+                        className="link"
                         href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiNuiIsohyetsSHP_mm.zip"
                       >
                         MauiNuiIsohyetsSHP_mm.zip
@@ -810,6 +813,7 @@ export default function Downloads() {
                     </td>
                     <td>
                       <a
+                        className="link"
                         href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/MauiIsohyetsSHP_mm.zip"
                       >
                         MauiIsohyetsSHP_mm.zip
@@ -861,8 +865,139 @@ export default function Downloads() {
             <div className="space-y-2">
               <p><strong>Raingage Stations:</strong></p>
               <p>
-
+                Two point shapefiles containing station information are available for
+                download. &#34;RFAtlasStations&#34; refers
+                to the stations used to create the final rainfall atlas maps. &#34;OtherStations&#34; refers to all
+                other
+                stations that have operated in Hawai‘i, but for various reasons could not be included in the final
+                analysis. The data available in the attribute table can also be downloaded as a *.csv or Microsoft Excel
+                *.xslx file (see Tabular Downloads).
               </p>
+            </div>
+            <div className="space-y-2">
+              <table className="bordered-table">
+                <thead>
+                <tr>
+                  <th>Coverage</th>
+                  <th>Shapefile</th>
+                  <th>Metadata</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>State</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/RFAtlasStationsSHP.zip"
+                    >
+                      RFAtlasStationsSHP.zip
+                    </a>
+                  </td>
+                  <td><a
+                    className="link"
+                    href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFAtlasStns.pdf"
+                  >
+                    RFAtlasStations_Metadata
+                  </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>State</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/OtherStationsSHP.zip"
+                    >
+                      OtherStationsSHP.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_OtherStns.pdf"
+                    >
+                      OtherStations_Metadata
+                    </a>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="space-y-2">
+              <p><strong>Uncertainty</strong></p>
+              <p>
+                The uncertainty grids are available at 250m resolution (0.00225 x 0.00225 cell size) for the state.
+                These are available in inches or millimeters, and can be downloaded in ESRI grid format or ASCII grid
+                format. These layers contain the combined standard error from all input sources to the final maps - see
+                <a className="link" href="/methods">&nbsp;Methods</a> for more information.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <p>ESRI Grid Format:</p>
+              <table className="bordered-table">
+                <thead>
+                <tr>
+                  <th>Coverage</th>
+                  <th>Inches</th>
+                  <th>Millimeters</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>State</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/UncertaintyGrids_inches.zip"
+                    >
+                      UncertaintyGrids_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/UncertaintyGrids_mm.zip"
+                    >
+                      UncertaintyGrids_mm.zip
+                    </a>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="space-y-2">
+              <p>ASCII Grid Format:</p>
+              <table className="bordered-table">
+                <thead>
+                <tr>
+                  <th>Coverage</th>
+                  <th>Inches</th>
+                  <th>Millimeters</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>State</td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/UncertaintyASCIIGrids_inches.zip"
+                    >
+                      UncertaintyASCIIGrids_inches.zip
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      className="link"
+                      href="https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/UncertaintyASCIIGrids_mm.zip"
+                    >
+                      UncertaintyASCIIGrids_mm.zip
+                    </a>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </AccordionItem>
