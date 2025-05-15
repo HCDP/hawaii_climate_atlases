@@ -17,7 +17,7 @@ export default function MapImages() {
             width="277"
             height="215"
             src="/images/downloads/download2_s.jpg"
-            alt="Mean October Rainfall Island of Kaua‘i"
+            alt="Isohyet Images"
             className="mx-3"
           />
           <p>
@@ -131,7 +131,7 @@ export default function MapImages() {
             width="277"
             height="215"
             src="/images/downloads/download1_s.jpg"
-            alt="Mean October Rainfall Island of Kaua‘i"
+            alt="Color Map Images"
             className="mx-3"
           />
           <p>

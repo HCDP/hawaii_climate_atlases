@@ -17,6 +17,8 @@ export default function GISLayers() {
         the
         Hawai‘i State GIS page,&nbsp;
         <a
+          target="_blank"
+          rel="noopener"
           className="link"
           href="http://www.state.hi.us/dbedt/gis/download.htm"
         >
@@ -26,6 +28,8 @@ export default function GISLayers() {
         downloading, users can upload layers to ArcGIS Online to make their own maps as an alternative to using a
         desktop GIS program,&nbsp;
         <a
+          target="_blank"
+          rel="noopener"
           className="link"
           href="http://www.arcgis.com/home/"
         >
@@ -43,6 +47,8 @@ export default function GISLayers() {
         <ul className="ml-16 list-disc list-inside">
           <li>
             <a
+              target="_blank"
+              rel="noopener"
               className="link"
               href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFGrids.pdf"
             >
@@ -397,8 +403,12 @@ export default function GISLayers() {
         </p>
         <ul className="ml-16 list-disc list-inside">
           <li>
-            <a className="link"
-               href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFIsohyets.pdf">
+            <a
+              target="_blank"
+              rel="noopener"
+              className="link"
+              href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_RFIsohyets.pdf"
+            >
               Isohyet Metadata
             </a>
           </li>
@@ -638,6 +648,18 @@ export default function GISLayers() {
           format. These layers contain the combined standard error from all input sources to the final maps - see
           <a className="link" href="/methods">&nbsp;Methods</a> for more information.
         </p>
+        <ul className="ml-16 list-disc list-inside">
+          <li>
+            <a
+              className="link"
+              href="https://atlas.uhtapis.org/rainfall/assets/files/PDF/Metadata_UncerGrids.pdf"
+              target="_blank"
+              rel="noopener"
+            >
+              Uncertainty Grid Metadata
+            </a>
+          </li>
+        </ul>
       </div>
       <div className="space-y-2">
         <p>ESRI Grid Format:</p>

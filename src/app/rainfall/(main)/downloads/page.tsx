@@ -5,6 +5,7 @@ import MapImages from "@/app/rainfall/(main)/downloads/MapImages";
 import GISLayers from "@/app/rainfall/(main)/downloads/GISLayers";
 import GoogleEarthFiles from "@/app/rainfall/(main)/downloads/GoogleEarthFiles";
 import Tabular from "@/app/rainfall/(main)/downloads/Tabular";
+import Report from "@/app/rainfall/(main)/downloads/Report";
 
 export default function Downloads() {
   const itemClasses = {
@@ -57,7 +58,7 @@ export default function Downloads() {
           <Tabular />
         </AccordionItem>
         <AccordionItem key="report" aria-label="Report" title="Report">
-          {defaultContent}
+          <Report />
         </AccordionItem>
         <AccordionItem key="month-year-maps" aria-label="Month-Year Maps 1920-2012" title="Month-Year Maps 1920-2012">
           {defaultContent}
