@@ -13,8 +13,6 @@ export default function Downloads() {
   const itemClasses = {
     title: "font-bold text-lg"
   }
-  const defaultContent =
-    "Lorem ipsum dolor s"
   return (
     <div className="flex flex-col my-14 max-w-[62rem] mx-auto gap-5">
       <h1 className="text-xl font-bold -mt-5">Downloads</h1>
