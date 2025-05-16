@@ -10,12 +10,14 @@ const Footer = () => {
           Geography Department -  University of Hawaiʻi at Mānoa
         </div>
         <div>
-          Contact us: <a href="mailto:rainfall@hawaii.edu" className="hover:underline hover:cursor-pointer">rainfall@hawaii.edu</a>
+          Contact us: <a href="mailto:rainfall@hawaii.edu" className="hover:underline">rainfall@hawaii.edu</a>
         </div>
         <div>
           <a
-            className="hover:underline hover:cursor-pointer"
-            onClick={() => {
+            className="hover:underline"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
               onOpenConditionsOfUse();
             }}
           >

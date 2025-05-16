@@ -11,6 +11,7 @@ import {
   getGrids 
 } from '@/lib';
 import RainfallMap from "@/components/maps/RainfallMap";
+import useConditionsOfUse from "@/hooks/useConditionsOfUse";
 //import dynamic from "next/dynamic";
 
 
@@ -45,6 +46,8 @@ const ClientInteractiveMap = () => {
 
     fetchData();
   }, []);
+
+  useConditionsOfUse();
 
   if(!rfStations && !otherStations && !isohyets && !grids) {
     return (

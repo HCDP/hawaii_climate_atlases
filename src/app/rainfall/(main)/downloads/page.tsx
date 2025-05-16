@@ -8,8 +8,11 @@ import Tabular from "@/app/rainfall/(main)/downloads/Tabular";
 import Report from "@/app/rainfall/(main)/downloads/Report";
 import MonthYearMaps from "@/app/rainfall/(main)/downloads/MonthYearMaps";
 import RainfallTrendMaps from "@/app/rainfall/(main)/downloads/RainfallTrendMaps";
+import useConditionsOfUse from "@/hooks/useConditionsOfUse";
 
 export default function Downloads() {
+  const { onOpenConditionsOfUse } = useConditionsOfUse();
+
   const itemClasses = {
     title: "font-bold text-lg"
   }
@@ -18,9 +21,18 @@ export default function Downloads() {
       <h1 className="text-xl font-bold -mt-5">Downloads</h1>
       <p>
         Click on the underlined links below to download the files. All data files with a “.zip” or “.rar” at the end
-        need to be unzipped after downloading (using WinZIP, WinRAR, 7-Zip, or a similar program). Please regard <a
-        className="link" href="#">Conditions
-        of Use</a> for all Rainfall Atlas products and refer to our <a className="link" href="/how-to-cite">How To
+        need to be unzipped after downloading (using WinZIP, WinRAR, 7-Zip, or a similar program). Please regard&nbsp;
+        <a
+          className="link"
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            onOpenConditionsOfUse();
+          }}
+        >
+          Conditions of Use
+        </a>
+        &nbsp;for all Rainfall Atlas products and refer to our <a className="link" href="/how-to-cite">How To
         Cite</a> page for
         citation information.
       </p>

@@ -4,15 +4,8 @@ import React, { createContext, Dispatch, SetStateAction, useMemo, useState } fro
 import NavBar, { NavBarProps } from "@/components/NavBar";
 import { usePathname } from "next/navigation";
 import Footer from "@/components/Footer";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-} from "@heroui/modal";
-import { ConditionsOfUse } from "@/components/ConditionsOfUse";
+import { useDisclosure } from "@heroui/modal";
+import { ConditionsOfUse, RequiredConditionsOfUse } from "@/components/ConditionsOfUse";
 
 export const LayoutContext = createContext<{
   maximized: boolean,
@@ -53,7 +46,14 @@ export const LayoutProvider: React.FC<Props> = ({children, navLinks, navImg}) =>
         onOpenRequiredConditionsOfUse: requiredConditionsOfUseDisclosure.onOpen,
       }}
     >
-      <ConditionsOfUse isOpen={conditionsOfUseDisclosure.isOpen} onOpenChange={conditionsOfUseDisclosure.onOpenChange} />
+      <ConditionsOfUse
+        isOpen={conditionsOfUseDisclosure.isOpen}
+        onOpenChange={conditionsOfUseDisclosure.onOpenChange}
+      />
+      <RequiredConditionsOfUse
+        isOpen={requiredConditionsOfUseDisclosure.isOpen}
+        onOpenChange={requiredConditionsOfUseDisclosure.onOpenChange}
+      />
       <div className={isMapPage ? 'flex flex-col min-h-screen h-screen max-h-screen' : ''}>
         {show && navBar}
         <main
