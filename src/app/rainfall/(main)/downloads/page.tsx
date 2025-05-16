@@ -6,6 +6,8 @@ import GISLayers from "@/app/rainfall/(main)/downloads/GISLayers";
 import GoogleEarthFiles from "@/app/rainfall/(main)/downloads/GoogleEarthFiles";
 import Tabular from "@/app/rainfall/(main)/downloads/Tabular";
 import Report from "@/app/rainfall/(main)/downloads/Report";
+import MonthYearMaps from "@/app/rainfall/(main)/downloads/MonthYearMaps";
+import RainfallTrendMaps from "@/app/rainfall/(main)/downloads/RainfallTrendMaps";
 
 export default function Downloads() {
   const itemClasses = {
@@ -14,7 +16,7 @@ export default function Downloads() {
   const defaultContent =
     "Lorem ipsum dolor s"
   return (
-    <div className="flex flex-col mt-14 max-w-[62rem] mx-auto gap-5">
+    <div className="flex flex-col my-14 max-w-[62rem] mx-auto gap-5">
       <h1 className="text-xl font-bold -mt-5">Downloads</h1>
       <p>
         Click on the underlined links below to download the files. All data files with a “.zip” or “.rar” at the end
@@ -61,14 +63,14 @@ export default function Downloads() {
           <Report />
         </AccordionItem>
         <AccordionItem key="month-year-maps" aria-label="Month-Year Maps 1920-2012" title="Month-Year Maps 1920-2012">
-          {defaultContent}
+          <MonthYearMaps />
         </AccordionItem>
         <AccordionItem
           key="rainfall-trend-maps"
           aria-label="Rainfall Trend Maps 1920-2012"
           title="Rainfall Trend Maps 1920-2012"
         >
-          {defaultContent}
+          <RainfallTrendMaps />
         </AccordionItem>
       </Accordion>
     </div>
