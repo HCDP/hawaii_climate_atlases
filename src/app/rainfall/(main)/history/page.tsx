@@ -1,7 +1,7 @@
 export default function History() {
   return (
     <div className="flex flex-col mt-14 max-w-[62rem] mx-auto gap-5 mb-5">
-      <h1 className="text-xl font-bold">History of Rainfall Mapping in Hawaiʻi</h1>
+      <h1 className="text-xl font-bold -mt-5">History of Rainfall Mapping in Hawaiʻi</h1>
       <p><em><a className="link" href="/how-to-cite">How to cite this information</a></em></p>
       <p>The earliest known rainfall observations in Hawaiʻi were taken by Dr. Thomas Charles Byde Rooke in 1837 at
         Nuʻuanu Avenue and Beretania Street in Honolulu. By the end of the 19th century, rainfall was being monitored at
