@@ -10,7 +10,7 @@ export default function useConditionsOfUse() {
   });
 
   function updateDontShowConditionsOfUse(preference: boolean) {
-    setDontShowConditionsOfUse(dontShowConditionsOfUse);
+    setDontShowConditionsOfUse(preference);
     if (preference) {
       localStorage.setItem(dontShowConditionsOfUseKey, JSON.stringify(preference));
     }
@@ -26,7 +26,6 @@ export default function useConditionsOfUse() {
   return {
     onOpenConditionsOfUse,
     onOpenRequiredConditionsOfUse,
-    dontShowConditionsOfUse,
     updateDontShowConditionsOfUse,
   }
 }
