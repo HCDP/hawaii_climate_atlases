@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Map, { MapProps, StationIcon } from "../Map";
 import { Station, Units, Period, Isohyets, Grids } from "@/lib";
 import SideBar from "@/components/SideBar";
@@ -14,13 +14,13 @@ const IsohyetLabels = ({ features }: { features: any[] }) => {
   const zoom = map.getZoom();
 
   // to prevent cluttered view, only show at certain zoom levels
-  if (zoom < 10) return null; 
+  if (zoom < 10) return null;
 
   return (
     <>
       {features.map((feature, index) => {
         const value = feature.properties.CONTOUR;
-        
+
         if (feature.geometry.type === 'LineString') {
           const coords = feature.geometry.coordinates;
           const mid = Math.floor(coords.length / 2);
@@ -46,12 +46,12 @@ const IsohyetLabels = ({ features }: { features: any[] }) => {
                   className: '', // prevent default Leaflet styles
                   iconSize: [20, 10], // box containing the value label
                   iconAnchor: [7, 7], // position of label in box (middle)
-              })}
+                })}
             />
           );
         }
         return null;
-      })} 
+      })}
     </>
   );
 };
@@ -71,12 +71,12 @@ const IsohyetsLayer = (
   return (
     <>
       <GeoJSON
-      interactive={false}
-      data={geojson}
-      style={{
-        color: 'black',
-        weight: 0.7,
-      }}
+        interactive={false}
+        data={geojson}
+        style={{
+          color: 'black',
+          weight: 0.7,
+        }}
       />
       <IsohyetLabels features={geojson.features} />
     </>
@@ -93,15 +93,16 @@ const PopupOnClick = (
     selectedPeriod: Period,
     grids: Grids,
   }) => {
-
-  const [location, setLocation] = useState<LatLng>();
+  const [location, setLocation] = useState<LatLng | null>(null);
   const [gridValue, setGridValue] = useState<number | null>(null);
-  useMapEvent("click", (e) => {
+  useEffect(() => {
+    if (!location) {
+      setGridValue(null);
+      return;
+    }
     // Credit: https://github.com/ikewai/precipitation_application/blob/prod/src/app/services/util/data-retreiver.service.ts#L34
     // const grid = grids[selectedUnits][selectedPeriod];
     const grid = grids[selectedUnits][0];
-    const location = e.latlng;
-    setLocation(location);
     const { ncols, nrows, xllcorner, yllcorner, cellsize } = grid.header;
     const offset = new LatLng(location.lat - yllcorner, location.lng - xllcorner);
 
@@ -131,6 +132,9 @@ const PopupOnClick = (
     } else {
       setGridValue(null);
     }
+  }, [location, selectedUnits, grids]);
+  useMapEvent("click", (e) => {
+    setLocation(e.latlng);
   });
 
   return location ? (
@@ -224,7 +228,7 @@ const RainfallMap: React.FC<Props> = (
   return (
     <div className="flex w-full h-full max-h-full">
       <div className="min-w-[24rem]">
-        <SideBar selectedStation={selectedStation} selectedUnits={selectedUnits}/>
+        <SideBar selectedStation={selectedStation} selectedUnits={selectedUnits} />
       </div>
       <div className="w-full h-full">
         <Map
@@ -241,7 +245,7 @@ const RainfallMap: React.FC<Props> = (
           />
 
           {showGrids && grids && (
-            <RainfallColorLayer 
+            <RainfallColorLayer
               options={{
                 cacheEmpty: true,
                 colorScale: {
@@ -286,7 +290,7 @@ const RainfallMap: React.FC<Props> = (
             grids={grids}
           />}
 
-          <ZoomendHandler onZoomEnd={setZoom}/>
+          <ZoomendHandler onZoomEnd={setZoom} />
           <MapOverlay
             selectedUnits={selectedUnits}
             setSelectedUnits={setSelectedUnits}
