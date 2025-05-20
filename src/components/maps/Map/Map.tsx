@@ -52,7 +52,7 @@ const Map: React.FC<Props> = (
       minZoom={minZoom}
       maxBoundsViscosity={0.75}
       ref={map => setMap(map)}
-      className="w-full h-full focus:outline-none"
+      className="w-full h-full focus:outline-none z-40"
     >
       {children}
     </MapContainer>
