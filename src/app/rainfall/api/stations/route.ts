@@ -1,46 +1,22 @@
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
 import path from 'path';
 import Papa from "papaparse";
 import { Station } from "@/lib";
+import { getCachedFileBuffer } from "@/lib/data_cache";
 
-const CACHE_PATH = path.join('public', 'data', 'rainfall', 'raw');
-const FILE_NAME = 'FinalStationData_Used_csv.csv';
-const FETCH_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/Tabular/FinalStationData_Used_csv.csv');
+const CACHE_PATH = path.join('rainfall', 'raw');
+const STATIONS_FILE_NAME = 'FinalStationData_Used_csv.csv';
+const STATIONS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/Tabular/FinalStationData_Used_csv.csv');
 
 export async function GET(): Promise<NextResponse<Station[] | null>> {
-  const cachedFilePath: string = path.join(process.cwd(), CACHE_PATH);
-  const cachedFile: string = path.join(cachedFilePath, FILE_NAME);
-
-  let data: string | undefined = undefined;
-  // if the file has already been cached, use it
-  try {
-    const file = await fs.readFile(cachedFile);
-    data = file.toString();
-  } catch (e) {
-    console.log('Could not read cached file, either an error occurred or the file had not been cached yet.', e);
-  }
-
+  const data: Buffer | null = await getCachedFileBuffer(STATIONS_FILE_URL, CACHE_PATH, STATIONS_FILE_NAME);
   if (!data) {
-    // the file was not cached, so fetch it and cache it
-    try {
-      const response = await fetch(FETCH_URL);
-      if (!response.ok) {
-        throw new Error(`Error fetching ${FETCH_URL}.`);
-      }
-      const fetchedData = await response.text();
-      await fs.mkdir(cachedFilePath, { recursive: true });
-      await fs.writeFile(cachedFile, fetchedData);
-      data = fetchedData;
-    } catch (e) {
-      console.error(e);
-      return NextResponse.json(null, { status: 503 });
-    }
+    return NextResponse.json(null, { status: 503 });
   }
 
   try {
     const stations: Station[] = await new Promise((resolve, reject) => {
-      Papa.parse(data, {
+      Papa.parse(data.toString('utf-8'), {
         worker: true,
         header: true, // treats top line of CSV as names for columns
         skipEmptyLines: true,
