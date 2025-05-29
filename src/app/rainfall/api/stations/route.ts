@@ -12,7 +12,7 @@ export async function GET(): Promise<NextResponse<Station[] | null>> {
   const cachedFilePath: string = path.join(process.cwd(), CACHE_PATH);
   const cachedFile: string = path.join(cachedFilePath, FILE_NAME);
 
-  let data: string;
+  let data: string | undefined = undefined;
   // if the file has already been cached, use it
   try {
     const file = await fs.readFile(cachedFile);
@@ -21,19 +21,21 @@ export async function GET(): Promise<NextResponse<Station[] | null>> {
     console.log('Could not read cached file, either an error occurred or the file had not been cached yet.', e);
   }
 
-  // the file was not cached, so fetch it and cache it
-  try {
-    const response = await fetch(FETCH_URL);
-    if (!response.ok) {
-      throw new Error(`Error fetching ${FETCH_URL}.`);
+  if (!data) {
+    // the file was not cached, so fetch it and cache it
+    try {
+      const response = await fetch(FETCH_URL);
+      if (!response.ok) {
+        throw new Error(`Error fetching ${FETCH_URL}.`);
+      }
+      const fetchedData = await response.text();
+      await fs.mkdir(cachedFilePath, { recursive: true });
+      await fs.writeFile(cachedFile, fetchedData);
+      data = fetchedData;
+    } catch (e) {
+      console.error(e);
+      return NextResponse.json(null, { status: 503 });
     }
-    const fetchedData = await response.text();
-    await fs.mkdir(cachedFilePath, { recursive: true });
-    await fs.writeFile(cachedFile, fetchedData);
-    data = fetchedData;
-  } catch (e) {
-    console.error(e);
-    return NextResponse.json(null, { status: 503 });
   }
 
   try {
