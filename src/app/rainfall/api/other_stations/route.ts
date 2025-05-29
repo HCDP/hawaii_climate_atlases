@@ -5,8 +5,8 @@ import Papa from "papaparse";
 import { Station } from "@/lib";
 
 const CACHE_PATH = path.join('public', 'data', 'rainfall', 'raw');
-const FILE_NAME = 'FinalStationData_Used_csv.csv';
-const FETCH_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/Tabular/FinalStationData_Used_csv.csv');
+const FILE_NAME = 'FinalStations_NotUsed_csv.csv';
+const FETCH_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/Tabular/FinalStations_NotUsed_csv.csv');
 
 export async function GET(): Promise<NextResponse<Station[] | null>> {
   const cachedFilePath: string = path.join(process.cwd(), CACHE_PATH);

@@ -1,37 +1,17 @@
-import { Isohyets, Station, Grids, AsciiGrid } from "@/lib";
-import Papa from "papaparse";
+"use client"
+
+import { AsciiGrid, Grids, Isohyets, Station } from "@/lib";
 import JSZip from "jszip";
 import shp, { FeatureCollectionWithFilename } from "shpjs";
 
 // const baseURL = 'https://atlas.uhtapis.org/rainfall/assets/files';
 
 export async function getStations(): Promise<Station[]> {
-  return fetchStations(`/api/stations`);
+  return await fetch('/api/stations').then(res => res.json());
 }
 
 export async function getOtherStations(): Promise<Station[]> {
-  return fetchStations(`/api/otherStations`);
-}
-
-async function fetchStations(url: string): Promise<Station[]> {
-  try {
-    const response = await fetch(url);
-    const dataAsText = await response.text();
-
-    return new Promise((resolve, reject) => {
-      Papa.parse(dataAsText, {
-        worker: true,
-        header: true, // treats top line of CSV as names for columns
-        skipEmptyLines: true,
-        complete: (result) => resolve(result.data as Station[]),
-        error: (error: never) => reject(error),
-      });
-    })
-    
-  } catch (error) {
-    console.error("Error fetching CSV data", error);
-    return [];
-  }
+  return await fetch('/api/other_stations').then(res => res.json());
 }
 
 export async function getIsohyets(): Promise<Isohyets> {

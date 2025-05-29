@@ -72,10 +72,10 @@ const ClientInteractiveMap = () => {
 /*
 const ClientInteractiveMap: React.FC<{
   rfStations: Station[],
-  otherStations: Station[],
+  other_stations: Station[],
   isohyets: Isohyets,
   grids: Grids,
-}> = ({ rfStations, otherStations, isohyets, grids }) => {
+}> = ({ rfStations, other_stations, isohyets, grids }) => {
   // const [mapMaximized, setMapMaximized] = useState<boolean>(false);
   // const toggleMapMaximized = () => setMapMaximized(mapMaximized => !mapMaximized);
 
@@ -85,7 +85,7 @@ const ClientInteractiveMap: React.FC<{
       startPosition={[20.750, -157.317]}
       startZoom={7.5}
       rfStations={rfStations}
-      otherStations={otherStations}
+      other_stations={other_stations}
       isohyets={isohyets}
       grids={grids}
     />
