@@ -41,6 +41,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<Station[] 
 async function getStations(fetchUrl: string | URL, cachePath: string = '', fileName: string): Promise<Station[] | null> {
   const stationsFileBuffer: Buffer | null = await getCachedFileBuffer(fetchUrl, cachePath, fileName);
   if (!stationsFileBuffer) {
+    console.error("Error fetching CSV data");
     return null;
   }
 
@@ -56,7 +57,7 @@ async function getStations(fetchUrl: string | URL, cachePath: string = '', fileN
     });
     return stations;
   } catch (error) {
-    console.error("Error fetching CSV data", error);
+    console.error("Error parsing CSV data", error);
     return null;
   }
 }
