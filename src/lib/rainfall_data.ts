@@ -11,7 +11,7 @@ export async function getStations(): Promise<Station[]> {
 }
 
 export async function getOtherStations(): Promise<Station[]> {
-  return await fetch('/api/other_stations').then(res => res.json());
+  return await fetch('/api/stations?filter=other').then(res => res.json());
 }
 
 export async function getIsohyets(): Promise<Isohyets> {
