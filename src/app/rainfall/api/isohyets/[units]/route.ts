@@ -6,12 +6,12 @@ import path from "path";
 const CACHE_PATH = path.join('rainfall', 'raw');
 
 const IN_ISOHYETS_FILE_NAME = 'StateIsohyetsSHP_inches.zip';
-const IN_ISOHYETS_FILE_URL = 'https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateIsohyetsSHP_inches.zip';
+const IN_ISOHYETS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateIsohyetsSHP_inches.zip');
 
 const MM_ISOHYETS_FILE_NAME = 'StateIsohyetsSHP_mm.zip';
-const MM_ISOHYETS_FILE_URL = 'https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateIsohyetsSHP_mm.zip';
+const MM_ISOHYETS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateIsohyetsSHP_mm.zip');
 
-export async function GET(_: NextRequest, { params }: { params: { units: string } }) {
+export async function GET(_: NextRequest, { params }: { params: { units: string } }): Promise<NextResponse<{ error: string } | FeatureCollectionWithFilename[]>> {
   const units: string = params.units.toLocaleUpperCase();
   let fileName, fetchUrl;
   if (units === 'IN') {

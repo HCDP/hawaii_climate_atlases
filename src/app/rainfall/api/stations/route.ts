@@ -12,7 +12,7 @@ const STATIONS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/fil
 const OTHER_STATIONS_FILE_NAME = 'FinalStations_NotUsed_csv.csv';
 const OTHER_STATIONS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/Tabular/FinalStations_NotUsed_csv.csv');
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse<{ error: string } | Station[]>> {
   const searchParams = request.nextUrl.searchParams;
   // valid filters: "all" | "used" | "other"
   const filter = searchParams.get('filter');
