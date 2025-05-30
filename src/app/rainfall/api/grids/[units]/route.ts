@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCachedFileBuffer } from "@/lib/data_cache";
 import path from 'path';
-import { AsciiGrid } from "@/lib";
+import { AsciiGrid, Units } from "@/lib";
 import JSZip from "jszip";
 
 const CACHE_PATH = path.join('rainfall', 'raw');
@@ -15,10 +15,10 @@ const MM_GRIDS_FILE_URL = 'https://atlas.uhtapis.org/rainfall/assets/files/GISLa
 export async function GET(_: NextRequest, { params }: { params: { units: string } }): Promise<NextResponse<{ error: string } | AsciiGrid[]>> {
   const units: string = params.units.toLocaleUpperCase();
   let fileName, fetchUrl;
-  if (units === 'IN') {
+  if (units === Units.IN) {
     fileName = IN_GRIDS_FILE_NAME;
     fetchUrl = IN_GRIDS_FILE_URL;
-  } else if (units === 'MM') {
+  } else if (units === Units.MM) {
     fileName = MM_GRIDS_FILE_NAME;
     fetchUrl = MM_GRIDS_FILE_URL;
   } else {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import shp, { FeatureCollectionWithFilename } from "shpjs";
 import { getCachedFileBuffer } from "@/lib/data_cache";
+import { Units } from "@/lib";
 import path from "path";
 
 const CACHE_PATH = path.join('rainfall', 'raw');
@@ -14,10 +15,10 @@ const MM_ISOHYETS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/
 export async function GET(_: NextRequest, { params }: { params: { units: string } }): Promise<NextResponse<{ error: string } | FeatureCollectionWithFilename[]>> {
   const units: string = params.units.toLocaleUpperCase();
   let fileName, fetchUrl;
-  if (units === 'IN') {
+  if (units === Units.IN) {
     fileName = IN_ISOHYETS_FILE_NAME;
     fetchUrl = IN_ISOHYETS_FILE_URL;
-  } else if (units === 'MM') {
+  } else if (units === Units.MM) {
     fileName = MM_ISOHYETS_FILE_NAME;
     fetchUrl = MM_ISOHYETS_FILE_URL;
   } else {

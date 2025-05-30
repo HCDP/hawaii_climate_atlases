@@ -124,20 +124,16 @@ const MapOverlay: React.FC<Props> = (
                   <TableCell><p className="text-base">Units: </p></TableCell>
                   <TableCell>
                     <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
-                      <Button
-                        variant={selectedUnits === "IN" ? "bordered" : "ghost"}
-                        onPress={() => setSelectedUnits("IN")}
-                        className={selectedUnits === "IN" ? "bg-gray-400" : "bg-white text-gray-300"}
-                      >
-                        in
-                      </Button>
-                      <Button
-                        variant={selectedUnits === "MM" ? "bordered" : "ghost"}
-                        onPress={() => setSelectedUnits("MM")}
-                        className={selectedUnits === "MM" ? "bg-gray-400" : "bg-white text-gray-300"}
-                      > 
-                        mm
-                      </Button>
+                      {Object.keys(Units).map(u => (
+                        <Button
+                          key={u}
+                          variant={selectedUnits === u ? "bordered" : "ghost"}
+                          onPress={() => setSelectedUnits(u as Units)}
+                          className={selectedUnits === u ? "bg-gray-400" : "bg-white text-gray-300"}
+                        >
+                          {u.toLocaleLowerCase()}
+                        </Button>
+                      ))}
                     </ButtonGroup>
                   </TableCell>
                 </TableRow>

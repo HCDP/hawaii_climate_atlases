@@ -208,7 +208,7 @@ const RainfallMap: React.FC<Props> = (
   }: Props
 ) => {
   const [selectedStation, setSelectedStation] = useState<Station>();
-  const [selectedUnits, setSelectedUnits] = useState<Units>("IN");
+  const [selectedUnits, setSelectedUnits] = useState<Units>(Units.IN);
   const [selectedPeriod, setSelectedPeriod] = useState<Period>(Period.Annual);
   const [showIsohyets, setShowIsohyets] = useState<boolean>(false);
   const [showGrids, setShowGrids] = useState<boolean>(true);

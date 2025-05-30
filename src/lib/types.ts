@@ -1,6 +1,9 @@
 import { FeatureCollectionWithFilename } from "shpjs";
 
-export type Units = "IN" | "MM";
+export enum Units {
+  IN = 'IN',
+  MM = 'MM'
+}
 
 export enum Period {
   January = 0,
