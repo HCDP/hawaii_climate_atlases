@@ -4,7 +4,7 @@ import path from 'path';
 import { AsciiGrid } from "@/lib";
 import JSZip from "jszip";
 
-const CACHE_PATH = path.join('public', 'raw');
+const CACHE_PATH = path.join('rainfall', 'raw');
 
 const IN_GRIDS_FILE_NAME = 'StateASCIIGrids_inches.zip';
 const IN_GRIDS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateASCIIGrids_inches.zip');
