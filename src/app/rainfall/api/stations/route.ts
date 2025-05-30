@@ -12,7 +12,7 @@ const STATIONS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/fil
 const OTHER_STATIONS_FILE_NAME = 'FinalStations_NotUsed_csv.csv';
 const OTHER_STATIONS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/Tabular/FinalStations_NotUsed_csv.csv');
 
-export async function GET(request: NextRequest): Promise<NextResponse<Station[] | null>> {
+export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   // valid filters: "all" | "used" | "other"
   const filter = searchParams.get('filter');
@@ -24,14 +24,14 @@ export async function GET(request: NextRequest): Promise<NextResponse<Station[] 
   if (includeUsedStations) {
     const usedStations: Station[] | null = await getStations(STATIONS_FILE_URL, CACHE_PATH, STATIONS_FILE_NAME);
     if (!usedStations) {
-      return NextResponse.json(null, { status: 503 });
+      return NextResponse.json({ error: 'Unable to retrieve the requested information.' }, { status: 503 });
     }
     stations = stations.concat(usedStations);
   }
   if (includeOtherStations) {
     const otherStations: Station[] | null = await getStations(OTHER_STATIONS_FILE_URL, CACHE_PATH, OTHER_STATIONS_FILE_NAME);
     if (!otherStations) {
-      return NextResponse.json(null, { status: 503 });
+      return NextResponse.json({ error: 'Unable to retrieve the requested information.'}, { status: 503 });
     }
     stations = stations.concat(otherStations);
   }

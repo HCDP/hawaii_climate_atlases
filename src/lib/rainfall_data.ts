@@ -2,7 +2,7 @@
 
 import { AsciiGrid, Grids, Isohyets, Station } from "@/lib";
 import JSZip from "jszip";
-import shp, { FeatureCollectionWithFilename } from "shpjs";
+import { FeatureCollectionWithFilename } from "shpjs";
 
 // const baseURL = 'https://atlas.uhtapis.org/rainfall/assets/files';
 
@@ -15,20 +15,10 @@ export async function getOtherStations(): Promise<Station[]> {
 }
 
 export async function getIsohyets(): Promise<Isohyets> {
-  const inchesSHP = await fetch(`/api/in_isohyets`)
-    .then(res => res.arrayBuffer());
-  const mmSHP = await fetch(`/api/mm_isohyets`)
-    .then(res => res.arrayBuffer());
-  const inchesGeojson: FeatureCollectionWithFilename[] = await shp(inchesSHP) as FeatureCollectionWithFilename[];
-  const mmGeojson: FeatureCollectionWithFilename[] = await shp(mmSHP) as FeatureCollectionWithFilename[];
-  const sortGeojsons = (a: FeatureCollectionWithFilename, b: FeatureCollectionWithFilename) => {
-    if (!a.fileName || !b.fileName) {
-      return 0;
-    }
-    return a.fileName > b.fileName ? 1 : a.fileName < b.fileName ? -1 : 0;
-  }
-  inchesGeojson.sort(sortGeojsons);
-  mmGeojson.sort(sortGeojsons);
+  const inchesGeojson: FeatureCollectionWithFilename[] = await fetch(`/api/isohyets/in`)
+    .then(res => res.json());
+  const mmGeojson: FeatureCollectionWithFilename[] = await fetch(`/api/isohyets/mm`)
+    .then(res => res.json());
   const isohyets: Isohyets = {
     IN: inchesGeojson,
     MM: mmGeojson,
