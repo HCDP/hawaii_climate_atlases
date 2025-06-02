@@ -1,9 +1,12 @@
 "use client"
 
-import useConditionsOfUse from "@/hooks/useConditionsOfUse";
+import { useContext } from "react";
+import useRequiredConditionsOfUse from "@/hooks/useRequiredConditionsOfUse";
+import { ConditionsOfUseContext } from "@/components/ConditionsOfUse/ConditionsOfUseContext";
 
 export default function HowToCite() {
-  const { onOpenConditionsOfUse } = useConditionsOfUse();
+  const { onOpenConditionsOfUse } = useContext(ConditionsOfUseContext);
+  useRequiredConditionsOfUse();
 
   return (
     <div className="mt-14 max-w-[62rem] mx-auto">

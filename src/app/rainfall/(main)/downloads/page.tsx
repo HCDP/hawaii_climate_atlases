@@ -8,10 +8,13 @@ import Tabular from "@/app/rainfall/(main)/downloads/Tabular";
 import Report from "@/app/rainfall/(main)/downloads/Report";
 import MonthYearMaps from "@/app/rainfall/(main)/downloads/MonthYearMaps";
 import RainfallTrendMaps from "@/app/rainfall/(main)/downloads/RainfallTrendMaps";
-import useConditionsOfUse from "@/hooks/useConditionsOfUse";
+import { useContext } from "react";
+import { ConditionsOfUseContext } from "@/components/ConditionsOfUse";
+import useRequiredConditionsOfUse from "@/hooks/useRequiredConditionsOfUse";
 
 export default function Downloads() {
-  const { onOpenConditionsOfUse } = useConditionsOfUse();
+  const { onOpenConditionsOfUse } = useContext(ConditionsOfUseContext);
+  useRequiredConditionsOfUse();
 
   const itemClasses = {
     title: "font-bold text-lg"

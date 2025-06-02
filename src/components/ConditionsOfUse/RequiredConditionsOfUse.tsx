@@ -1,30 +1,32 @@
+"use client"
+
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { Checkbox } from "@heroui/checkbox";
-import ConditionsOfUseContent from "@/components/ConditionsOfUse/ConditionsOfUseContent";
+import { ConditionsOfUseContent } from "@/components/ConditionsOfUse";
 import { Button } from "@heroui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import useConditionsOfUse from "@/hooks/useConditionsOfUse";
 
 interface Props {
   isOpen: boolean,
   onOpenChange: () => void,
+  updateDontShowConditionsOfUsePreference: (doNotShow: boolean) => void,
 }
 
 export default function RequiredConditionsOfUse({
   isOpen,
   onOpenChange,
+  updateDontShowConditionsOfUsePreference,
 }: Props) {
-  const { updateDontShowConditionsOfUse } = useConditionsOfUse();
   const [doNotShow, setDoNotShow] = useState<boolean>(false);
   const router = useRouter();
 
   function handleAgreeClick() {
-    updateDontShowConditionsOfUse(doNotShow);
+    updateDontShowConditionsOfUsePreference(doNotShow);
   }
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl" isDismissable={false}>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl" isDismissable={false} isKeyboardDismissDisabled hideCloseButton>
       <ModalContent>
         {(onClose) => (
           <>

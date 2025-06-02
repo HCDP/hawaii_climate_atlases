@@ -4,30 +4,22 @@ import React, { createContext, Dispatch, SetStateAction, useMemo, useState } fro
 import NavBar, { NavBarProps } from "@/components/NavBar";
 import { usePathname } from "next/navigation";
 import Footer from "@/components/Footer";
-import { useDisclosure } from "@heroui/modal";
-import { ConditionsOfUse, RequiredConditionsOfUse } from "@/components/ConditionsOfUse";
 
 export const LayoutContext = createContext<{
   maximized: boolean,
   setMaximized: Dispatch<SetStateAction<boolean>>,
-  onOpenConditionsOfUse: () => void,
-  onOpenRequiredConditionsOfUse: () => void,
 }>({
   maximized: false,
   setMaximized: () => {},
-  onOpenConditionsOfUse: () => {},
-  onOpenRequiredConditionsOfUse: () => {},
 });
 
 interface Props extends NavBarProps {
   children: React.ReactNode,
 }
 
-export const LayoutProvider: React.FC<Props> = ({children, navLinks, navImg}) => {
+export const LayoutProvider: React.FC<Props> = ({ children, navLinks, navImg }: Props) => {
   const [maximized, setMaximized] = useState<boolean>(false);
 
-  const conditionsOfUseDisclosure = useDisclosure();
-  const requiredConditionsOfUseDisclosure = useDisclosure();
 
   const pathname: string = usePathname();
   const isMapPage: boolean = pathname === '/interactive-map';
@@ -42,18 +34,8 @@ export const LayoutProvider: React.FC<Props> = ({children, navLinks, navImg}) =>
       value={{
         maximized,
         setMaximized,
-        onOpenConditionsOfUse: conditionsOfUseDisclosure.onOpen,
-        onOpenRequiredConditionsOfUse: requiredConditionsOfUseDisclosure.onOpen,
       }}
     >
-      <ConditionsOfUse
-        isOpen={conditionsOfUseDisclosure.isOpen}
-        onOpenChange={conditionsOfUseDisclosure.onOpenChange}
-      />
-      <RequiredConditionsOfUse
-        isOpen={requiredConditionsOfUseDisclosure.isOpen}
-        onOpenChange={requiredConditionsOfUseDisclosure.onOpenChange}
-      />
       <div className={isMapPage ? 'flex flex-col min-h-screen h-screen max-h-screen' : ''}>
         {show && navBar}
         <main

@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Modal,
   ModalContent,
@@ -6,7 +8,7 @@ import {
   ModalFooter,
 } from "@heroui/modal";
 import { Button } from "@heroui/button";
-import ConditionsOfUseContent from "@/components/ConditionsOfUse/ConditionsOfUseContent";
+import { ConditionsOfUseContent } from "@/components/ConditionsOfUse";
 
 interface Props {
   isOpen: boolean,

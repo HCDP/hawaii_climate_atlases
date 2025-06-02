@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import { LayoutContext } from "@/components/LayoutContext";
+import { ConditionsOfUseContext } from "@/components/ConditionsOfUse";
 
 const Footer = () => {
-  const { onOpenConditionsOfUse } = useContext(LayoutContext);
+  const { onOpenConditionsOfUse } = useContext(ConditionsOfUseContext);
   return (
     <footer className="flex justify-center bg-[#708090] text-white py-4">
       <div className="flex flex-col text-center text-sm">
