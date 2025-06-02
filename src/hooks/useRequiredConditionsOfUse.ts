@@ -12,9 +12,5 @@ export default function useRequiredConditionsOfUse() {
     if (!dontShowConditionsOfUse) {
       onOpenRequiredConditionsOfUse();
     }
-  });
-
-  return {
-    onOpenRequiredConditionsOfUse,
-  }
+  }, []);
 }
