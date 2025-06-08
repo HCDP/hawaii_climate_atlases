@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import shp, { FeatureCollectionWithFilename } from "shpjs";
+import { FeatureCollection } from "geojson";
 import { getCachedFileBuffer } from "@/lib/data_cache";
 import { Units } from "@/lib";
 import path from "path";
@@ -12,7 +13,7 @@ const IN_ISOHYETS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/
 const MM_ISOHYETS_FILE_NAME = 'StateIsohyetsSHP_mm.zip';
 const MM_ISOHYETS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateIsohyetsSHP_mm.zip');
 
-export async function GET(_: NextRequest, { params }: { params: { units: string } }): Promise<NextResponse<{ error: string } | FeatureCollectionWithFilename[]>> {
+export async function GET(_: NextRequest, { params }: { params: { units: string } }): Promise<NextResponse<{ error: string } | FeatureCollection[]>> {
   const units: string = params.units.toLocaleUpperCase();
   let fileName, fetchUrl;
   if (units === Units.IN) {
@@ -41,6 +42,7 @@ export async function GET(_: NextRequest, { params }: { params: { units: string 
       return a.fileName > b.fileName ? 1 : a.fileName < b.fileName ? -1 : 0;
     }
     geojson.sort(sortGeojsons);
+    geojson.forEach(g => delete g.fileName);
   }
   return NextResponse.json(geojson, { status: 200 });
 }

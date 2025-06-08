@@ -1,7 +1,7 @@
 "use client"
 
 import { AsciiGrid, Grids, Isohyets, Station } from "@/lib";
-import { FeatureCollectionWithFilename } from "shpjs";
+import { FeatureCollection } from "geojson";
 
 // const baseURL = 'https://atlas.uhtapis.org/rainfall/assets/files';
 
@@ -14,9 +14,9 @@ export async function getOtherStations(): Promise<Station[]> {
 }
 
 export async function getIsohyets(): Promise<Isohyets> {
-  const inchesGeojson: FeatureCollectionWithFilename[] = await fetch(`/api/isohyets/in`)
+  const inchesGeojson: FeatureCollection[] = await fetch(`/api/isohyets/in`)
     .then(res => res.json());
-  const mmGeojson: FeatureCollectionWithFilename[] = await fetch(`/api/isohyets/mm`)
+  const mmGeojson: FeatureCollection[] = await fetch(`/api/isohyets/mm`)
     .then(res => res.json());
   const isohyets: Isohyets = {
     IN: inchesGeojson,

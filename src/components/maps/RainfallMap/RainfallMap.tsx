@@ -8,8 +8,7 @@ import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import formatNum = Util.formatNum;
 import { LayoutContext } from "@/components/LayoutContext";
 import { RainfallColorLayer } from "./RainfallColorLayer";
-import { FeatureCollectionWithFilename } from "shpjs";
-import { Feature } from "geojson";
+import { Feature, FeatureCollection } from "geojson";
 
 const IsohyetLabels = ({ features }: { features: Feature[] }) => {
   const map = useMap();
@@ -68,7 +67,7 @@ const IsohyetsLayer = (
     selectedUnits: Units,
     selectedPeriod: Period,
   }) => {
-  const geojson: FeatureCollectionWithFilename = isohyets[selectedUnits][selectedPeriod];
+  const geojson: FeatureCollection = isohyets[selectedUnits][selectedPeriod];
   //console.log(JSON.stringify(geojson, null, 2));
   return (
     <>

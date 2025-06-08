@@ -1,4 +1,4 @@
-import { FeatureCollectionWithFilename } from "shpjs";
+import { FeatureCollection } from "geojson";
 
 export enum Units {
   IN = 'IN',
@@ -62,7 +62,7 @@ export interface Station {
 }
 
 export type Isohyets = {
-  [key in Units]: FeatureCollectionWithFilename[];
+  [key in Units]: FeatureCollection[];
 };
 
 export type AsciiGrid = {
