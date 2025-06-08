@@ -26,13 +26,15 @@ export async function getIsohyets(): Promise<Isohyets> {
 }
 
 export async function getGrids(): Promise<Grids> {
-  const inchesAsciiGrids: AsciiGrid[] = await fetch(`/api/grids/in`)
+  /* TODO: Temporarily only returning the annual data. Returning all the data together makes everything slow,
+      need to figure out how to fix this. */
+  const inchesAsciiGrids: AsciiGrid = await fetch(`/api/grids/in/annual`)
     .then(res => res.json());
-  const mmAsciiGrids: AsciiGrid[] = await fetch(`/api/grids/mm`)
+  const mmAsciiGrids: AsciiGrid = await fetch(`/api/grids/mm/annual`)
     .then(res => res.json());
   const grids = {
-    IN: inchesAsciiGrids,
-    MM: mmAsciiGrids,
+    IN: [inchesAsciiGrids],
+    MM: [mmAsciiGrids],
   }
   return grids;
 }
