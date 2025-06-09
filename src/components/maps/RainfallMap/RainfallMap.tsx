@@ -2,14 +2,9 @@ import React, { useEffect, useState } from "react";
 import Map, { StationIcon } from "../Map";
 import {
   Station,
-  Grids,
-  Isohyets,
   Units,
   Period,
-  getStations,
-  getOtherStations,
-  getIsohyets,
-  getGrids
+  AsciiGrid,
 } from "@/lib";
 import SideBar from "@/components/SideBar";
 import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, useMapEvents, Marker } from "react-leaflet";
@@ -20,6 +15,9 @@ import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
 import { useSettings } from "@/hooks/useSettings";
 import { defaultSettings } from "@/components/SettingsContext";
+import { useStations } from "@/hooks/useStations";
+import { useIsohyets } from "@/hooks/useIsohyets";
+import { useGrids } from "@/hooks/useGrids";
 
 const IsohyetLabels = ({ features }: { features: Feature[] }) => {
   const map = useMap();
@@ -70,15 +68,10 @@ const IsohyetLabels = ({ features }: { features: Feature[] }) => {
 
 const IsohyetsLayer = (
   {
-    isohyets,
-    selectedUnits,
-    selectedPeriod,
+    geojson,
   }: {
-    isohyets: Isohyets,
-    selectedUnits: Units,
-    selectedPeriod: Period,
+    geojson: FeatureCollection,
   }) => {
-  const geojson: FeatureCollection = isohyets[selectedUnits][selectedPeriod];
   //console.log(JSON.stringify(geojson, null, 2));
   return (
     <>
@@ -98,12 +91,10 @@ const IsohyetsLayer = (
 const PopupOnClick = (
   {
     selectedUnits,
-    // selectedPeriod,
-    grids,
+    grid,
   }: {
     selectedUnits: Units,
-    selectedPeriod: Period,
-    grids: Grids,
+    grid: AsciiGrid,
   }) => {
   const [location, setLocation] = useState<LatLng | null>(null);
   const [gridValue, setGridValue] = useState<number | null>(null);
@@ -113,8 +104,6 @@ const PopupOnClick = (
       return;
     }
     // Credit: https://github.com/ikewai/precipitation_application/blob/prod/src/app/services/util/data-retreiver.service.ts#L34
-    // const grid = grids[selectedUnits][selectedPeriod];
-    const grid = grids[selectedUnits][0];
     const { ncols, nrows, xllcorner, yllcorner, cellsize } = grid.header;
     const offset = new LatLng(location.lat - yllcorner, location.lng - xllcorner);
 
@@ -144,7 +133,7 @@ const PopupOnClick = (
     } else {
       setGridValue(null);
     }
-  }, [location, selectedUnits, grids]);
+  }, [location, selectedUnits, grid]);
   useMapEvent("click", (e) => {
     setLocation(e.latlng);
   });
@@ -210,41 +199,24 @@ const zoomSnap = 0.75,
   minZoom = 6;
 
 const RainfallMap = () => {
-  const [rfStations, setRfStations] = useState<Station[] | null>(null);
-  const [otherStations, setOtherStations] = useState<Station[] | null>(null);
-  const [isohyets, setIsohyets] = useState<Isohyets | null>(null);
-  const [grids, setGrids] = useState<Grids | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const [rfStations, otherStations, isohyets, grids] = await Promise.all([
-        getStations(),
-        getOtherStations(),
-        getIsohyets(),
-        getGrids(),
-      ]);
-      setRfStations(rfStations);
-      setOtherStations(otherStations);
-      setIsohyets(isohyets);
-      setGrids(grids);
-    };
-
-    fetchData();
-  }, []);
-
   const {
-    showRFStations,
-    showOtherStations,
-    setSelectedStation,
-    showGrids,
-    showIsohyets,
-    selectedUnits,
-    selectedPeriod,
-    zoom,
-    setZoom
-  } = useSettings();
+  showRFStations,
+  showOtherStations,
+  setSelectedStation,
+  showGrids,
+  showIsohyets,
+  selectedUnits,
+  selectedPeriod,
+  zoom,
+  setZoom
+} = useSettings();
 
-  if (!rfStations && !otherStations && !isohyets && !grids) {
+  const { stations: rfStations } = useStations();
+  const { stations: otherStations } = useStations("other");
+  const { featureCollections } = useIsohyets(selectedUnits);
+  const { asciiGrid } = useGrids(selectedUnits, Period[selectedPeriod]);
+
+  if (!(rfStations && otherStations && featureCollections && asciiGrid)) {
     return (
       <p className="text-center">Loading map...</p>
     );
@@ -269,7 +241,7 @@ const RainfallMap = () => {
             url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
           />
 
-          {showGrids && grids && (
+          {showGrids && asciiGrid && (
             <RainfallColorLayer
               options={{
                 cacheEmpty: true,
@@ -277,7 +249,7 @@ const RainfallMap = () => {
                   colors: [],
                   range: [8, 404.4],
                 },
-                asciiGrid: grids[selectedUnits][0],
+                asciiGrid,
               }}
             />
           )}
@@ -301,18 +273,16 @@ const RainfallMap = () => {
           )}
 
           {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */}
-          {showIsohyets && isohyets && (
+          {showIsohyets && featureCollections && (
             <IsohyetsLayer
               key={`${selectedUnits}${selectedPeriod}`}
-              isohyets={isohyets} selectedUnits={selectedUnits}
-              selectedPeriod={selectedPeriod}
+              geojson={featureCollections[selectedPeriod]}
             />
           )}
 
-          {grids && <PopupOnClick
+          {asciiGrid && <PopupOnClick
+            grid={asciiGrid}
             selectedUnits={selectedUnits}
-            selectedPeriod={selectedPeriod}
-            grids={grids}
           />}
 
           <ZoomendHandler onZoomEnd={setZoom} />

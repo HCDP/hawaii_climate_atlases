@@ -35,7 +35,8 @@
     "react-dom": "^18.3.1",
     "react-leaflet": "^4.2.1",
     "react-plotly.js": "^2.6.0",
-    "shpjs": "^6.1.0"
+    "shpjs": "^6.1.0",
+    "swr": "^2.3.3"
   },
   "devDependencies": {
     "@types/chroma-js": "^3.1.1",
