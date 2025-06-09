@@ -3,7 +3,8 @@ import { getCachedFileBuffer } from "@/lib/data_cache";
 import path from 'path';
 import { AsciiGrid, Period, Units } from "@/lib";
 import JSZip from "jszip";
-import { capitalize } from "@/utils";
+import { isUnits, isPeriod } from "@/utils";
+import { invalidUnitsResponse, invalidPeriodResponse } from "@/lib/responses";
 
 const CACHE_PATH = path.join('rainfall', 'raw');
 
@@ -11,7 +12,7 @@ const IN_GRIDS_FILE_NAME = 'StateASCIIGrids_inches.zip';
 const IN_GRIDS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateASCIIGrids_inches.zip');
 
 const MM_GRIDS_FILE_NAME = 'StateASCIIGrids_mm.zip';
-const MM_GRIDS_FILE_URL = 'https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateASCIIGrids_mm.zip';
+const MM_GRIDS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateASCIIGrids_mm.zip');
 
 export async function GET(_: NextRequest, { params }: {
   params: {
@@ -19,15 +20,10 @@ export async function GET(_: NextRequest, { params }: {
     period: string,
   },
 }): Promise<NextResponse<{ error: string } | AsciiGrid>> {
-  const invalidUnitsResponse = NextResponse.json({ error: 'Invalid units.' }, { status: 400 });
-  const invalidPeriodResponse = NextResponse.json({ error: 'Invalid period.' }, { status: 400 });
-  if (!params.units) {
-    return invalidUnitsResponse;
-  }
-  if (!params.period) {
-    return invalidPeriodResponse;
-  }
-  const units: string = params.units.toLocaleUpperCase();
+  const units: string = params.units;
+  if (!isUnits(units)) return invalidUnitsResponse;
+  const period: string = params.period;
+  if (!isPeriod(period)) return invalidPeriodResponse;
   let fileName, fetchUrl;
   if (units === Units.IN) {
     fileName = IN_GRIDS_FILE_NAME;
@@ -37,11 +33,6 @@ export async function GET(_: NextRequest, { params }: {
     fetchUrl = MM_GRIDS_FILE_URL;
   } else {
     return invalidUnitsResponse;
-  }
-
-  const period: string = capitalize(params.period.toLocaleLowerCase());
-  if (!(period in Period)) {
-    return invalidPeriodResponse;
   }
 
   const gridsFileBuffer: Buffer | null = await getCachedFileBuffer(fetchUrl, CACHE_PATH, fileName);

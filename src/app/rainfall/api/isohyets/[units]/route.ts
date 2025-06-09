@@ -4,6 +4,8 @@ import { FeatureCollection } from "geojson";
 import { getCachedFileBuffer } from "@/lib/data_cache";
 import { Units } from "@/lib";
 import path from "path";
+import { isUnits } from "@/utils";
+import { invalidUnitsResponse, unableToRetrieveResponse } from "@/lib/responses";
 
 const CACHE_PATH = path.join('rainfall', 'raw');
 
@@ -14,7 +16,8 @@ const MM_ISOHYETS_FILE_NAME = 'StateIsohyetsSHP_mm.zip';
 const MM_ISOHYETS_FILE_URL = new URL('https://atlas.uhtapis.org/rainfall/assets/files/GISLayers/StateIsohyetsSHP_mm.zip');
 
 export async function GET(_: NextRequest, { params }: { params: { units: string } }): Promise<NextResponse<{ error: string } | FeatureCollection[]>> {
-  const units: string = params.units.toLocaleUpperCase();
+  const units: string = params.units;
+  if (!isUnits(units)) return invalidUnitsResponse;
   let fileName, fetchUrl;
   if (units === Units.IN) {
     fileName = IN_ISOHYETS_FILE_NAME;
@@ -23,12 +26,12 @@ export async function GET(_: NextRequest, { params }: { params: { units: string 
     fileName = MM_ISOHYETS_FILE_NAME;
     fetchUrl = MM_ISOHYETS_FILE_URL;
   } else {
-    return NextResponse.json({ error: 'Invalid units.' }, { status: 400 });
+    return invalidUnitsResponse;
   }
 
   const shpFileBuffer: Buffer | null = await getCachedFileBuffer(fetchUrl, CACHE_PATH, fileName);
   if (!shpFileBuffer) {
-    return NextResponse.json({ error: 'Unable to retrieve the requested information.' }, { status: 503 });
+    return unableToRetrieveResponse;
   }
 
   let geojson: FeatureCollectionWithFilename | FeatureCollectionWithFilename[] = await shp(shpFileBuffer);

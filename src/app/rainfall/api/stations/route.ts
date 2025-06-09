@@ -3,6 +3,7 @@ import path from 'path';
 import Papa from "papaparse";
 import { Station } from "@/lib";
 import { getCachedFileBuffer } from "@/lib/data_cache";
+import { unableToRetrieveResponse } from "@/lib/responses";
 
 const CACHE_PATH = path.join('rainfall', 'raw');
 
@@ -24,14 +25,14 @@ export async function GET(request: NextRequest): Promise<NextResponse<{ error: s
   if (includeUsedStations) {
     const usedStations: Station[] | null = await getStations(STATIONS_FILE_URL, CACHE_PATH, STATIONS_FILE_NAME);
     if (!usedStations) {
-      return NextResponse.json({ error: 'Unable to retrieve the requested information.' }, { status: 503 });
+      return unableToRetrieveResponse;
     }
     stations = stations.concat(usedStations);
   }
   if (includeOtherStations) {
     const otherStations: Station[] | null = await getStations(OTHER_STATIONS_FILE_URL, CACHE_PATH, OTHER_STATIONS_FILE_NAME);
     if (!otherStations) {
-      return NextResponse.json({ error: 'Unable to retrieve the requested information.'}, { status: 503 });
+      return unableToRetrieveResponse;
     }
     stations = stations.concat(otherStations);
   }
