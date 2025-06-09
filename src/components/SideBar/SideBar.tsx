@@ -1,19 +1,20 @@
 import React from 'react';
 import Plot from '@/components/Plot';
-import { Station, Units } from "@/lib";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, getKeyValue } from "@heroui/table";
+import { useSettings } from "@/hooks/useSettings";
 
-const fullMonths = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const fullMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const SideBar: React.FC<{
-  selectedStation?: Station,
-  selectedUnits: Units,
-}> = ({ selectedStation, selectedUnits }) => {
+const SideBar: React.FC = () => {
+  const {
+    selectedStation,
+    selectedUnits
+  } = useSettings();
 
   const stationData: number[] = selectedStation ? months.map(month =>
-    Math.max(selectedStation[`${month}Avg${selectedUnits}` as keyof typeof selectedStation] as number, 0)
+    Math.max(Number(selectedStation[`${month}Avg${selectedUnits}` as keyof typeof selectedStation]), 0)
   ) : [];
 
   const rainfallColumns=[
@@ -49,9 +50,9 @@ const SideBar: React.FC<{
     <div className="flex flex-col max-h-full">
       <div className="h-[300px] p-4 shrink-0">
         <Plot
-          stationName={selectedStation && selectedStation.Name}
+          stationName={selectedStation?.Name ?? ""}
           xdata={months}
-          ydata={selectedStation && stationData}
+          ydata={stationData}
           units={selectedUnits}
         />
       </div>

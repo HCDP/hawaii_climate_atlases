@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import L, { LatLng, Map } from "leaflet";
 import { useMap, ZoomControl } from "react-leaflet";
 import LocationField from "@/components/LocationField";
@@ -10,6 +10,8 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from 
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import Fullscreen from "@mui/icons-material/Fullscreen";
 import FullscreenExit from "@mui/icons-material/FullscreenExit";
+import { LayoutContext } from "@/components/LayoutContext";
+import { useSettings } from "@/hooks/useSettings";
 
 const parseLocation = (input: string): LatLng | null => {
   const [lat, lng] = input.split(",").map(s => parseFloat(s));
@@ -20,41 +22,23 @@ const parseLocation = (input: string): LatLng | null => {
   }
 }
 
-interface Props {
-  selectedUnits: Units,
-  setSelectedUnits: (units: Units) => void,
-  selectedPeriod: Period,
-  setSelectedPeriod: (period: Period) => void,
-  showRFStations: boolean,
-  setShowRFStations: (show: boolean) => void,
-  showOtherStations: boolean,
-  setShowOtherStations: (show: boolean) => void,
-  showIsohyets: boolean,
-  setShowIsohyets: (show: boolean) => void,
-  showGrids: boolean,
-  setShowGrids: (show: boolean) => void,
-  mapMaximized: boolean,
-  onToggleMaximize: () => void,
-};
-
-const MapOverlay: React.FC<Props> = (
-  { 
+const MapOverlay = () => {
+  const { maximized, setMaximized } = useContext(LayoutContext);
+  const toggleMapMaximized = () => setMaximized(oldMax => !oldMax);
+  const {
     selectedUnits,
     setSelectedUnits,
-    selectedPeriod,
-    setSelectedPeriod,
-    showRFStations,
-    setShowRFStations,
-    showOtherStations,
-    setShowOtherStations,
     showIsohyets,
     setShowIsohyets,
     showGrids,
     setShowGrids,
-    mapMaximized,
-    onToggleMaximize,
-  }
-) => {
+    showRFStations,
+    setShowRFStations,
+    showOtherStations,
+    setShowOtherStations,
+    selectedPeriod,
+    setSelectedPeriod,
+  } = useSettings();
   const map: Map = useMap();
 
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -74,7 +58,7 @@ const MapOverlay: React.FC<Props> = (
   // I put this here instead of in the onPress function because if I do that the resize might not happen properly.
   useEffect(() => {
     map.invalidateSize()
-  }, [mapMaximized]);
+  }, [map, maximized]);
 
   // For menu and options/fields behavior (temp)
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -94,14 +78,14 @@ const MapOverlay: React.FC<Props> = (
       <div className={LEAFLET_POSITIONS.topright}>
         <div className="leaflet-control rounded-full shadow-md">
           <Button
-            onPress={onToggleMaximize}
+            onPress={toggleMapMaximized}
             radius="full"
             size="lg"
             isIconOnly
             title="Maximize map (hide header and footer)"
             className="bg-white shadow-md"
           >
-            {mapMaximized ? <FullscreenExit /> : <Fullscreen />}
+            {maximized ? <FullscreenExit /> : <Fullscreen />}
           </Button>
         </div>
       </div>

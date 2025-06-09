@@ -7,9 +7,9 @@ import { Units } from "@/lib";
 const emptyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 export interface Props {
-  stationName?: string,
+  stationName: string,
   xdata: string[],
-  ydata?: number[],
+  ydata: number[],
   units: Units,
 }
 

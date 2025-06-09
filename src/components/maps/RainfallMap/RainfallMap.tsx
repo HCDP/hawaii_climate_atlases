@@ -1,14 +1,25 @@
-import React, { useContext, useEffect, useState } from "react";
-import Map, { MapProps, StationIcon } from "../Map";
-import { Station, Units, Period, Isohyets, Grids } from "@/lib";
+import React, { useEffect, useState } from "react";
+import Map, { StationIcon } from "../Map";
+import {
+  Station,
+  Grids,
+  Isohyets,
+  Units,
+  Period,
+  getStations,
+  getOtherStations,
+  getIsohyets,
+  getGrids
+} from "@/lib";
 import SideBar from "@/components/SideBar";
 import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, useMapEvents, Marker } from "react-leaflet";
 import L, { LatLng, LatLngExpression, Map as LeafletMap, Util } from "leaflet";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import formatNum = Util.formatNum;
-import { LayoutContext } from "@/components/LayoutContext";
 import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
+import { useSettings } from "@/hooks/useSettings";
+import { defaultSettings } from "@/components/SettingsContext";
 
 const IsohyetLabels = ({ features }: { features: Feature[] }) => {
   const map = useMap();
@@ -193,48 +204,61 @@ const StationIcons = (
   );
 }
 
-interface Props extends MapProps {
-  rfStations: Station[] | null,
-  otherStations: Station[] | null,
-  isohyets: Isohyets | null,
-  grids: Grids | null,
-}
+const startPosition: LatLngExpression = [21.344875, -157.908248];
+const zoomSnap = 0.75,
+  zoomDelta = 0.75,
+  minZoom = 6;
 
-const RainfallMap: React.FC<Props> = (
-  {
-    rfStations,
-    otherStations,
-    isohyets,
-    grids,
-  }: Props
-) => {
-  const [selectedStation, setSelectedStation] = useState<Station>();
-  const [selectedUnits, setSelectedUnits] = useState<Units>(Units.IN);
-  const [selectedPeriod, setSelectedPeriod] = useState<Period>(Period.Annual);
-  const [showIsohyets, setShowIsohyets] = useState<boolean>(false);
-  const [showGrids, setShowGrids] = useState<boolean>(true);
-  const [showRFStations, setShowRFStations] = useState<boolean>(true);
-  const [showOtherStations, setShowOtherStations] = useState<boolean>(false);
+const RainfallMap = () => {
+  const [rfStations, setRfStations] = useState<Station[] | null>(null);
+  const [otherStations, setOtherStations] = useState<Station[] | null>(null);
+  const [isohyets, setIsohyets] = useState<Isohyets | null>(null);
+  const [grids, setGrids] = useState<Grids | null>(null);
 
-  const { maximized, setMaximized } = useContext(LayoutContext);
-  const toggleMapMaximized = () => setMaximized(oldMax => !oldMax);
+  useEffect(() => {
+    const fetchData = async () => {
+      const [rfStations, otherStations, isohyets, grids] = await Promise.all([
+        getStations(),
+        getOtherStations(),
+        getIsohyets(),
+        getGrids(),
+      ]);
+      setRfStations(rfStations);
+      setOtherStations(otherStations);
+      setIsohyets(isohyets);
+      setGrids(grids);
+    };
 
-  const startPosition: LatLngExpression = [21.344875, -157.908248];
-  const startZoom = 7.5,
-    zoomSnap = 0.75,
-    zoomDelta = 0.75,
-    minZoom = 6;
-  const [zoom, setZoom] = useState<number>(startZoom);
+    fetchData();
+  }, []);
+
+  const {
+    showRFStations,
+    showOtherStations,
+    setSelectedStation,
+    showGrids,
+    showIsohyets,
+    selectedUnits,
+    selectedPeriod,
+    zoom,
+    setZoom
+  } = useSettings();
+
+  if (!rfStations && !otherStations && !isohyets && !grids) {
+    return (
+      <p className="text-center">Loading map...</p>
+    );
+  }
 
   return (
     <div className="flex w-full h-full max-h-full">
       <div className="min-w-[24rem]">
-        <SideBar selectedStation={selectedStation} selectedUnits={selectedUnits} />
+        <SideBar />
       </div>
       <div className="w-full h-full">
         <Map
           startPosition={startPosition}
-          startZoom={startZoom}
+          startZoom={defaultSettings.zoom}
           zoomSnap={zoomSnap}
           zoomDelta={zoomDelta}
           minZoom={minZoom}
@@ -292,22 +316,7 @@ const RainfallMap: React.FC<Props> = (
           />}
 
           <ZoomendHandler onZoomEnd={setZoom} />
-          <MapOverlay
-            selectedUnits={selectedUnits}
-            setSelectedUnits={setSelectedUnits}
-            selectedPeriod={selectedPeriod}
-            setSelectedPeriod={setSelectedPeriod}
-            showRFStations={showRFStations}
-            setShowRFStations={setShowRFStations}
-            showOtherStations={showOtherStations}
-            setShowOtherStations={setShowOtherStations}
-            showIsohyets={showIsohyets}
-            setShowIsohyets={setShowIsohyets}
-            showGrids={showGrids}
-            setShowGrids={setShowGrids}
-            mapMaximized={maximized}
-            onToggleMaximize={toggleMapMaximized}
-          />
+          <MapOverlay />
         </Map>
       </div>
     </div>
