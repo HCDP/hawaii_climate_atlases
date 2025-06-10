@@ -16,17 +16,7 @@ import { Feature, FeatureCollection } from "geojson";
 import { useStations } from "@/hooks/useStations";
 import { useIsohyets } from "@/hooks/useIsohyets";
 import { useGrids } from "@/hooks/useGrids";
-
-const defaultSettings = {
-  selectedStation: null,
-  selectedUnits: Units.IN,
-  selectedPeriod: Period.Annual,
-  showIsohyets: false,
-  showGrids: true,
-  showRFStations: true,
-  showOtherStations: false,
-  zoom: 7.5,
-}
+import { defaultSettings } from "@/constants";
 
 const IsohyetLabels = ({ features }: { features: Feature[] }) => {
   const map = useMap();
