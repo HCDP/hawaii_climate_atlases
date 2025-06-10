@@ -13,11 +13,20 @@ import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import formatNum = Util.formatNum;
 import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
-import { useSettings } from "@/hooks/useSettings";
-import { defaultSettings } from "@/components/SettingsContext";
 import { useStations } from "@/hooks/useStations";
 import { useIsohyets } from "@/hooks/useIsohyets";
 import { useGrids } from "@/hooks/useGrids";
+
+const defaultSettings = {
+  selectedStation: null,
+  selectedUnits: Units.IN,
+  selectedPeriod: Period.Annual,
+  showIsohyets: false,
+  showGrids: true,
+  showRFStations: true,
+  showOtherStations: false,
+  zoom: 7.5,
+}
 
 const IsohyetLabels = ({ features }: { features: Feature[] }) => {
   const map = useMap();
@@ -199,17 +208,14 @@ const zoomSnap = 0.75,
   minZoom = 6;
 
 const RainfallMap = () => {
-  const {
-  showRFStations,
-  showOtherStations,
-  setSelectedStation,
-  showGrids,
-  showIsohyets,
-  selectedUnits,
-  selectedPeriod,
-  zoom,
-  setZoom
-} = useSettings();
+  const [selectedStation, setSelectedStation] = useState<Station | null>(defaultSettings.selectedStation);
+  const [selectedUnits, setSelectedUnits] = useState<Units>(defaultSettings.selectedUnits);
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>(defaultSettings.selectedPeriod);
+  const [showIsohyets, setShowIsohyets] = useState<boolean>(defaultSettings.showIsohyets);
+  const [showGrids, setShowGrids] = useState<boolean>(defaultSettings.showGrids);
+  const [showRFStations, setShowRFStations] = useState<boolean>(defaultSettings.showRFStations);
+  const [showOtherStations, setShowOtherStations] = useState<boolean>(defaultSettings.showOtherStations);
+  const [zoom, setZoom] = useState<number>(defaultSettings.zoom);
 
   const { stations: rfStations } = useStations();
   const { stations: otherStations } = useStations("other");
@@ -225,7 +231,10 @@ const RainfallMap = () => {
   return (
     <div className="flex w-full h-full max-h-full">
       <div className="min-w-[24rem]">
-        <SideBar />
+        <SideBar
+          selectedStation={selectedStation}
+          selectedUnits={selectedUnits}
+        />
       </div>
       <div className="w-full h-full">
         <Map
@@ -286,7 +295,20 @@ const RainfallMap = () => {
           />}
 
           <ZoomendHandler onZoomEnd={setZoom} />
-          <MapOverlay />
+          <MapOverlay
+            selectedUnits={selectedUnits}
+            setSelectedUnits={setSelectedUnits}
+            selectedPeriod={selectedPeriod}
+            setSelectedPeriod={setSelectedPeriod}
+            showRFStations={showRFStations}
+            setShowRFStations={setShowRFStations}
+            showOtherStations={showOtherStations}
+            setShowOtherStations={setShowOtherStations}
+            showIsohyets={showIsohyets}
+            setShowIsohyets={setShowIsohyets}
+            showGrids={showGrids}
+            setShowGrids={setShowGrids}
+          />
         </Map>
       </div>
     </div>

@@ -2,17 +2,15 @@ import React from 'react';
 import Plot from '@/components/Plot';
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, getKeyValue } from "@heroui/table";
-import { useSettings } from "@/hooks/useSettings";
+import { Station, Units } from "@/lib";
 
 const fullMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const SideBar: React.FC = () => {
-  const {
-    selectedStation,
-    selectedUnits
-  } = useSettings();
-
+const SideBar: React.FC<{
+  selectedStation?: Station | null,
+  selectedUnits: Units,
+}> = ({ selectedStation, selectedUnits }) => {
   const stationData: number[] = selectedStation ? months.map(month =>
     Math.max(Number(selectedStation[`${month}Avg${selectedUnits}` as keyof typeof selectedStation]), 0)
   ) : [];

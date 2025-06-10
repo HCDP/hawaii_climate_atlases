@@ -2,7 +2,6 @@
 
 import RainfallMap from "@/components/maps/RainfallMap";
 import useRequiredConditionsOfUse from "@/hooks/useRequiredConditionsOfUse";
-import { SettingsProvider } from "@/components/SettingsContext";
 //import dynamic from "next/dynamic";
 
 
@@ -20,9 +19,7 @@ const ClientInteractiveMap = () => {
 
   return (
     // UH Manoa coordinates: 21.297, -157.817
-    <SettingsProvider>
-      <RainfallMap />
-    </SettingsProvider>
+    <RainfallMap />
   );
 }
 

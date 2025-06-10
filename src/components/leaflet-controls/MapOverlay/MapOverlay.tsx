@@ -11,7 +11,6 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/d
 import Fullscreen from "@mui/icons-material/Fullscreen";
 import FullscreenExit from "@mui/icons-material/FullscreenExit";
 import { LayoutContext } from "@/components/LayoutContext";
-import { useSettings } from "@/hooks/useSettings";
 
 const parseLocation = (input: string): LatLng | null => {
   const [lat, lng] = input.split(",").map(s => parseFloat(s));
@@ -22,23 +21,39 @@ const parseLocation = (input: string): LatLng | null => {
   }
 }
 
-const MapOverlay = () => {
-  const { maximized, setMaximized } = useContext(LayoutContext);
-  const toggleMapMaximized = () => setMaximized(oldMax => !oldMax);
-  const {
+interface Props {
+  selectedUnits: Units,
+  setSelectedUnits: (units: Units) => void,
+  selectedPeriod: Period,
+  setSelectedPeriod: (period: Period) => void,
+  showRFStations: boolean,
+  setShowRFStations: (show: boolean) => void,
+  showOtherStations: boolean,
+  setShowOtherStations: (show: boolean) => void,
+  showIsohyets: boolean,
+  setShowIsohyets: (show: boolean) => void,
+  showGrids: boolean,
+  setShowGrids: (show: boolean) => void,
+};
+
+const MapOverlay: React.FC<Props> = (
+  {
     selectedUnits,
     setSelectedUnits,
-    showIsohyets,
-    setShowIsohyets,
-    showGrids,
-    setShowGrids,
+    selectedPeriod,
+    setSelectedPeriod,
     showRFStations,
     setShowRFStations,
     showOtherStations,
     setShowOtherStations,
-    selectedPeriod,
-    setSelectedPeriod,
-  } = useSettings();
+    showIsohyets,
+    setShowIsohyets,
+    showGrids,
+    setShowGrids,
+  }
+) => {
+  const { maximized, setMaximized } = useContext(LayoutContext);
+  const toggleMapMaximized = () => setMaximized(oldMax => !oldMax);
   const map: Map = useMap();
 
   const overlayRef = useRef<HTMLDivElement>(null);
