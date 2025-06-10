@@ -215,6 +215,39 @@ const RainfallMap = () => {
   const { stations: otherStations } = useStations("other");
   const { featureCollections } = useIsohyets(selectedUnits);
   const { asciiGrid } = useGrids(selectedUnits, Period[selectedPeriod]);
+  const ranges_IN: [number, number][] = [
+    [0.8, 32.2],
+    [0.4, 26.4],
+    [0.6, 51.9],
+    [0.3, 38.5],
+    [0.1, 30.7],
+    [0, 32.8],
+    [0, 38.7],
+    [0, 34.7],
+    [0, 30.1],
+    [0.3, 38.3],
+    [0.7, 38.6],
+    [0.6, 36.4],
+    [8, 404.4]
+  ];
+  const ranges_MM: [number, number][] = [
+    [0.8, 32.2],
+    [0.4, 26.4],
+    [0.6, 51.9],
+    [0.3, 38.5],
+    [0.1, 30.7],
+    [0, 32.8],
+    [0, 38.7],
+    [0, 34.7],
+    [0, 30.1],
+    [0.3, 38.3],
+    [0.7, 38.6],
+    [0.6, 36.4],
+    [8, 404.4]
+  ]
+
+  console.log("Current month index: ", selectedPeriod);
+  console.log("Current data range: ", ranges_IN[selectedPeriod]);
 
   const colorLayer = useMemo(() => {
     return asciiGrid ? (
@@ -224,7 +257,7 @@ const RainfallMap = () => {
           cacheEmpty: true,
           colorScale: {
             colors: [],
-            range: [8, 404.4],
+            range: selectedUnits == 'IN' ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod],
           },
           asciiGrid,
         }}

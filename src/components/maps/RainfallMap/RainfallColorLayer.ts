@@ -90,8 +90,7 @@ R.GridLayer.RasterLayer = L.GridLayer.extend({
     // Standard rainbow chart for now
     const colorScheme = ['red', 'yellow', 'green', 'blue', 'purple', 'indigo'];
 
-    //temp hard-coded scale (from annual IN.)
-    const range = [8, 404.4];
+    const range = this.options.colorScale.range;
 
     /* removed correctLightness() at the end of this line in order to make the colors 
       appear properly.
