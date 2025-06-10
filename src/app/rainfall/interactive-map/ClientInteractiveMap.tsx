@@ -1,17 +1,17 @@
 "use client"
 
-import RainfallMap from "@/components/maps/RainfallMap";
+// import RainfallMap from "@/components/maps/RainfallMap";
 import useRequiredConditionsOfUse from "@/hooks/useRequiredConditionsOfUse";
-//import dynamic from "next/dynamic";
+import dynamic from "next/dynamic";
 
 
-/*const RainfallMap = dynamic(
+const RainfallMap = dynamic(
   () => import("@/components/maps/RainfallMap"),
   {
     ssr: false,
     loading: () => <p className="text-center">Loading map...</p>
   }
-);*/
+);
 
 
 const ClientInteractiveMap = () => {

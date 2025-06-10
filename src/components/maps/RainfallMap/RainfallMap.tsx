@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Map, { StationIcon } from "../Map";
 import {
   Station,
@@ -212,9 +212,54 @@ const RainfallMap = () => {
   const { featureCollections } = useIsohyets(selectedUnits);
   const { asciiGrid } = useGrids(selectedUnits, Period[selectedPeriod]);
 
+  const colorLayer = useMemo(() => {
+    return asciiGrid ? (
+      <RainfallColorLayer
+        key={`color-layer-${selectedUnits}-${selectedPeriod}`}
+        options={{
+          cacheEmpty: true,
+          colorScale: {
+            colors: [],
+            range: [8, 404.4],
+          },
+          asciiGrid,
+        }}
+      />
+    ) : null;
+  }, [asciiGrid, selectedUnits, selectedPeriod]);
+  const rfStationIcons = useMemo(() => {
+    return rfStations ? (
+      <StationIcons
+        stations={rfStations}
+        setSelectedStation={setSelectedStation}
+        zoom={zoom}
+        zoomDelta={zoomDelta}
+      />
+    ) : null;
+  }, [rfStations, zoom]);
+  const otherStationIcons = useMemo(() => {
+    return otherStations ? (
+      <StationIcons
+        stations={otherStations}
+        setSelectedStation={setSelectedStation}
+        zoom={zoom}
+        zoomDelta={zoomDelta}
+      />
+    ) : null;
+  }, [otherStations, zoom]);
+  const isohyetsLayer = useMemo(() => {
+    {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */}
+    return featureCollections ? (
+      <IsohyetsLayer
+        key={`isohyets-layer-${selectedUnits}-${selectedPeriod}`}
+        geojson={featureCollections[selectedPeriod]}
+      />
+    ) : null;
+  }, [featureCollections, selectedPeriod, selectedUnits]);
+  console.log("Map renderinggg");
   if (!(rfStations && otherStations && featureCollections && asciiGrid)) {
     return (
-      <p className="text-center">Loading map...</p>
+      <p className="text-center">Loading data...</p>
     );
   }
 
@@ -240,44 +285,13 @@ const RainfallMap = () => {
             url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
           />
 
-          {showGrids && asciiGrid && (
-            <RainfallColorLayer
-              options={{
-                cacheEmpty: true,
-                colorScale: {
-                  colors: [],
-                  range: [8, 404.4],
-                },
-                asciiGrid,
-              }}
-            />
-          )}
+          {showGrids && colorLayer}
 
-          {showRFStations && rfStations && (
-            <StationIcons
-              stations={rfStations}
-              setSelectedStation={setSelectedStation}
-              zoom={zoom}
-              zoomDelta={zoomDelta}
-            />
-          )}
+          {showRFStations && rfStationIcons}
 
-          {showOtherStations && otherStations && (
-            <StationIcons
-              stations={otherStations}
-              setSelectedStation={setSelectedStation}
-              zoom={zoom}
-              zoomDelta={zoomDelta}
-            />
-          )}
+          {showOtherStations && otherStationIcons}
 
-          {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */}
-          {showIsohyets && featureCollections && (
-            <IsohyetsLayer
-              key={`${selectedUnits}${selectedPeriod}`}
-              geojson={featureCollections[selectedPeriod]}
-            />
-          )}
+          {showIsohyets && isohyetsLayer}
 
           {asciiGrid && <PopupOnClick
             grid={asciiGrid}
