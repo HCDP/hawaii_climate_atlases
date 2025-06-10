@@ -18,10 +18,13 @@ import { useIsohyets } from "@/hooks/useIsohyets";
 import { useGrids } from "@/hooks/useGrids";
 import { defaultSettings } from "@/constants";
 
-const IsohyetLabels = ({ features }: { features: Feature[] }) => {
-  const map = useMap();
-  const zoom = map.getZoom();
-
+const IsohyetLabels = ({
+  features,
+  zoom
+}: {
+  features: Feature[],
+  zoom: number
+}) => {
   // to prevent cluttered view, only show at certain zoom levels
   if (zoom < 10) return null;
 
@@ -68,8 +71,10 @@ const IsohyetLabels = ({ features }: { features: Feature[] }) => {
 const IsohyetsLayer = (
   {
     geojson,
+    zoom,
   }: {
     geojson: FeatureCollection,
+    zoom: number,
   }) => {
   //console.log(JSON.stringify(geojson, null, 2));
   return (
@@ -82,7 +87,7 @@ const IsohyetsLayer = (
           weight: 0.7,
         }}
       />
-      <IsohyetLabels features={geojson.features} />
+      <IsohyetLabels features={geojson.features} zoom={zoom} />
     </>
   );
 }
@@ -158,7 +163,7 @@ const ZoomendHandler = ({ onZoomEnd }: {
 
 const StationIcons = (
   {
-    stations, setSelectedStation, zoomDelta
+    stations, setSelectedStation, zoom, zoomDelta
   }: {
     stations: Station[],
     setSelectedStation: (station: Station) => void,
@@ -166,7 +171,6 @@ const StationIcons = (
     zoomDelta: number,
   }) => {
   const map = useMap();
-  const zoom = map.getZoom();
   // Credit: https://github.com/ikewai/precipitation_application/blob/prod/src/app/components/map/map.component.ts#L656
   const pivotRadius = 360, pivotZoom = 12, borderPivotZoom = 10.5;
   const scale = map.getZoomScale(12, zoom);
@@ -253,9 +257,10 @@ const RainfallMap = () => {
       <IsohyetsLayer
         key={`isohyets-layer-${selectedUnits}-${selectedPeriod}`}
         geojson={featureCollections[selectedPeriod]}
+        zoom={zoom}
       />
     ) : null;
-  }, [featureCollections, selectedPeriod, selectedUnits]);
+  }, [featureCollections, selectedPeriod, selectedUnits, zoom]);
   console.log("Map renderinggg");
   if (!(rfStations && otherStations && featureCollections && asciiGrid)) {
     return (
