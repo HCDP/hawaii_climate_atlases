@@ -157,7 +157,23 @@ const ZoomendHandler = ({ onZoomEnd }: {
   return null;
 }
 
-function createStationMarker(station: Station): L.Marker {
+const startPosition: LatLngExpression = [21.344875, -157.908248];
+const zoomSnap = 0.75,
+  zoomDelta = 0.75,
+  minZoom = 6;
+
+const pivotZoom = 12, hideBorderZoom = 9;
+
+function createStationMarker(station: Station, zoom: number): L.Marker {
+  const baseSize = 12;
+  let size: number;
+  if (zoom >= pivotZoom) {
+    size = baseSize;
+  } else {
+    size = baseSize - (3 * (pivotZoom - zoom) * 0.75);
+  }
+  const showBorder = zoom > hideBorderZoom;
+  const scale = size / 12;
   const stationIconHtml: {
     [key: string]: string
   } = {
@@ -166,7 +182,7 @@ function createStationMarker(station: Station): L.Marker {
         fill="rgb(90, 180, 0)"
         fill-opacity="0.75"
         stroke="rgb(0, 0, 0)"
-        stroke-opacity="1"
+        stroke-opacity="${showBorder ? "1" : 0}"
         stroke-width="3"
         stroke-linecap="square"
         stroke-linejoin={undefined}
@@ -182,7 +198,7 @@ function createStationMarker(station: Station): L.Marker {
         fill="rgb(180, 90, 0)"
         fill-opacity="0.755"
         stroke="rgb(0, 0, 0)"
-        stroke-opacity="1"
+        stroke-opacity="${showBorder ? "1" : 0}"
         stroke-width="1.5"
         stroke-linecap="square"
         stroke-linejoin={undefined}
@@ -199,7 +215,7 @@ function createStationMarker(station: Station): L.Marker {
         fill="rgb(180, 0, 115)"
         fill-opacity="0.75"
         stroke="rgb(0, 0, 0)"
-        stroke-opacity="1"
+        stroke-opacity="${showBorder ? "1" : 0}"
         stroke-width="1.5"
         stroke-linecap="square"
         stroke-linejoin={undefined}
@@ -212,7 +228,7 @@ function createStationMarker(station: Station): L.Marker {
     `,
   }
   const icon = L.divIcon({
-    html: `<svg width="12" height="12" viewBox="0 0 12 12">
+    html: `<svg width="12" height="12" viewBox="0 0 12 12" style="transform: scale(${scale}); transform-origin: center;">
         ${stationIconHtml[station.StationStatus]}
       </svg>`,
     className: "",
@@ -227,56 +243,65 @@ function createStationMarker(station: Station): L.Marker {
 const StationIcons = ({
   stations,
   setSelectedStation,
+  show,
 }: {
   stations: Station[],
   setSelectedStation: (station: Station) => void,
+  show: boolean,
 }) => {
+  const map = useMap();
+  const [zoom, setZoom] = useState<number>(map.getZoom());
+
   // Credit: https://medium.com/@silvajohnny777/optimizing-leaflet-performance-with-a-large-number-of-markers-0dea18c2ec99
   const allMarkersRef = useRef<L.Marker[]>(
     stations.map(station => {
-      const marker = createStationMarker(station);
-      marker.addEventListener("click", () => {
-        setSelectedStation(station);
-      })
-      return marker;
+      return createStationMarker(station, zoom)
+        .addEventListener("click", () => {
+          setSelectedStation(station);
+        })
     })
   );
   const markersGroupRef = useRef<L.LayerGroup>(L.layerGroup());
-  const map = useMap();
+
   const renderMarkers = useCallback(() => {
-    // const bounds = map.getBounds();
-    // markersGroupRef.current.eachLayer(layer => {
-    //   markersGroupRef.current.removeLayer(marker);
-    // });
-    // stations.forEach((station) => {
-    //   const stationLocation: LatLng = L.latLng(station.Lat_DD, station.Lon_DD);
-    //   if (bounds.contains(stationLocation)) {
-    //     const marker = createStationMarker(station);
-    //     marker.addEventListener("click", () => {
-    //       setSelectedStation(station);
-    //     });
-    //     markersGroupRef.current.addLayer(marker);
-    //   }
-    // });
+    const newZoom = map.getZoom();
+    // Either newZoom < pivotZoom, in which case we want to recalculate regardless, or newZoom > pivotZoom.
+    // In this case, either the old zoom was < pivotZoom, in which case we want to recalculate so that the icons
+    // become their base size, or the old zoom >= pivotZoom, in which case we don't need to recalculate.
+    if (newZoom !== zoom) {
+      if (newZoom < pivotZoom || zoom < pivotZoom) {
+        // recalculate
+        markersGroupRef.current.clearLayers();
+        allMarkersRef.current = stations.map(station => {
+          return createStationMarker(station, newZoom)
+            .addEventListener("click", () => {
+              setSelectedStation(station);
+            })
+        })
+      }
+    }
+    setZoom(newZoom);
 
     const bounds = map.getBounds();
-    const allMarkers = allMarkersRef.current;
-    const markersGroup = markersGroupRef.current;
-    allMarkers.forEach((marker) => {
+    allMarkersRef.current.forEach((marker) => {
       const markerLocation = marker.getLatLng();
       if (bounds.contains(markerLocation)) {
-        if (!markersGroup.hasLayer(marker)) {
-          markersGroup.addLayer(marker);
+        if (!markersGroupRef.current.hasLayer(marker)) {
+          markersGroupRef.current.addLayer(marker);
         }
       } else {
-        if (markersGroup.hasLayer(marker)) {
-          markersGroup.removeLayer(marker);
+        if (markersGroupRef.current.hasLayer(marker)) {
+          markersGroupRef.current.removeLayer(marker);
         }
       }
     });
-  }, [map]);
+  }, [map, setSelectedStation, stations, zoom]);
 
   useEffect(() => {
+    if (!show) {
+      markersGroupRef.current.clearLayers();
+      return;
+    }
     if (!map) return;
     if (!map.hasLayer(markersGroupRef.current)) {
       map.addLayer(markersGroupRef.current);
@@ -286,15 +311,10 @@ const StationIcons = ({
     return () => {
       map.off("moveend", renderMarkers);
     }
-  }, [map, renderMarkers, stations]);
+  }, [map, renderMarkers, stations, show]);
 
   return null;
 }
-
-const startPosition: LatLngExpression = [21.344875, -157.908248];
-const zoomSnap = 0.75,
-  zoomDelta = 0.75,
-  minZoom = 6;
 
 const RainfallMap = () => {
   const [selectedStation, setSelectedStation] = useState<Station | null>(defaultSettings.selectedStation);
@@ -360,23 +380,26 @@ const RainfallMap = () => {
         }}
       />
     ) : null;
+    // eslint-disable-next-line
   }, [asciiGrid]);
   const rfStationIcons = useMemo(() => {
     return rfStations ? (
       <StationIcons
         stations={rfStations}
         setSelectedStation={setSelectedStation}
+        show={showRFStations}
       />
     ) : null;
-  }, [rfStations]);
+  }, [rfStations, showRFStations]);
   const otherStationIcons = useMemo(() => {
     return otherStations ? (
       <StationIcons
         stations={otherStations}
         setSelectedStation={setSelectedStation}
+        show={showOtherStations}
       />
     ) : null;
-  }, [otherStations]);
+  }, [otherStations, showOtherStations]);
   const isohyetsLayer = useMemo(() => {
     {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */}
     return featureCollections ? (
@@ -418,9 +441,9 @@ const RainfallMap = () => {
 
           {showGrids && colorLayer}
 
-          {showRFStations && rfStationIcons}
+          {rfStationIcons}
 
-          {showOtherStations && otherStationIcons}
+          {otherStationIcons}
 
           {showIsohyets && isohyetsLayer}
 
