@@ -236,6 +236,7 @@ function createStationMarker(station: Station, zoom: number): L.Marker {
     iconAnchor: [6, 6],
   });
   return L.marker([station.Lat_DD, station.Lon_DD], {
+    bubblingMouseEvents: true,
     icon,
   });
 }
