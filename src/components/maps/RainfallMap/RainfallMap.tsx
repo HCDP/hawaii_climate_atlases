@@ -331,20 +331,21 @@ const RainfallMap = () => {
     [8, 404.4]
   ];
   const ranges_MM: [number, number][] = [
-    [0.8, 32.2],
-    [0.4, 26.4],
-    [0.6, 51.9],
-    [0.3, 38.5],
-    [0.1, 30.7],
-    [0, 32.8],
-    [0, 38.7],
-    [0, 34.7],
-    [0, 30.1],
-    [0.3, 38.3],
-    [0.7, 38.6],
-    [0.6, 36.4],
-    [8, 404.4]
-  ]
+    [21, 818],
+    [11, 669],
+    [16, 1323],
+    [7, 978],
+    [2, 777],
+    [0, 833],
+    [0, 984],
+    [1, 881],
+    [1, 764],
+    [8, 973],
+    [19, 980],
+    [14, 921],
+    [204, 10271]
+  ];
+
   const colorLayer = useMemo(() => {
     return asciiGrid ? (
       <RainfallColorLayer
@@ -353,13 +354,13 @@ const RainfallMap = () => {
           cacheEmpty: true,
           colorScale: {
             colors: [],
-            range: selectedUnits == 'IN' ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod],
+            range: selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod],
           },
           asciiGrid,
         }}
       />
     ) : null;
-  }, [asciiGrid, selectedUnits, selectedPeriod]);
+  }, [asciiGrid]);
   const rfStationIcons = useMemo(() => {
     return rfStations ? (
       <StationIcons
