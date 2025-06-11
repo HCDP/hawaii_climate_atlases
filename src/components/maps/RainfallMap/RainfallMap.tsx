@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import Map, { StationIcon } from "../Map";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Map from "../Map";
 import {
   Station,
   Units,
@@ -8,9 +8,8 @@ import {
 } from "@/lib";
 import SideBar from "@/components/SideBar";
 import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, useMapEvents, Marker } from "react-leaflet";
-import L, { LatLng, LatLngExpression, Map as LeafletMap, Util } from "leaflet";
+import L, { LatLng, LatLngExpression, Map as LeafletMap } from "leaflet";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
-import formatNum = Util.formatNum;
 import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
 import { defaultSettings } from "@/constants";
@@ -74,7 +73,6 @@ const IsohyetsLayer = (
     geojson: FeatureCollection,
     zoom: number,
   }) => {
-  //console.log(JSON.stringify(geojson, null, 2));
   return (
     <>
       <GeoJSON
@@ -159,39 +157,138 @@ const ZoomendHandler = ({ onZoomEnd }: {
   return null;
 }
 
-const StationIcons = (
-  {
-    stations, setSelectedStation, zoom, zoomDelta
-  }: {
-    stations: Station[],
-    setSelectedStation: (station: Station) => void,
-    zoom: number,
-    zoomDelta: number,
-  }) => {
-  const map = useMap();
-  // Credit: https://github.com/ikewai/precipitation_application/blob/prod/src/app/components/map/map.component.ts#L656
-  const pivotRadius = 360, pivotZoom = 12, borderPivotZoom = 10.5;
-  const scale = map.getZoomScale(12, zoom);
-  let radius: number;
-  if (zoom >= pivotZoom) {
-    radius = pivotRadius * scale;
-  } else {
-    radius = pivotRadius + (120 * (pivotZoom - zoom) / zoomDelta)
+function createStationMarker(station: Station): L.Marker {
+  const stationIconHtml: {
+    [key: string]: string
+  } = {
+    "Current": `
+      <path
+        fill="rgb(90, 180, 0)"
+        fill-opacity="0.75"
+        stroke="rgb(0, 0, 0)"
+        stroke-opacity="1"
+        stroke-width="3"
+        stroke-linecap="square"
+        stroke-linejoin={undefined}
+        stroke-miterlimit="4"
+        path="M 0,0 12,0 12,12 0,12 Z"
+        d="M 0 0 12 0 12 12 0 12Z"
+        fill-rule="evenodd"
+        stroke-dasharray="none"
+      />`,
+    "Discontinued": `
+      <circle
+        key={index}
+        fill="rgb(180, 90, 0)"
+        fill-opacity="0.755"
+        stroke="rgb(0, 0, 0)"
+        stroke-opacity="1"
+        stroke-width="1.5"
+        stroke-linecap="square"
+        stroke-linejoin={undefined}
+        stroke-miterlimit="4"
+        cx="6"
+        cy="6"
+        r="5.5"
+        fill-rule="evenodd"
+        stroke-dasharray="none"
+      />
+    `,
+    "Virtual": `
+      <path
+        fill="rgb(180, 0, 115)"
+        fill-opacity="0.75"
+        stroke="rgb(0, 0, 0)"
+        stroke-opacity="1"
+        stroke-width="1.5"
+        stroke-linecap="square"
+        stroke-linejoin={undefined}
+        stroke-miterlimit="4"
+        path="M 0,6 6,12 12,6 6,0 Z"
+        d="M 0 6 6 12 12 6 6 0Z"
+        fill-rule="evenodd"
+        stroke-dasharray="none"
+      />
+    `,
   }
-  return (
-    <>
-      {stations.map((station, index) => (
-        <StationIcon
-          station={station}
-          onClick={setSelectedStation}
-          center={new LatLng(formatNum(station.Lat_DD, false), formatNum(station.Lon_DD, false))}
-          radius={radius}
-          outline={zoom >= borderPivotZoom}
-          key={index}
-        />
-      ))}
-    </>
+  const icon = L.divIcon({
+    html: `<svg width="12" height="12" viewBox="0 0 12 12">
+        ${stationIconHtml[station.StationStatus]}
+      </svg>`,
+    className: "",
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
+  });
+  return L.marker([station.Lat_DD, station.Lon_DD], {
+    icon,
+  });
+}
+
+const StationIcons = ({
+  stations,
+  setSelectedStation,
+}: {
+  stations: Station[],
+  setSelectedStation: (station: Station) => void,
+}) => {
+  // Credit: https://medium.com/@silvajohnny777/optimizing-leaflet-performance-with-a-large-number-of-markers-0dea18c2ec99
+  const allMarkersRef = useRef<L.Marker[]>(
+    stations.map(station => {
+      const marker = createStationMarker(station);
+      marker.addEventListener("click", () => {
+        setSelectedStation(station);
+      })
+      return marker;
+    })
   );
+  const markersGroupRef = useRef<L.LayerGroup>(L.layerGroup());
+  const map = useMap();
+  const renderMarkers = useCallback(() => {
+    // const bounds = map.getBounds();
+    // markersGroupRef.current.eachLayer(layer => {
+    //   markersGroupRef.current.removeLayer(marker);
+    // });
+    // stations.forEach((station) => {
+    //   const stationLocation: LatLng = L.latLng(station.Lat_DD, station.Lon_DD);
+    //   if (bounds.contains(stationLocation)) {
+    //     const marker = createStationMarker(station);
+    //     marker.addEventListener("click", () => {
+    //       setSelectedStation(station);
+    //     });
+    //     markersGroupRef.current.addLayer(marker);
+    //   }
+    // });
+
+    const bounds = map.getBounds();
+    const allMarkers = allMarkersRef.current;
+    const markersGroup = markersGroupRef.current;
+    allMarkers.forEach((marker) => {
+      const markerLocation = marker.getLatLng();
+      if (bounds.contains(markerLocation)) {
+        if (!markersGroup.hasLayer(marker)) {
+          markersGroup.addLayer(marker);
+        }
+      } else {
+        if (markersGroup.hasLayer(marker)) {
+          markersGroup.removeLayer(marker);
+        }
+      }
+    });
+  }, [map]);
+
+  useEffect(() => {
+    if (!map) return;
+    if (!map.hasLayer(markersGroupRef.current)) {
+      map.addLayer(markersGroupRef.current);
+    }
+    renderMarkers();
+    map.on("moveend", renderMarkers);
+    return () => {
+      map.off("moveend", renderMarkers);
+    }
+  }, [map, renderMarkers, stations]);
+
+  return null;
 }
 
 const startPosition: LatLngExpression = [21.344875, -157.908248];
@@ -248,10 +345,6 @@ const RainfallMap = () => {
     [0.6, 36.4],
     [8, 404.4]
   ]
-
-  console.log("Current month index: ", selectedPeriod);
-  console.log("Current data range: ", ranges_IN[selectedPeriod]);
-
   const colorLayer = useMemo(() => {
     return asciiGrid ? (
       <RainfallColorLayer
@@ -272,21 +365,17 @@ const RainfallMap = () => {
       <StationIcons
         stations={rfStations}
         setSelectedStation={setSelectedStation}
-        zoom={zoom}
-        zoomDelta={zoomDelta}
       />
     ) : null;
-  }, [rfStations, zoom]);
+  }, [rfStations]);
   const otherStationIcons = useMemo(() => {
     return otherStations ? (
       <StationIcons
         stations={otherStations}
         setSelectedStation={setSelectedStation}
-        zoom={zoom}
-        zoomDelta={zoomDelta}
       />
     ) : null;
-  }, [otherStations, zoom]);
+  }, [otherStations]);
   const isohyetsLayer = useMemo(() => {
     {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */}
     return featureCollections ? (
@@ -297,7 +386,7 @@ const RainfallMap = () => {
       />
     ) : null;
   }, [featureCollections, selectedPeriod, selectedUnits, zoom]);
-  console.log("Map renderinggg");
+
   if (!allDataLoaded) {
     return (
       <p className="text-center">Loading data...</p>
