@@ -13,10 +13,8 @@ import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import formatNum = Util.formatNum;
 import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
-import { useStations } from "@/hooks/useStations";
-import { useIsohyets } from "@/hooks/useIsohyets";
-import { useGrids } from "@/hooks/useGrids";
 import { defaultSettings } from "@/constants";
+import useRainfallData from "@/hooks/useRainfallData";
 
 const IsohyetLabels = ({
   features,
@@ -211,10 +209,15 @@ const RainfallMap = () => {
   const [showOtherStations, setShowOtherStations] = useState<boolean>(defaultSettings.showOtherStations);
   const [zoom, setZoom] = useState<number>(defaultSettings.zoom);
 
-  const { stations: rfStations } = useStations();
-  const { stations: otherStations } = useStations("other");
-  const { featureCollections } = useIsohyets(selectedUnits);
-  const { asciiGrid } = useGrids(selectedUnits, Period[selectedPeriod]);
+  const {
+    rfStations,
+    otherStations,
+    featureCollections,
+    asciiGrid,
+    allDataLoaded,
+    isLoading,
+  } = useRainfallData(selectedUnits, selectedPeriod);
+
   const ranges_IN: [number, number][] = [
     [0.8, 32.2],
     [0.4, 26.4],
@@ -292,7 +295,7 @@ const RainfallMap = () => {
     ) : null;
   }, [featureCollections, selectedPeriod, selectedUnits, zoom]);
   console.log("Map renderinggg");
-  if (!(rfStations && otherStations && featureCollections && asciiGrid)) {
+  if (!allDataLoaded) {
     return (
       <p className="text-center">Loading data...</p>
     );
@@ -347,6 +350,7 @@ const RainfallMap = () => {
             setShowIsohyets={setShowIsohyets}
             showGrids={showGrids}
             setShowGrids={setShowGrids}
+            isLoading={isLoading}
           />
         </Map>
       </div>

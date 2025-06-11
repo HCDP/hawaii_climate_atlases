@@ -17,6 +17,7 @@
     "@heroui/dropdown": "^2.3.16",
     "@heroui/input": "^2.4.16",
     "@heroui/modal": "^2.2.16",
+    "@heroui/spinner": "^2.2.18",
     "@heroui/system": "^2.4.12",
     "@heroui/table": "^2.2.15",
     "@heroui/theme": "^2.4.12",
