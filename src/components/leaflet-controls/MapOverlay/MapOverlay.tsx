@@ -94,7 +94,7 @@ const MapOverlay: React.FC<Props> = (
   }, [map, maximized]);
 
   // For menu and options/fields behavior (temp)
-  const [showMenu, setShowMenu] = useState<boolean>(false);
+  const [showMenu, setShowMenu] = useState<boolean>(true);
   //const [rainfall, setRainfall] = useState<boolean>(false);
   const [uncertainty, setUncertainty] = useState<boolean>(false);
 

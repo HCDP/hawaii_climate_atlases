@@ -134,7 +134,7 @@ const SideBar: React.FC<{
                 {/* For stations icons */}
                 <div>
                   <h1 className="font-bold">RF Atlas Stations</h1>
-                  <div className="flex flex-col pl-2">
+                  <div className="flex flex-col p-2">
                     <div className="flex flex-row gap-2 items-center">
                       <svg width="16" height="16" viewBox="0 0 16 16">
                         <StationIcon stationStatus="Current" showBorder={true} transform="translate(2, 2)" />
@@ -157,6 +157,20 @@ const SideBar: React.FC<{
                   <h1 className="font-bold">
                     Other Stations
                   </h1>
+                  <div className="flex flex-col p-2">
+                    <div className="flex flex-row gap-2 items-center">
+                      <svg width="16" height="16" viewBox="0 0 16 16">
+                        <StationIcon stationStatus="Current" other showBorder={true} transform="translate(2, 2)" />
+                      </svg>
+                      <p>Current</p>
+                    </div>
+                    <div className="flex flex-row gap-2 items-center">
+                      <svg width="16" height="16" viewBox="0 0 16 16">
+                        <StationIcon stationStatus="Discontinued" other showBorder={true} transform="translate(2, 2)" />
+                      </svg>
+                      <p>Discontinued</p>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <h1 className="font-bold mb-[5px]">Rainfall Grid</h1>
