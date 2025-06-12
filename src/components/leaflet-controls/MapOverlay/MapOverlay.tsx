@@ -74,13 +74,6 @@ const MapOverlay: React.FC<Props> = (
   const toggleMapMaximized = () => setMaximized(oldMax => !oldMax);
   const map: Map = useMap();
 
-  const overlayRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if(overlayRef.current) {
-      L.DomEvent.disableClickPropagation(overlayRef.current);
-    }
-  });
-
   const handleLocationChange = (input: string) => {
       const parsedLatLng = parseLocation(input);
       if (parsedLatLng !== null) {
@@ -102,7 +95,11 @@ const MapOverlay: React.FC<Props> = (
   const periodNames: string[] = Object.keys(Period).filter(period => isNaN(parseInt(period)));
 
   return (
-    <div ref={overlayRef}>
+    <div ref={overlay => {
+      if (overlay) {
+        L.DomEvent.disableClickPropagation(overlay);
+      }
+    }}>
       <div className={LEAFLET_POSITIONS.topleft}>
         <div className="leaflet-control flex">
           <LocationField onLocationChange={handleLocationChange}/>
