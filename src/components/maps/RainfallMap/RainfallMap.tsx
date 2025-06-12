@@ -435,14 +435,12 @@ const RainfallMap = () => {
 
   return (
     <div className="flex w-full h-full max-h-full">
-      <div className="min-w-[24rem]">
-        <SideBar
-          selectedStation={selectedStation}
-          selectedUnits={selectedUnits}
-          selectedPeriod={selectedPeriod}
-          range={selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod]}
-        />
-      </div>
+      <SideBar
+        selectedStation={selectedStation}
+        selectedUnits={selectedUnits}
+        selectedPeriod={selectedPeriod}
+        range={selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod]}
+      />
       <div className="w-full h-full">
         <Map
           startPosition={startPosition}
