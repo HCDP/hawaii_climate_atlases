@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Map from "../Map";
+import Map, { StationIcon } from "../Map";
 import {
   Station,
   Units,
@@ -14,6 +14,7 @@ import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
 import { defaultSettings } from "@/constants";
 import useRainfallData from "@/hooks/useRainfallData";
+import { renderToStaticMarkup } from "react-dom/server";
 
 const IsohyetLabels = ({
   features,
@@ -170,70 +171,19 @@ function createStationMarker(station: Station, zoom: number): L.Marker {
   if (zoom >= pivotZoom) {
     size = baseSize;
   } else {
-    size = baseSize - (3 * (pivotZoom - zoom) * 0.75);
+    size = baseSize - (3 * (pivotZoom - zoom) * zoomDelta);
   }
   const showBorder = zoom > hideBorderZoom;
-  const scale = size / 12;
-  const stationIconHtml: {
-    [key: string]: string
-  } = {
-    "Current": `
-      <path
-        fill="rgb(90, 180, 0)"
-        fill-opacity="0.75"
-        stroke="rgb(0, 0, 0)"
-        stroke-opacity="${showBorder ? "1" : 0}"
-        stroke-width="3"
-        stroke-linecap="square"
-        stroke-linejoin={undefined}
-        stroke-miterlimit="4"
-        path="M 0,0 12,0 12,12 0,12 Z"
-        d="M 0 0 12 0 12 12 0 12Z"
-        fill-rule="evenodd"
-        stroke-dasharray="none"
-      />`,
-    "Discontinued": `
-      <circle
-        key={index}
-        fill="rgb(180, 90, 0)"
-        fill-opacity="0.755"
-        stroke="rgb(0, 0, 0)"
-        stroke-opacity="${showBorder ? "1" : 0}"
-        stroke-width="1.5"
-        stroke-linecap="square"
-        stroke-linejoin={undefined}
-        stroke-miterlimit="4"
-        cx="6"
-        cy="6"
-        r="5.5"
-        fill-rule="evenodd"
-        stroke-dasharray="none"
-      />
-    `,
-    "Virtual": `
-      <path
-        fill="rgb(180, 0, 115)"
-        fill-opacity="0.75"
-        stroke="rgb(0, 0, 0)"
-        stroke-opacity="${showBorder ? "1" : 0}"
-        stroke-width="1.5"
-        stroke-linecap="square"
-        stroke-linejoin={undefined}
-        stroke-miterlimit="4"
-        path="M 0,6 6,12 12,6 6,0 Z"
-        d="M 0 6 6 12 12 6 6 0Z"
-        fill-rule="evenodd"
-        stroke-dasharray="none"
-      />
-    `,
-  }
+  const scale = size / baseSize;
+  const currentIcon = <StationIcon stationStatus={station.StationStatus} showBorder={showBorder} transform="translate(2, 2)" />
+  const stationIconHtml = renderToStaticMarkup(currentIcon);
   const icon = L.divIcon({
-    html: `<svg width="12" height="12" viewBox="0 0 12 12" style="transform: scale(${scale}); transform-origin: center;">
-        ${stationIconHtml[station.StationStatus]}
+    html: `<svg width="16" height="16" viewBox="0 0 16 16" style="transform: scale(${scale}); transform-origin: center;">
+        ${stationIconHtml}
       </svg>`,
     className: "",
-    iconSize: [12, 12],
-    iconAnchor: [6, 6],
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
   });
   return L.marker([station.Lat_DD, station.Lon_DD], {
     bubblingMouseEvents: true,

@@ -3,6 +3,7 @@ import Plot from '@/components/Plot';
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, getKeyValue } from "@heroui/table";
 import { Station, Units, Period } from "@/lib";
+import { StationIcon } from "@/components/maps/Map";
 
 const fullMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -12,12 +13,12 @@ const SideBar: React.FC<{
   selectedUnits: Units,
   selectedPeriod: Period,
   range: [number, number],
-}> = ({ selectedStation, selectedUnits, selectedPeriod, range}) => {
+}> = ({ selectedStation, selectedUnits, selectedPeriod, range }) => {
   const stationData: number[] = selectedStation ? months.map(month =>
     Math.max(Number(selectedStation[`${month}Avg${selectedUnits}` as keyof typeof selectedStation]), 0)
   ) : [];
 
-  const rainfallColumns=[
+  const rainfallColumns = [
     { key: "month", label: "Month" },
     { key: "data", label: `Rainfall (${selectedUnits.toLocaleLowerCase()})` },
   ];
@@ -25,7 +26,7 @@ const SideBar: React.FC<{
   const rainfallRows = fullMonths.map((month, index) => {
     return {
       key: index,
-      month:  month,
+      month: month,
       data: Math.round(stationData[index] * 100) / 100,
     };
   })
@@ -40,7 +41,11 @@ const SideBar: React.FC<{
     { key: "name", field: "Name", value: `${selectedStation["Name"]}` },
     { key: "observer", field: "Observer", value: `${selectedStation["Observer"]}` },
     { key: "location", field: "Location", value: `${selectedStation["Lat_DD"]}, ${selectedStation["Lon_DD"]}` },
-    { key: "elevation", field: "Elevation", value: `${selectedStation["ElevM"]} meters / ${selectedStation["ElevFT"]} feet` },
+    {
+      key: "elevation",
+      field: "Elevation",
+      value: `${selectedStation["ElevM"]} meters / ${selectedStation["ElevFT"]} feet`
+    },
     { key: "period", field: "Record Period", value: `${selectedStation["MinYear"]} - ${selectedStation["MaxYear"]}` },
     { key: "sources", field: "Data Sources", value: `${selectedStation["DataSources"]}` },
     { key: "status", field: "Station Status", value: `${selectedStation["StationStatus"]}` },
@@ -77,7 +82,8 @@ const SideBar: React.FC<{
                 aria-label="Rainfall data table"
               >
                 <TableHeader columns={rainfallColumns}>
-                  {(column) => <TableColumn key={column.key} align={column.key === 'data' ? 'end' : 'start'}>{column.label}</TableColumn>}
+                  {(column) => <TableColumn key={column.key}
+                                            align={column.key === 'data' ? 'end' : 'start'}>{column.label}</TableColumn>}
                 </TableHeader>
                 <TableBody items={rainfallRows}>
                   {item => (
@@ -104,7 +110,8 @@ const SideBar: React.FC<{
                 aria-label="Station information table"
               >
                 <TableHeader columns={stationColumns}>
-                  {(column) => <TableColumn key={column.key} align={column.key === 'value' ? 'end' : 'start'}>{column.label}</TableColumn>}
+                  {(column) => <TableColumn key={column.key}
+                                            align={column.key === 'value' ? 'end' : 'start'}>{column.label}</TableColumn>}
                 </TableHeader>
                 <TableBody items={stationRows}>
                   {item => (
@@ -127,17 +134,39 @@ const SideBar: React.FC<{
                 {/* For stations icons */}
                 <div>
                   <h1 className="font-bold">RF Atlas Stations</h1>
-                  <h1 className="font-bold">Other Stations</h1>
+                  <div className="flex flex-col pl-2">
+                    <div className="flex flex-row gap-2 items-center">
+                      <svg width="16" height="16" viewBox="0 0 16 16">
+                        <StationIcon stationStatus="Current" showBorder={true} transform="translate(2, 2)" />
+                      </svg>
+                      <p>Current</p>
+                    </div>
+                    <div className="flex flex-row gap-2 items-center">
+                      <svg width="16" height="16" viewBox="0 0 16 16">
+                        <StationIcon stationStatus="Discontinued" showBorder={true} transform="translate(2, 2)" />
+                      </svg>
+                      <p>Discontinued</p>
+                    </div>
+                    <div className="flex flex-row gap-2 items-center">
+                      <svg width="16" height="16" viewBox="0 0 16 16">
+                        <StationIcon stationStatus="Virtual" showBorder={true} transform="translate(2, 2)" />
+                      </svg>
+                      <p>Virtual</p>
+                    </div>
+                  </div>
+                  <h1 className="font-bold">
+                    Other Stations
+                  </h1>
                 </div>
                 <div>
                   <h1 className="font-bold mb-[5px]">Rainfall Grid</h1>
                   <h1>({selectedPeriod > 11 ? 'Annual' : fullMonths[selectedPeriod]})</h1>
                   <div className="inline-flex flex-row mt-[5px]">
                     <div
-                    className="w-[30px] h-[75px]"
-                    style={{
-                      background: 'linear-gradient(to bottom, indigo, purple, blue, green, yellow, red)'
-                    }}
+                      className="w-[30px] h-[75px]"
+                      style={{
+                        background: 'linear-gradient(to bottom, indigo, purple, blue, green, yellow, red)'
+                      }}
                     ></div>
                     <div className="ml-[10px]">
                       <h1>High : {range[1]}</h1>

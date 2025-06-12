@@ -1,52 +1,73 @@
 import React from "react";
-import { Station } from "@/lib";
-import { Circle, Polygon, Rectangle } from "react-leaflet";
-import { LatLng } from "leaflet";
 
 interface Props {
-  station: Station,
-  onClick: (station: Station) => void,
-  center: LatLng,
-  radius: number,
-  outline: boolean,
+  stationStatus: string,
+  showBorder?: boolean,
+  transform?: string,
 }
 
-export const StationIcon: React.FC<Props> = ({ station, onClick, center, radius, outline }) => {
-  const bounds = center.toBounds(2 * radius);
-  switch (station.StationStatus) {
-    case "Current": return (
-      <Rectangle
-        bounds={bounds}
-        pathOptions={{ color: 'black', fillColor: 'green', weight: outline ? 1 : 0, fillOpacity: 1  }}
-        eventHandlers={{
-          click: () => onClick(station)
-        }}
-      />
-    );
-    case "Discontinued": return (
-      <Circle
-        center={center}
-        radius={radius}
-        pathOptions={{ color: 'black', fillColor: 'red', weight: outline ? 1 : 0, fillOpacity: 1 }}
-        eventHandlers={{
-          click: () => onClick(station)
-        }}
-      />
-    );
-    case "Virtual": return (
-      <Polygon
-        positions={[
-          [bounds.getNorth(), bounds.getCenter().lng],
-          [bounds.getCenter().lat, bounds.getEast()],
-          [bounds.getSouth(), bounds.getCenter().lng],
-          [bounds.getCenter().lat, bounds.getWest()],
-        ]}
-        pathOptions={{ color: 'black', fillColor: 'magenta', weight: outline ? 1 : 0, fillOpacity: 1 }}
-        eventHandlers={{
-          click: () => onClick(station)
-        }}
-      />
-    );
-    default: return null;
+export const StationIcon: React.FC<Props> = ({
+  stationStatus,
+  showBorder = false,
+  transform,
+}) => {
+  switch (stationStatus) {
+    case "Current":
+      return (
+        <path
+          fill="rgb(90, 180, 0)"
+          fillOpacity="0.75"
+          stroke="rgb(0, 0, 0)"
+          stroke-opacity={showBorder ? 1 : 0}
+          stroke-width="1.5"
+          stroke-linecap="square"
+          stroke-linejoin={undefined}
+          stroke-miterlimit="4"
+          path="M 0,0 12,0 12,12 0,12 Z"
+          d="M 0 0 12 0 12 12 0 12Z"
+          fill-rule="evenodd"
+          stroke-dasharray="none"
+          transform={transform}
+        />
+      );
+    case "Discontinued":
+      return (
+        <circle
+          fill="rgb(180, 90, 0)"
+          fill-opacity="0.755"
+          stroke="rgb(0, 0, 0)"
+          stroke-opacity={showBorder ? 1 : 0}
+          stroke-width="1.5"
+          stroke-linecap="square"
+          stroke-linejoin={undefined}
+          stroke-miterlimit="4"
+          cx="6"
+          cy="6"
+          r="6"
+          fill-rule="evenodd"
+          stroke-dasharray="none"
+          transform={transform}
+        />
+      );
+    case "Virtual":
+      return (
+        <path
+          fill="rgb(180, 0, 115)"
+          fill-opacity="0.75"
+          stroke="rgb(0, 0, 0)"
+          stroke-opacity={showBorder ? 1 : 0}
+          stroke-width="1.5"
+          stroke-linecap="square"
+          stroke-linejoin={undefined}
+          stroke-miterlimit="4"
+          path="M 0,6 6,12 12,6 6,0 Z"
+          d="M 0 6 6 12 12 6 6 0Z"
+          fill-rule="evenodd"
+          stroke-dasharray="none"
+          transform={transform}
+        />
+      );
+    default:
+      return null;
   }
 }
