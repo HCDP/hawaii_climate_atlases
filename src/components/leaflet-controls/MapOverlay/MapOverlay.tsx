@@ -27,7 +27,7 @@ const parseLocation = (input: string): LatLng | null => {
      Match a pattern that is either a comma surrounded by whitespace, or plain whitespace.
   */
   const parsed = input
-    .split(/\s*,+\s*|\s+/)
+    .split(/\s*,\s*|\s+/)
     .map(s => parseFloat(s));
   const [lat, lng] = parsed;
   if (parsed.length === 2 && (lat && lng)) {
