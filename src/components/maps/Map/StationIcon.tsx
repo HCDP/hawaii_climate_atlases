@@ -2,24 +2,28 @@ import React from "react";
 
 interface Props {
   stationStatus: string,
+  other?: boolean,
   showBorder?: boolean,
   transform?: string,
 }
 
 export const StationIcon: React.FC<Props> = ({
   stationStatus,
+  other,
   showBorder = false,
   transform,
 }) => {
+  let color: string;
   switch (stationStatus) {
     case "Current":
+      color = "rgb(90, 180, 0)";
       return (
         <path
-          fill="rgb(90, 180, 0)"
-          fillOpacity="0.75"
-          stroke="rgb(0, 0, 0)"
+          fill={other ? "rgb(255, 255, 255)" : color}
+          fill-opacity="0.75"
+          stroke={other ? color : "rgb(0, 0, 0)"}
           stroke-opacity={showBorder ? 1 : 0}
-          stroke-width="1.5"
+          stroke-width="2"
           stroke-linecap="square"
           stroke-linejoin={undefined}
           stroke-miterlimit="4"
@@ -31,11 +35,12 @@ export const StationIcon: React.FC<Props> = ({
         />
       );
     case "Discontinued":
+      color = "rgb(180, 90, 0)";
       return (
         <circle
-          fill="rgb(180, 90, 0)"
-          fill-opacity="0.755"
-          stroke="rgb(0, 0, 0)"
+          fill={other ? "rgb(255, 255, 255)" : color}
+          fill-opacity="0.75"
+          stroke={other ? color : "rgb(0, 0, 0)"}
           stroke-opacity={showBorder ? 1 : 0}
           stroke-width="1.5"
           stroke-linecap="square"
@@ -50,11 +55,12 @@ export const StationIcon: React.FC<Props> = ({
         />
       );
     case "Virtual":
+      color = "rgb(180, 0, 115)";
       return (
         <path
-          fill="rgb(180, 0, 115)"
+          fill={other ? "rgb(255, 255, 255)" : color}
           fill-opacity="0.75"
-          stroke="rgb(0, 0, 0)"
+          stroke={other ? color : "rgb(0, 0, 0)"}
           stroke-opacity={showBorder ? 1 : 0}
           stroke-width="1.5"
           stroke-linecap="square"
