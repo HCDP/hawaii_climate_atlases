@@ -92,9 +92,11 @@ const IsohyetsLayer = (
 const PopupOnClick = (
   {
     selectedUnits,
+    selectedPeriod,
     grid,
   }: {
     selectedUnits: Units,
+    selectedPeriod: Period,
     grid: AsciiGrid,
   }) => {
   const [location, setLocation] = useState<LatLng | null>(null);
@@ -139,9 +141,11 @@ const PopupOnClick = (
     setLocation(e.latlng);
   });
 
+  const periodText = Number(selectedPeriod) === Period.Annual ? "annual" : Period[selectedPeriod];
+
   return location ? (
     <Popup position={location}>
-      {gridValue ? `Mean annual rainfall: ${gridValue.toFixed(3)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
+      {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(3)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
     </Popup>
   ) : null;
 }
@@ -464,6 +468,7 @@ const RainfallMap = () => {
           {asciiGrid && <PopupOnClick
             grid={asciiGrid}
             selectedUnits={selectedUnits}
+            selectedPeriod={selectedPeriod}
           />}
 
           <ZoomendHandler onZoomEnd={setZoom} />
