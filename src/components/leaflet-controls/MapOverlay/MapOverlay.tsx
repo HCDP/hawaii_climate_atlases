@@ -13,9 +13,24 @@ import Fullscreen from "@mui/icons-material/Fullscreen";
 import FullscreenExit from "@mui/icons-material/FullscreenExit";
 import { LayoutContext } from "@/components/LayoutContext";
 
+/*
+  20, -150 works
+  20 ,-150 works
+  20   ,   -150 works
+  20,-150 works
+  20 -150 works
+  20   -150 works
+  20 asdf -150 does not work
+ */
 const parseLocation = (input: string): LatLng | null => {
-  const [lat, lng] = input.split(",").map(s => parseFloat(s));
-  if (lat && lng) {
+  /* Regex meaning:
+     Match a pattern that is either a comma surrounded by whitespace, or plain whitespace.
+  */
+  const parsed = input
+    .split(/\s*,+\s*|\s+/)
+    .map(s => parseFloat(s));
+  const [lat, lng] = parsed;
+  if (parsed.length === 2 && (lat && lng)) {
     return new LatLng(lat, lng);
   } else {
     return null;
