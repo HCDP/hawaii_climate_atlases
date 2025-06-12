@@ -20,17 +20,17 @@ export const StationIcon: React.FC<Props> = ({
       return (
         <path
           fill={other ? "rgb(255, 255, 255)" : color}
-          fill-opacity="0.75"
+          fillOpacity="0.75"
           stroke={other ? color : "rgb(0, 0, 0)"}
-          stroke-opacity={showBorder ? 1 : 0}
-          stroke-width="2"
-          stroke-linecap="square"
-          stroke-linejoin={undefined}
-          stroke-miterlimit="4"
+          strokeOpacity={showBorder ? 1 : 0}
+          strokeWidth="2"
+          strokeLinecap="square"
+          strokeLinejoin={undefined}
+          strokeMiterlimit="4"
           path="M 0,0 12,0 12,12 0,12 Z"
           d="M 0 0 12 0 12 12 0 12Z"
-          fill-rule="evenodd"
-          stroke-dasharray="none"
+          fillRule="evenodd"
+          strokeDasharray="none"
           transform={transform}
         />
       );
@@ -39,18 +39,18 @@ export const StationIcon: React.FC<Props> = ({
       return (
         <circle
           fill={other ? "rgb(255, 255, 255)" : color}
-          fill-opacity="0.75"
+          fillOpacity="0.75"
           stroke={other ? color : "rgb(0, 0, 0)"}
-          stroke-opacity={showBorder ? 1 : 0}
-          stroke-width="1.5"
-          stroke-linecap="square"
-          stroke-linejoin={undefined}
-          stroke-miterlimit="4"
+          strokeOpacity={showBorder ? 1 : 0}
+          strokeWidth="1.5"
+          strokeLinecap="square"
+          strokeLinejoin={undefined}
+          strokeMiterlimit="4"
           cx="6"
           cy="6"
           r="6"
-          fill-rule="evenodd"
-          stroke-dasharray="none"
+          fillRule="evenodd"
+          strokeDasharray="none"
           transform={transform}
         />
       );
@@ -59,17 +59,17 @@ export const StationIcon: React.FC<Props> = ({
       return (
         <path
           fill={other ? "rgb(255, 255, 255)" : color}
-          fill-opacity="0.75"
+          fillOpacity="0.75"
           stroke={other ? color : "rgb(0, 0, 0)"}
-          stroke-opacity={showBorder ? 1 : 0}
-          stroke-width="1.5"
-          stroke-linecap="square"
-          stroke-linejoin={undefined}
-          stroke-miterlimit="4"
+          strokeOpacity={showBorder ? 1 : 0}
+          strokeWidth="1.5"
+          strokeLinecap="square"
+          strokeLinejoin={undefined}
+          strokeMiterlimit="4"
           path="M 0,6 6,12 12,6 6,0 Z"
           d="M 0 6 6 12 12 6 6 0Z"
-          fill-rule="evenodd"
-          stroke-dasharray="none"
+          fillRule="evenodd"
+          strokeDasharray="none"
           transform={transform}
         />
       );
