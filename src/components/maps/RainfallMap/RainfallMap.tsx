@@ -165,7 +165,7 @@ const zoomSnap = 0.75,
 
 const pivotZoom = 12, hideBorderZoom = 9;
 
-function createStationMarker(station: Station, zoom: number, other?: boolean): L.Marker {
+function createStationIcon(stationStatus: string, zoom: number, other?: boolean): L.DivIcon {
   const baseSize = 12;
   let size: number;
   if (zoom >= pivotZoom) {
@@ -177,14 +177,14 @@ function createStationMarker(station: Station, zoom: number, other?: boolean): L
   const scale = size / baseSize;
   const currentIcon = (
     <StationIcon
-      stationStatus={station.StationStatus}
+      stationStatus={stationStatus}
       other={other}
       showBorder={showBorder}
       transform="translate(2, 2)"
     />
   );
   const stationIconHtml = renderToStaticMarkup(currentIcon);
-  const icon = L.divIcon({
+  return L.divIcon({
     html: `<svg width="16" height="16" viewBox="0 0 16 16" style="transform: scale(${scale}); transform-origin: center;">
         ${stationIconHtml}
       </svg>`,
@@ -192,6 +192,10 @@ function createStationMarker(station: Station, zoom: number, other?: boolean): L
     iconSize: [16, 16],
     iconAnchor: [8, 8],
   });
+}
+
+function createStationMarker(station: Station, zoom: number, other?: boolean): L.Marker {
+  const icon = createStationIcon(station.StationStatus, zoom, other);
   return L.marker([station.Lat_DD, station.Lon_DD], {
     zIndexOffset: other ? 30 : 40,
     bubblingMouseEvents: true,
@@ -210,53 +214,98 @@ const StationIcons = ({
   setSelectedStation: (station: Station) => void,
   show: boolean,
 }) => {
+  // Credit: https://medium.com/@silvajohnny777/optimizing-leaflet-performance-with-a-large-number-of-markers-0dea18c2ec99
   const map = useMap();
   const [zoom, setZoom] = useState<number>(map.getZoom());
+  const [bounds, setBounds] = useState<L.LatLngBounds>(map.getBounds());
 
-  // Credit: https://medium.com/@silvajohnny777/optimizing-leaflet-performance-with-a-large-number-of-markers-0dea18c2ec99
-  const allMarkersRef = useRef<L.Marker[]>(
+  type StationIcon = {
+    station: Station,
+    marker: L.Marker
+  }
+  /* allStationIconsRef represents every station icon, along with its corresponding station, that will be added or
+     removed to the map. */
+  const allStationIconsRef = useRef<StationIcon[]>(
     stations.map(station => {
-      return createStationMarker(station, zoom, other)
+      const marker = createStationMarker(station, zoom, other)
         .addEventListener("click", () => {
           setSelectedStation(station);
-        })
+        });
+      return { station, marker }
     })
   );
+  // markersGroupRef is the reference to the layer group that contains the icons.
   const markersGroupRef = useRef<L.LayerGroup>(L.layerGroup());
 
   const renderMarkers = useCallback(() => {
-    const newZoom = map.getZoom();
-    // Either newZoom < pivotZoom, in which case we want to recalculate regardless, or newZoom > pivotZoom.
-    // In this case, either the old zoom was < pivotZoom, in which case we want to recalculate so that the icons
-    // become their base size, or the old zoom >= pivotZoom, in which case we don't need to recalculate.
-    if (newZoom !== zoom) {
-      if (newZoom < pivotZoom || zoom < pivotZoom) {
-        // recalculate
-        markersGroupRef.current.clearLayers();
-        allMarkersRef.current = stations.map(station => {
-          return createStationMarker(station, newZoom, other)
-            .addEventListener("click", () => {
-              setSelectedStation(station);
-            })
-        })
-      }
-    }
-    setZoom(newZoom);
+    /* objectives:
+       remove no longer visible markers
+       add newly visible markers
+       restyle new markers if needed
+       restyle current markers only if zoom has changed */
+    const oldBounds = bounds;
+    const oldZoom = zoom;
 
-    const bounds = map.getBounds();
-    allMarkersRef.current.forEach((marker) => {
+    const newBounds = map.getBounds();
+    const newZoom = map.getZoom();
+
+    /* newStationIcons represents the icons, along with their corresponding station, that will be visible by the end of
+       this render. */
+    const newStationIcons: StationIcon[] = [];
+
+    const markersToRemove: L.Marker[] = [];
+    const markersToAdd: L.Marker[] = [];
+
+    const markersGroup = markersGroupRef.current;
+    const allStationIcons = allStationIconsRef.current;
+
+    // Figure out which icons need to be removed and which ones need to be added
+    allStationIcons.forEach((stationIcon) => {
+      const { marker } = stationIcon;
       const markerLocation = marker.getLatLng();
-      if (bounds.contains(markerLocation)) {
-        if (!markersGroupRef.current.hasLayer(marker)) {
-          markersGroupRef.current.addLayer(marker);
+      if (newBounds.contains(markerLocation)) {
+        newStationIcons.push(stationIcon);
+        if (!markersGroup.hasLayer(marker)) {
+          markersToAdd.push(marker);
         }
       } else {
-        if (markersGroupRef.current.hasLayer(marker)) {
-          markersGroupRef.current.removeLayer(marker);
+        if (markersGroup.hasLayer(marker)) {
+          markersToRemove.push(marker);
         }
       }
     });
-  }, [map, setSelectedStation, stations, zoom, other]);
+
+    function restyleIcon(stationIcon: StationIcon) {
+      const { station, marker } = stationIcon;
+      marker.setIcon(createStationIcon(station.StationStatus, newZoom, other));
+    }
+    // Restyle icons that need it
+    // If a zoom occurred we want to restyle all currently visible markers regardless of whether they're new or not:
+    // Either newZoom < pivotZoom, in which case we want to restyle regardless, or newZoom > pivotZoom.
+    // In this case, either the old zoom was < pivotZoom, in which case we want to restyle so that the icons
+    // become their base size, or the old zoom >= pivotZoom, in which case we don't need to restyle.
+    if (newZoom !== oldZoom) {
+      if (newZoom < pivotZoom || oldZoom < pivotZoom) {
+        newStationIcons.forEach(stationIcon => {
+          restyleIcon(stationIcon);
+        });
+      }
+      // Else, we only want to restyle the newly added markers
+    } else {
+      newStationIcons.forEach(stationIcon => {
+        if (!oldBounds.contains(stationIcon.marker.getLatLng())) {
+          restyleIcon(stationIcon);
+        }
+      });
+    }
+
+    markersToAdd.forEach(marker => markersGroup.addLayer(marker));
+    markersToRemove.forEach(marker => markersGroup.removeLayer(marker));
+
+    setZoom(newZoom);
+    setBounds(newBounds);
+    // eslint-disable-next-line
+  }, [map]);
 
   useEffect(() => {
     if (!show) {
