@@ -424,6 +424,8 @@ const RainfallMap = () => {
         <SideBar
           selectedStation={selectedStation}
           selectedUnits={selectedUnits}
+          selectedPeriod={selectedPeriod}
+          range={selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod]}
         />
       </div>
       <div className="w-full h-full">

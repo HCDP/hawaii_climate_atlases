@@ -92,9 +92,6 @@ R.GridLayer.RasterLayer = L.GridLayer.extend({
 
     const range = this.options.colorScale.range;
 
-    /* removed correctLightness() at the end of this line in order to make the colors 
-      appear properly.
-      ... domain(range).correctLightness(), may use for other potential color schemes */
     const colorScale = chroma.scale(colorScheme).domain(range);
 
     let span = range[1] - range[0];
@@ -108,7 +105,7 @@ R.GridLayer.RasterLayer = L.GridLayer.extend({
       color.r = Math.round(r);
       color.g = Math.round(g);
       color.b = Math.round(b);
-      color.a = Math.round(((a * 255) / 2) + 30);
+      color.a = Math.round(((a * 255) / 2) + 50);
       colors.push(color);
     }
 

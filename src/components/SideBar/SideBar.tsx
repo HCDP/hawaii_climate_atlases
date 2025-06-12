@@ -2,7 +2,7 @@ import React from 'react';
 import Plot from '@/components/Plot';
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, getKeyValue } from "@heroui/table";
-import { Station, Units } from "@/lib";
+import { Station, Units, Period } from "@/lib";
 
 const fullMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -10,7 +10,9 @@ const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const SideBar: React.FC<{
   selectedStation?: Station | null,
   selectedUnits: Units,
-}> = ({ selectedStation, selectedUnits }) => {
+  selectedPeriod: Period,
+  range: [number, number],
+}> = ({ selectedStation, selectedUnits, selectedPeriod, range}) => {
   const stationData: number[] = selectedStation ? months.map(month =>
     Math.max(Number(selectedStation[`${month}Avg${selectedUnits}` as keyof typeof selectedStation]), 0)
   ) : [];
@@ -121,7 +123,29 @@ const SideBar: React.FC<{
                 title: "font-extrabold text-gray-600"
               }}
             >
-              <h3 className="text-center font-extrabold text-gray-600">Legend</h3>
+              <div className="inline-flex flex-row space-x-[50px]">
+                {/* For stations icons */}
+                <div>
+                  <h1 className="font-bold">RF Atlas Stations</h1>
+                  <h1 className="font-bold">Other Stations</h1>
+                </div>
+                <div>
+                  <h1 className="font-bold mb-[5px]">Rainfall Grid</h1>
+                  <h1>({selectedPeriod > 11 ? 'Annual' : fullMonths[selectedPeriod]})</h1>
+                  <div className="inline-flex flex-row mt-[5px]">
+                    <div
+                    className="w-[30px] h-[75px]"
+                    style={{
+                      background: 'linear-gradient(to bottom, indigo, purple, blue, green, yellow, red)'
+                    }}
+                    ></div>
+                    <div className="ml-[10px]">
+                      <h1>High : {range[1]}</h1>
+                      <h1 className="mt-[25px]">Low : {range[0]}</h1>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </AccordionItem>
           </Accordion>
         )}
