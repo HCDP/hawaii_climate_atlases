@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import L, { LatLng, Map } from "leaflet";
 import { useMap, ZoomControl } from "react-leaflet";
 import LocationField from "@/components/LocationField";
