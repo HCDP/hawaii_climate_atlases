@@ -3,6 +3,8 @@
 // import RainfallMap from "@/components/maps/RainfallMap";
 import useRequiredConditionsOfUse from "@/hooks/useRequiredConditionsOfUse";
 import dynamic from "next/dynamic";
+import useRainfallData from "@/hooks/useRainfallData";
+import { defaultSettings } from "@/constants";
 
 
 const RainfallMap = dynamic(
@@ -16,6 +18,7 @@ const RainfallMap = dynamic(
 
 const ClientInteractiveMap = () => {
   useRequiredConditionsOfUse();
+  useRainfallData(defaultSettings.selectedUnits, defaultSettings.selectedPeriod);
 
   return (
     // UH Manoa coordinates: 21.297, -157.817
