@@ -162,17 +162,25 @@ const MapOverlay: React.FC<Props> = (
                     <div className="inline-flex flex-col">
                       <Checkbox 
                         value="Rainfall" 
-                        onValueChange={() => setShowGrids(!showGrids)}
+                        onValueChange={() => {
+                          setShowGrids(!showGrids);
+                          if(uncertainty) {
+                            setUncertainty(!uncertainty);
+                          }
+                        }}
                         isSelected={showGrids}
-                        isDisabled={uncertainty}
                       >
                         Rainfall
                       </Checkbox>
                       <Checkbox 
                         value="Uncertainty" 
-                        onValueChange={() => setUncertainty(!uncertainty)}
+                        onValueChange={() => {
+                          setUncertainty(!uncertainty);
+                          if(showGrids) {
+                            setShowGrids(!showGrids);
+                          }
+                        }}
                         isSelected={uncertainty}
-                        isDisabled={showGrids}
                       >
                         Uncertainty
                       </Checkbox>
