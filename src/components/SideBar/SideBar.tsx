@@ -14,7 +14,7 @@ const SideBar: React.FC<{
   selectedPeriod: Period,
   range: [number, number],
 }> = ({ selectedStation, selectedUnits, selectedPeriod, range }) => {
-  const [width, setWidth] = useState('24rem');
+  const [width, setWidth] = useState(24);
   const isResizing = useRef(false);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const SideBar: React.FC<{
       if(isResizing.current) {
         const remX = e.clientX / parseFloat(getComputedStyle(document.documentElement).fontSize);
         const newWidth = Math.min(Math.max(remX, 24), 32); // 24rem = min, 28 = max width
-        setWidth(`${newWidth}rem`);
+        setWidth(newWidth);
       }
     };
 
@@ -81,7 +81,7 @@ const SideBar: React.FC<{
     <>
       <div 
         className="flex flex-col max-h-full"
-        style={{ minWidth: width }}
+        style={{ minWidth: `${width}rem` }}
       >
         <div className="h-[300px] p-4 shrink-0">
           <Plot
@@ -160,7 +160,10 @@ const SideBar: React.FC<{
                   title: "font-extrabold text-gray-600"
                 }}
               >
-                <div className="inline-flex flex-row space-x-[50px]">
+                <div 
+                  className="inline-flex flex-row w-full"
+                  style={{ columnGap: width <= 26.5 ? '15%' : width < 29.5 ? '25%' : '35%' }}
+                >
                   {/* For stations icons */}
                   <div>
                     <h1 className="font-bold">RF Atlas Stations</h1>
