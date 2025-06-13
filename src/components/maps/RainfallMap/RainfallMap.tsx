@@ -7,8 +7,8 @@ import {
   AsciiGrid,
 } from "@/lib";
 import SideBar from "@/components/SideBar";
-import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, useMapEvents, Marker } from "react-leaflet";
-import L, { LatLng, LatLngExpression, Map as LeafletMap } from "leaflet";
+import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, Marker } from "react-leaflet";
+import L, { LatLng, LatLngExpression } from "leaflet";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
@@ -69,11 +69,14 @@ const IsohyetLabels = ({
 const IsohyetsLayer = (
   {
     geojson,
-    zoom,
   }: {
     geojson: FeatureCollection,
-    zoom: number,
   }) => {
+  const map = useMap();
+  const [zoom, setZoom] = useState<number>(map.getZoom());
+  useMapEvent("zoomend", () => {
+    setZoom(map.getZoom());
+  });
   return (
     <>
       <GeoJSON
@@ -148,18 +151,6 @@ const PopupOnClick = (
       {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(3)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
     </Popup>
   ) : null;
-}
-
-const ZoomendHandler = ({ onZoomEnd }: {
-  onZoomEnd: (zoom: number) => void,
-}) => {
-  const map: LeafletMap = useMapEvents({
-    zoomend: () => {
-      const zoom = map.getZoom();
-      onZoomEnd(zoom);
-    }
-  });
-  return null;
 }
 
 const startPosition: LatLngExpression = [21.344875, -157.908248];
@@ -338,7 +329,6 @@ const RainfallMap = () => {
   const [showGrids, setShowGrids] = useState<boolean>(defaultSettings.showGrids);
   const [showRFStations, setShowRFStations] = useState<boolean>(defaultSettings.showRFStations);
   const [showOtherStations, setShowOtherStations] = useState<boolean>(defaultSettings.showOtherStations);
-  const [zoom, setZoom] = useState<number>(defaultSettings.zoom);
 
   const {
     rfStations,
@@ -422,10 +412,9 @@ const RainfallMap = () => {
       <IsohyetsLayer
         key={`isohyets-layer-${selectedUnits}-${selectedPeriod}`}
         geojson={featureCollections[selectedPeriod]}
-        zoom={zoom}
       />
     ) : null;
-  }, [featureCollections, selectedPeriod, selectedUnits, zoom]);
+  }, [featureCollections, selectedPeriod, selectedUnits]);
 
   if (!allDataLoaded) {
     return (
@@ -469,7 +458,6 @@ const RainfallMap = () => {
             selectedPeriod={selectedPeriod}
           />}
 
-          <ZoomendHandler onZoomEnd={setZoom} />
           <MapOverlay
             selectedUnits={selectedUnits}
             setSelectedUnits={setSelectedUnits}
