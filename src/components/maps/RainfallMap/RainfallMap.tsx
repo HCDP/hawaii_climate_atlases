@@ -429,6 +429,7 @@ const RainfallMap = () => {
         selectedUnits={selectedUnits}
         selectedPeriod={selectedPeriod}
         range={selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod]}
+        units={selectedUnits == Units.IN ? 'in' : 'mm'}
       />
       <div className="w-full h-full">
         <Map

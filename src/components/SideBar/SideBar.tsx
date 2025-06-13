@@ -13,7 +13,8 @@ const SideBar: React.FC<{
   selectedUnits: Units,
   selectedPeriod: Period,
   range: [number, number],
-}> = ({ selectedStation, selectedUnits, selectedPeriod, range }) => {
+  units: string,
+}> = ({ selectedStation, selectedUnits, selectedPeriod, range, units }) => {
   const [width, setWidth] = useState(24);
   const isResizing = useRef(false);
 
@@ -162,7 +163,7 @@ const SideBar: React.FC<{
               >
                 <div 
                   className="inline-flex flex-row w-full"
-                  style={{ columnGap: width <= 26.5 ? '15%' : width < 29.5 ? '25%' : '35%' }}
+                  style={{ columnGap: width <= 26.5 ? '8%' : width < 30.5 ? '18%' : '30%' }}
                 >
                   {/* For stations icons */}
                   <div>
@@ -216,8 +217,8 @@ const SideBar: React.FC<{
                         }}
                       ></div>
                       <div className="ml-[10px]">
-                        <h1>High : {range[1]}</h1>
-                        <h1 className="mt-[25px]">Low : {range[0]}</h1>
+                        <h1>High: {range[1] + ' ' + units}</h1>
+                        <h1 className="mt-[25px]">Low: {range[0] + ' ' + units}</h1>
                       </div>
                     </div>
                   </div>
