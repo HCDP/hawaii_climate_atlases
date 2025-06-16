@@ -223,9 +223,6 @@ const StationIcons = ({
   const allStationIconsRef = useRef<StationIcon[]>(
     stations.map(station => {
       const marker = createStationMarker(station, zoom, other)
-        .addEventListener("click", () => {
-          setSelectedStation(station);
-        });
       return { station, marker }
     })
   );
@@ -311,12 +308,23 @@ const StationIcons = ({
     if (!map.hasLayer(markersGroupRef.current)) {
       map.addLayer(markersGroupRef.current);
     }
+    const allStationIcons = allStationIconsRef.current;
+    allStationIcons.forEach(icon => {
+      const { station, marker } = icon;
+      marker.addEventListener("click", () => {
+        setSelectedStation(station);
+      });
+    });
     renderMarkers();
     map.on("moveend", renderMarkers);
     return () => {
       map.off("moveend", renderMarkers);
+      allStationIcons.forEach(icon => {
+        const { marker } = icon;
+        marker.off();
+      });
     }
-  }, [map, renderMarkers, stations, show]);
+  }, [map, renderMarkers, stations, show, setSelectedStation]);
 
   return null;
 }
