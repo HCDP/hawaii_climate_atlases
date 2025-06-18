@@ -147,9 +147,31 @@ const PopupOnClick = (
   const periodText = Number(selectedPeriod) === Period.Annual ? "annual" : Period[selectedPeriod];
 
   return location ? (
-    <Popup position={location}>
-      {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(3)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
-    </Popup>
+    <>
+      <Popup position={location}>
+        {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(3)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
+      </Popup>
+      {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) */ }
+      {gridValue ? <Marker
+        position={location}
+        icon={
+          L.divIcon({
+            html: 
+              `<svg width="25" height="25" viewBox="0 0 100 100">
+                <path 
+                  d="M10 10 L90 90 M90 10 L10 90"
+                  stroke="red"
+                  stroke-width="25"
+                  stroke-opacity="0.9"
+                  fill="none" 
+                />
+              </svg>`,
+            className: '',
+            iconSize: [25, 25],
+            iconAnchor: [12.5, 12.5],
+        })}
+      /> : <></>}
+    </>
   ) : null;
 }
 

@@ -215,7 +215,7 @@ const SideBar: React.FC<{
                         style={{
                           background: 'linear-gradient(to bottom, indigo, purple, blue, green, yellow, red)'
                         }}
-                      ></div>
+                      />
                       <div className="ml-[10px]">
                         <h1>High: {range[1] + ' ' + units}</h1>
                         <h1 className="mt-[25px]">Low: {range[0] + ' ' + units}</h1>
