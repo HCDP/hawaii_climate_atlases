@@ -8,7 +8,7 @@ import {
 } from "@/lib";
 import SideBar from "@/components/SideBar";
 import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, Marker } from "react-leaflet";
-import L, { LatLng, LatLngExpression } from "leaflet";
+import L, { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
@@ -151,12 +151,12 @@ const PopupOnClick = (
       <Popup position={location}>
         {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(3)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
       </Popup>
-      {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) */ }
+      {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) */}
       {gridValue ? <Marker
         position={location}
         icon={
           L.divIcon({
-            html: 
+            html:
               `<svg width="25" height="25" viewBox="0 0 100 100">
                 <path 
                   d="M10 10 L90 90 M90 10 L10 90"
@@ -169,7 +169,7 @@ const PopupOnClick = (
             className: '',
             iconSize: [25, 25],
             iconAnchor: [12.5, 12.5],
-        })}
+          })}
       /> : <></>}
     </>
   ) : null;
@@ -233,8 +233,7 @@ const StationIcons = ({
 }) => {
   // Credit: https://medium.com/@silvajohnny777/optimizing-leaflet-performance-with-a-large-number-of-markers-0dea18c2ec99
   const map = useMap();
-  const [zoom, setZoom] = useState<number>(map.getZoom());
-  const [bounds, setBounds] = useState<L.LatLngBounds>(map.getBounds());
+  const zoom = map.getZoom();
 
   type StationIcon = {
     station: Station,
@@ -251,17 +250,17 @@ const StationIcons = ({
   // markersGroupRef is the reference to the layer group that contains the icons.
   const markersGroupRef = useRef<L.LayerGroup>(L.layerGroup());
 
-  const renderMarkers = useCallback(() => {
+  const renderMarkers = useCallback((
+    oldZoom: number,
+    newZoom: number,
+    oldBounds: LatLngBounds,
+    newBounds: LatLngBounds,
+  ) => {
     /* objectives:
        remove no longer visible markers
        add newly visible markers
        restyle new markers if needed
        restyle current markers only if zoom has changed */
-    const oldBounds = bounds;
-    const oldZoom = zoom;
-
-    const newBounds = map.getBounds();
-    const newZoom = map.getZoom();
 
     /* newStationIcons represents the icons, along with their corresponding station, that will be visible by the end of
        this render. */
@@ -293,6 +292,7 @@ const StationIcons = ({
       const { station, marker } = stationIcon;
       marker.setIcon(createStationIcon(station.StationStatus, newZoom, other));
     }
+
     // Restyle icons that need it
     // If a zoom occurred we want to restyle all currently visible markers regardless of whether they're new or not:
     // Either newZoom < pivotZoom, in which case we want to restyle regardless, or newZoom > pivotZoom.
@@ -315,12 +315,7 @@ const StationIcons = ({
 
     markersToAdd.forEach(marker => markersGroup.addLayer(marker));
     markersToRemove.forEach(marker => markersGroup.removeLayer(marker));
-
-    setZoom(newZoom);
-    setBounds(newBounds);
-    // eslint-disable-next-line
-  }, [map]);
-
+  }, [other]);
   useEffect(() => {
     if (!show) {
       markersGroupRef.current.clearLayers();
@@ -337,10 +332,23 @@ const StationIcons = ({
         setSelectedStation(station);
       });
     });
-    renderMarkers();
-    map.on("moveend", renderMarkers);
+
+    let oldZoom = map.getZoom();
+    let oldBounds = map.getBounds();
+    renderMarkers(oldZoom, oldZoom, oldBounds, oldBounds);
+
+    function render() {
+      const newZoom = map.getZoom();
+      const newBounds = map.getBounds();
+      renderMarkers(oldZoom, newZoom, oldBounds, newBounds);
+
+      oldZoom = newZoom;
+      oldBounds = newBounds;
+    }
+
+    map.on("moveend", render);
     return () => {
-      map.off("moveend", renderMarkers);
+      map.off("moveend", render);
       allStationIcons.forEach(icon => {
         const { marker } = icon;
         marker.off();
