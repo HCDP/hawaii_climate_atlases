@@ -1,52 +1,79 @@
 import React from "react";
-import { Station } from "@/lib";
-import { Circle, Polygon, Rectangle } from "react-leaflet";
-import { LatLng } from "leaflet";
 
 interface Props {
-  station: Station,
-  onClick: (station: Station) => void,
-  center: LatLng,
-  radius: number,
-  outline: boolean,
+  stationStatus: string,
+  other?: boolean,
+  showBorder?: boolean,
+  transform?: string,
 }
 
-export const StationIcon: React.FC<Props> = ({ station, onClick, center, radius, outline }) => {
-  const bounds = center.toBounds(2 * radius);
-  switch (station.StationStatus) {
-    case "Current": return (
-      <Rectangle
-        bounds={bounds}
-        pathOptions={{ color: 'black', fillColor: 'green', weight: outline ? 1 : 0, fillOpacity: 1  }}
-        eventHandlers={{
-          click: () => onClick(station)
-        }}
-      />
-    );
-    case "Discontinued": return (
-      <Circle
-        center={center}
-        radius={radius}
-        pathOptions={{ color: 'black', fillColor: 'red', weight: outline ? 1 : 0, fillOpacity: 1 }}
-        eventHandlers={{
-          click: () => onClick(station)
-        }}
-      />
-    );
-    case "Virtual": return (
-      <Polygon
-        positions={[
-          [bounds.getNorth(), bounds.getCenter().lng],
-          [bounds.getCenter().lat, bounds.getEast()],
-          [bounds.getSouth(), bounds.getCenter().lng],
-          [bounds.getCenter().lat, bounds.getWest()],
-        ]}
-        pathOptions={{ color: 'black', fillColor: 'magenta', weight: outline ? 1 : 0, fillOpacity: 1 }}
-        eventHandlers={{
-          click: () => onClick(station)
-        }}
-      />
-    );
-    default: return null;
+export const StationIcon: React.FC<Props> = ({
+  stationStatus,
+  other,
+  showBorder = false,
+  transform,
+}) => {
+  let color: string;
+  switch (stationStatus) {
+    case "Current":
+      color = "rgb(90, 180, 0)";
+      return (
+        <path
+          fill={other ? "rgb(255, 255, 255)" : color}
+          fillOpacity="0.75"
+          stroke={other ? color : "rgb(0, 0, 0)"}
+          strokeOpacity={showBorder ? 1 : 0}
+          strokeWidth="2"
+          strokeLinecap="square"
+          strokeLinejoin={undefined}
+          strokeMiterlimit="4"
+          path="M 0,0 12,0 12,12 0,12 Z"
+          d="M 0 0 12 0 12 12 0 12Z"
+          fillRule="evenodd"
+          strokeDasharray="none"
+          transform={transform}
+        />
+      );
+    case "Discontinued":
+      color = "rgb(180, 90, 0)";
+      return (
+        <circle
+          fill={other ? "rgb(255, 255, 255)" : color}
+          fillOpacity="0.75"
+          stroke={other ? color : "rgb(0, 0, 0)"}
+          strokeOpacity={showBorder ? 1 : 0}
+          strokeWidth="1.5"
+          strokeLinecap="square"
+          strokeLinejoin={undefined}
+          strokeMiterlimit="4"
+          cx="6"
+          cy="6"
+          r="6"
+          fillRule="evenodd"
+          strokeDasharray="none"
+          transform={transform}
+        />
+      );
+    case "Virtual":
+      color = "rgb(180, 0, 115)";
+      return (
+        <path
+          fill={other ? "rgb(255, 255, 255)" : color}
+          fillOpacity="0.75"
+          stroke={other ? color : "rgb(0, 0, 0)"}
+          strokeOpacity={showBorder ? 1 : 0}
+          strokeWidth="1.5"
+          strokeLinecap="square"
+          strokeLinejoin={undefined}
+          strokeMiterlimit="4"
+          path="M 0,6 6,12 12,6 6,0 Z"
+          d="M 0 6 6 12 12 6 6 0Z"
+          fillRule="evenodd"
+          strokeDasharray="none"
+          transform={transform}
+        />
+      );
+    default:
+      return null;
   }
 }

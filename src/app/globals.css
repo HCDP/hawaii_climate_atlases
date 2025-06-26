@@ -25,3 +25,19 @@ body {
     text-wrap: balance;
   }
 }
+
+.link {
+  @apply text-blue-600 no-underline visited:text-purple-600 hover:text-blue-800 hover:underline;
+}
+
+.bordered-table {
+  @apply border-1 border-collapse w-full
+}
+
+.bordered-table th {
+  @apply p-1 border-1 border-gray-300
+}
+
+.bordered-table td {
+  @apply p-1 border-1 border-gray-300
+}

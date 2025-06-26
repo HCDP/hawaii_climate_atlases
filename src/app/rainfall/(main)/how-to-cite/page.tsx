@@ -1,4 +1,13 @@
+"use client"
+
+import { useContext } from "react";
+import useRequiredConditionsOfUse from "@/hooks/useRequiredConditionsOfUse";
+import { ConditionsOfUseContext } from "@/components/ConditionsOfUse/ConditionsOfUseContext";
+
 export default function HowToCite() {
+  const { onOpenConditionsOfUse } = useContext(ConditionsOfUseContext);
+  useRequiredConditionsOfUse();
+
   return (
     <div className="mt-14 max-w-[62rem] mx-auto">
       <h1 className="text-xl font-bold -mt-5">How do I cite material from this website?</h1>
@@ -27,7 +36,19 @@ export default function HowToCite() {
         <i>Int. J. Climatol.</i>, 37(5), 2522–2531. doi: 10.1002/joc.4862
       </p>
       {/* TODO: conditions of use modal */}
-      <p className="my-3">Complete information can be found in the <a href="#" className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">Conditions of Use.</a></p>
+      <p className="my-3">
+        Complete information can be found in the&nbsp;
+        <a
+          href="#"
+          className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+          onClick={(e) => {
+            e.preventDefault();
+            onOpenConditionsOfUse();
+          }}
+        >
+          Conditions of Use.
+        </a>
+      </p>
     </div>
   );
 }

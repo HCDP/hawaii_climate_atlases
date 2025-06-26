@@ -6,11 +6,11 @@ import ClientInteractiveMap from "./ClientInteractiveMap";
 export default async function InteractiveMap() {
   /*
   const rfStations: Station[] = await getStations();
-  const otherStations: Station[] = await getOtherStations();
+  const other_stations: Station[] = await getOtherStations();
   const isohyets: Isohyets = await getIsohyets();
   const asciiGrids: Grids = await getGrids();
   return (
-    <ClientInteractiveMap rfStations={rfStations} otherStations={otherStations} isohyets={isohyets} grids={asciiGrids} />
+    <ClientInteractiveMap rfStations={rfStations} other_stations={other_stations} isohyets={isohyets} grids={asciiGrids} />
   );
   */
   return (

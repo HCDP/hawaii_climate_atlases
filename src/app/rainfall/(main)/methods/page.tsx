@@ -1,6 +1,6 @@
 export default function Methods() {
   return (
-    <div className="mt-14 max-w-[62rem] mx-auto">
+    <div className="mt-14 max-w-[62rem] mx-auto mb-5">
       <h1 className="text-xl font-bold -mt-5 mb-3">How the Rainfall Atlas of Hawaiʻi Was Made</h1>
       <a href="/how-to-cite" className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600 italic">
         How to cite this information
@@ -365,7 +365,7 @@ export default function Methods() {
       
       <h1 className="text-xl font-bold mt-3">References</h1>
       {/* Squish text in a div to right-align with citations above */}
-      <div className="max-w-[38rem] mb-5">
+      <div className="max-w-[38rem]">
         <p className="mt-3">
           Daly, C., Smith, J., Doggett, M., Halbleib, M., and Gibson, W. 2006. High-resolution climate maps for the Pacific Basin Islands, 1971-2000. Report submitted to National Park 
           Service Pacific West Regional Office. PRISM Group, Oregon State University. 

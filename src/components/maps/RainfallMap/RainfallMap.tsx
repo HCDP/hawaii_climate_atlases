@@ -1,26 +1,36 @@
-import React, { useContext, useState } from "react";
-import Map, { MapProps, StationIcon } from "../Map";
-import { Station, Units, Period, Isohyets, Grids } from "@/lib";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Map, { StationIcon } from "../Map";
+import {
+  Station,
+  Units,
+  Period,
+  AsciiGrid,
+} from "@/lib";
 import SideBar from "@/components/SideBar";
-import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, useMapEvents, Marker } from "react-leaflet";
-import L, { LatLng, LatLngExpression, Map as LeafletMap, Util } from "leaflet";
+import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, Marker } from "react-leaflet";
+import L, { LatLng, LatLngBounds } from "leaflet";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
-import formatNum = Util.formatNum;
-import { LayoutContext } from "@/components/LayoutContext";
 import { RainfallColorLayer } from "./RainfallColorLayer";
+import { Feature, FeatureCollection } from "geojson";
+import { defaultSettings } from "@/constants";
+import useRainfallData from "@/hooks/useRainfallData";
+import { renderToStaticMarkup } from "react-dom/server";
 
-const IsohyetLabels = ({ features }: { features: any[] }) => {
-  const map = useMap();
-  const zoom = map.getZoom();
-
+const IsohyetLabels = ({
+  features,
+  zoom
+}: {
+  features: Feature[],
+  zoom: number
+}) => {
   // to prevent cluttered view, only show at certain zoom levels
-  if (zoom < 10) return null; 
+  if (zoom < 10) return null;
 
   return (
     <>
       {features.map((feature, index) => {
-        const value = feature.properties.CONTOUR;
-        
+        const value = feature.properties?.CONTOUR;
+
         if (feature.geometry.type === 'LineString') {
           const coords = feature.geometry.coordinates;
           const mid = Math.floor(coords.length / 2);
@@ -46,39 +56,38 @@ const IsohyetLabels = ({ features }: { features: any[] }) => {
                   className: '', // prevent default Leaflet styles
                   iconSize: [20, 10], // box containing the value label
                   iconAnchor: [7, 7], // position of label in box (middle)
-              })}
+                })}
             />
           );
         }
         return null;
-      })} 
+      })}
     </>
   );
 };
 
 const IsohyetsLayer = (
   {
-    isohyets,
-    selectedUnits,
-    selectedPeriod,
+    geojson,
   }: {
-    isohyets: Isohyets,
-    selectedUnits: Units,
-    selectedPeriod: Period,
+    geojson: FeatureCollection,
   }) => {
-  const geojson = isohyets[selectedUnits][selectedPeriod];
-  //console.log(JSON.stringify(geojson, null, 2));
+  const map = useMap();
+  const [zoom, setZoom] = useState<number>(map.getZoom());
+  useMapEvent("zoomend", () => {
+    setZoom(map.getZoom());
+  });
   return (
     <>
       <GeoJSON
-      interactive={false}
-      data={geojson}
-      style={{
-        color: 'black',
-        weight: 0.7,
-      }}
+        interactive={false}
+        data={geojson}
+        style={{
+          color: 'black',
+          weight: 0.7,
+        }}
       />
-      <IsohyetLabels features={geojson.features} />
+      <IsohyetLabels features={geojson.features} zoom={zoom} />
     </>
   );
 }
@@ -86,22 +95,23 @@ const IsohyetsLayer = (
 const PopupOnClick = (
   {
     selectedUnits,
-    // selectedPeriod,
-    grids,
+    selectedPeriod,
+    selectedStation,
+    grid,
   }: {
     selectedUnits: Units,
     selectedPeriod: Period,
-    grids: Grids,
+    selectedStation?: Station | null,
+    grid: AsciiGrid,
   }) => {
-
-  const [location, setLocation] = useState<LatLng>();
+  const [location, setLocation] = useState<LatLng | null>(null);
   const [gridValue, setGridValue] = useState<number | null>(null);
-  useMapEvent("click", (e) => {
+  useEffect(() => {
+    if (!location) {
+      setGridValue(null);
+      return;
+    }
     // Credit: https://github.com/ikewai/precipitation_application/blob/prod/src/app/services/util/data-retreiver.service.ts#L34
-    // const grid = grids[selectedUnits][selectedPeriod];
-    const grid = grids[selectedUnits][0];
-    const location = e.latlng;
-    setLocation(location);
     const { ncols, nrows, xllcorner, yllcorner, cellsize } = grid.header;
     const offset = new LatLng(location.lat - yllcorner, location.lng - xllcorner);
 
@@ -131,105 +141,358 @@ const PopupOnClick = (
     } else {
       setGridValue(null);
     }
+  }, [location, selectedUnits, grid]);
+  useMapEvent("click", (e) => {
+    setLocation(e.latlng);
   });
 
+  const periodText = Number(selectedPeriod) === Period.Annual ? "annual" : Period[selectedPeriod];
+  const clickedOnStation: boolean =
+    !!selectedStation &&
+    !!location &&
+    location.equals(new LatLng(selectedStation.Lat_DD, selectedStation.Lon_DD));
+
   return location ? (
-    <Popup position={location}>
-      {gridValue ? `Mean annual rainfall: ${gridValue.toFixed(3)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
-    </Popup>
+    <>
+      <Popup position={location}>
+        <div className="flex flex-col gap-3">
+          Location: Lat: {location.lat.toFixed(4)},
+          Lon: {location.lng.toFixed(4)}
+          <hr />
+          {clickedOnStation && selectedStation && (
+            <>
+              Station: {selectedStation.Name}<br />
+              Status: {selectedStation.StationStatus}<br />
+              Record period: {selectedStation.MinYear} - {selectedStation.MaxYear}
+              <hr />
+            </>
+          )}
+          {/*Mean annual rainfall: {selectedStation?.AnnAvgIN}*/}
+          {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
+        </div>
+      </Popup>
+      {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) */}
+      {gridValue ? <Marker
+        position={location}
+        icon={
+          L.divIcon({
+            html:
+              `<svg width="25" height="25" viewBox="0 0 100 100">
+                <path 
+                  d="M10 10 L90 90 M90 10 L10 90"
+                  stroke="red"
+                  stroke-width="25"
+                  stroke-opacity="0.9"
+                  fill="none" 
+                />
+              </svg>`,
+            className: '',
+            iconSize: [25, 25],
+            iconAnchor: [12.5, 12.5],
+          })}
+      /> : <></>}
+    </>
   ) : null;
 }
 
-const ZoomendHandler = ({ onZoomEnd }: {
-  onZoomEnd: (zoom: number) => void,
-}) => {
-  const map: LeafletMap = useMapEvents({
-    zoomend: () => {
-      const zoom = map.getZoom();
-      onZoomEnd(zoom);
-    }
+const zoomSnap = 0.75,
+  zoomDelta = 0.75,
+  minZoom = 6;
+
+const pivotZoom = 12, hideBorderZoom = 9;
+
+function createStationIcon(stationStatus: string, zoom: number, other?: boolean): L.DivIcon {
+  const baseSize = 12;
+  let size: number;
+  if (zoom >= pivotZoom) {
+    size = baseSize;
+  } else {
+    size = baseSize - (3 * (pivotZoom - zoom) * zoomDelta);
+  }
+  const showBorder = zoom > hideBorderZoom;
+  const scale = size / baseSize;
+  const currentIcon = (
+    <StationIcon
+      stationStatus={stationStatus}
+      other={other}
+      showBorder={showBorder}
+      transform="translate(2, 2)"
+    />
+  );
+  const stationIconHtml = renderToStaticMarkup(currentIcon);
+  return L.divIcon({
+    html: `<svg width="16" height="16" viewBox="0 0 16 16" style="transform: scale(${scale}); transform-origin: center;">
+        ${stationIconHtml}
+      </svg>`,
+    className: "",
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
   });
+}
+
+function createStationMarker(station: Station, zoom: number, other?: boolean): L.Marker {
+  const icon = createStationIcon(station.StationStatus, zoom, other);
+  return L.marker([station.Lat_DD, station.Lon_DD], {
+    zIndexOffset: other ? 30 : 40,
+    bubblingMouseEvents: true,
+    icon,
+  });
+}
+
+const StationIcons = ({
+  stations,
+  other,
+  setSelectedStation,
+  show,
+}: {
+  stations: Station[],
+  other?: boolean,
+  setSelectedStation: (station: Station) => void,
+  show: boolean,
+}) => {
+  // Credit: https://medium.com/@silvajohnny777/optimizing-leaflet-performance-with-a-large-number-of-markers-0dea18c2ec99
+  const map = useMap();
+  const zoom = map.getZoom();
+
+  type StationIcon = {
+    station: Station,
+    marker: L.Marker
+  }
+  /* allStationIconsRef represents every station icon, along with its corresponding station, that will be added or
+     removed to the map. */
+  const allStationIconsRef = useRef<StationIcon[]>(
+    stations.map(station => {
+      const marker = createStationMarker(station, zoom, other)
+      return { station, marker }
+    })
+  );
+  // markersGroupRef is the reference to the layer group that contains the icons.
+  const markersGroupRef = useRef<L.LayerGroup>(L.layerGroup());
+
+  const renderMarkers = useCallback((
+    oldZoom: number,
+    newZoom: number,
+    oldBounds: LatLngBounds,
+    newBounds: LatLngBounds,
+  ) => {
+    /* objectives:
+       remove no longer visible markers
+       add newly visible markers
+       restyle new markers if needed
+       restyle current markers only if zoom has changed */
+
+    /* newStationIcons represents the icons, along with their corresponding station, that will be visible by the end of
+       this render. */
+    const newStationIcons: StationIcon[] = [];
+
+    const markersToRemove: L.Marker[] = [];
+    const markersToAdd: L.Marker[] = [];
+
+    const markersGroup = markersGroupRef.current;
+    const allStationIcons = allStationIconsRef.current;
+
+    // Figure out which icons need to be removed and which ones need to be added
+    allStationIcons.forEach((stationIcon) => {
+      const { marker } = stationIcon;
+      const markerLocation = marker.getLatLng();
+      if (newBounds.contains(markerLocation)) {
+        newStationIcons.push(stationIcon);
+        if (!markersGroup.hasLayer(marker)) {
+          markersToAdd.push(marker);
+        }
+      } else {
+        if (markersGroup.hasLayer(marker)) {
+          markersToRemove.push(marker);
+        }
+      }
+    });
+
+    function restyleIcon(stationIcon: StationIcon) {
+      const { station, marker } = stationIcon;
+      marker.setIcon(createStationIcon(station.StationStatus, newZoom, other));
+    }
+
+    // Restyle icons that need it
+    // If a zoom occurred we want to restyle all currently visible markers regardless of whether they're new or not:
+    // Either newZoom < pivotZoom, in which case we want to restyle regardless, or newZoom > pivotZoom.
+    // In this case, either the old zoom was < pivotZoom, in which case we want to restyle so that the icons
+    // become their base size, or the old zoom >= pivotZoom, in which case we don't need to restyle.
+    if (newZoom !== oldZoom) {
+      if (newZoom < pivotZoom || oldZoom < pivotZoom) {
+        newStationIcons.forEach(stationIcon => {
+          restyleIcon(stationIcon);
+        });
+      }
+      // Else, we only want to restyle the newly added markers
+    } else {
+      newStationIcons.forEach(stationIcon => {
+        if (!oldBounds.contains(stationIcon.marker.getLatLng())) {
+          restyleIcon(stationIcon);
+        }
+      });
+    }
+
+    markersToAdd.forEach(marker => markersGroup.addLayer(marker));
+    markersToRemove.forEach(marker => markersGroup.removeLayer(marker));
+  }, [other]);
+  useEffect(() => {
+    if (!map) return;
+    if (!show) {
+      if (map.hasLayer(markersGroupRef.current)) {
+        map.removeLayer(markersGroupRef.current);
+        return;
+      }
+    }
+    if (!map.hasLayer(markersGroupRef.current)) {
+      map.addLayer(markersGroupRef.current);
+    }
+    const allStationIcons = allStationIconsRef.current;
+    allStationIcons.forEach(icon => {
+      const { station, marker } = icon;
+      marker.addEventListener("click", () => {
+        setSelectedStation(station);
+      });
+    });
+
+    let oldZoom = map.getZoom();
+    let oldBounds = map.getBounds();
+    renderMarkers(0, oldZoom, oldBounds, oldBounds);
+    function render() {
+      const newZoom = map.getZoom();
+      const newBounds = map.getBounds();
+      renderMarkers(oldZoom, newZoom, oldBounds, newBounds);
+
+      oldZoom = newZoom;
+      oldBounds = newBounds;
+    }
+
+    map.on("moveend", render);
+    return () => {
+      map.off("moveend", render);
+      allStationIcons.forEach(icon => {
+        const { marker } = icon;
+        marker.off();
+      });
+    }
+  }, [map, renderMarkers, stations, show, setSelectedStation]);
+
   return null;
 }
 
-const StationIcons = (
-  {
-    stations, setSelectedStation, zoomDelta
-  }: {
-    stations: Station[],
-    setSelectedStation: (station: Station) => void,
-    zoom: number,
-    zoomDelta: number,
-  }) => {
-  const map = useMap();
-  const zoom = map.getZoom();
-  // Credit: https://github.com/ikewai/precipitation_application/blob/prod/src/app/components/map/map.component.ts#L656
-  const pivotRadius = 360, pivotZoom = 12, borderPivotZoom = 10.5;
-  const scale = map.getZoomScale(12, zoom);
-  let radius: number;
-  if (zoom >= pivotZoom) {
-    radius = pivotRadius * scale;
-  } else {
-    radius = pivotRadius + (120 * (pivotZoom - zoom) / zoomDelta)
-  }
-  return (
-    <>
-      {stations.map((station, index) => (
-        <StationIcon
-          station={station}
-          onClick={setSelectedStation}
-          center={new LatLng(formatNum(station.Lat_DD, false), formatNum(station.Lon_DD, false))}
-          radius={radius}
-          outline={zoom >= borderPivotZoom}
-          key={index}
-        />
-      ))}
-    </>
-  );
-}
+const RainfallMap = () => {
+  const [selectedStation, setSelectedStation] = useState<Station | null>(defaultSettings.selectedStation);
+  const [selectedUnits, setSelectedUnits] = useState<Units>(defaultSettings.selectedUnits);
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>(defaultSettings.selectedPeriod);
+  const [showIsohyets, setShowIsohyets] = useState<boolean>(defaultSettings.showIsohyets);
+  const [showGrids, setShowGrids] = useState<boolean>(defaultSettings.showGrids);
+  const [showRFStations, setShowRFStations] = useState<boolean>(defaultSettings.showRFStations);
+  const [showOtherStations, setShowOtherStations] = useState<boolean>(defaultSettings.showOtherStations);
 
-interface Props extends MapProps {
-  rfStations: Station[] | null,
-  otherStations: Station[] | null,
-  isohyets: Isohyets | null,
-  grids: Grids | null,
-}
-
-const RainfallMap: React.FC<Props> = (
-  {
+  const {
     rfStations,
     otherStations,
-    isohyets,
-    grids,
-  }: Props
-) => {
-  const [selectedStation, setSelectedStation] = useState<Station>();
-  const [selectedUnits, setSelectedUnits] = useState<Units>("IN");
-  const [selectedPeriod, setSelectedPeriod] = useState<Period>(Period.Annual);
-  const [showIsohyets, setShowIsohyets] = useState<boolean>(false);
-  const [showGrids, setShowGrids] = useState<boolean>(true);
-  const [showRFStations, setShowRFStations] = useState<boolean>(true);
-  const [showOtherStations, setShowOtherStations] = useState<boolean>(false);
+    featureCollections,
+    asciiGrid,
+    allDataLoaded,
+    isLoading,
+  } = useRainfallData(selectedUnits, selectedPeriod);
 
-  const { maximized, setMaximized } = useContext(LayoutContext);
-  const toggleMapMaximized = () => setMaximized(oldMax => !oldMax);
+  const ranges_IN: [number, number][] = [
+    [0.8, 32.2],
+    [0.4, 26.4],
+    [0.6, 51.9],
+    [0.3, 38.5],
+    [0.1, 30.7],
+    [0, 32.8],
+    [0, 38.7],
+    [0, 34.7],
+    [0, 30.1],
+    [0.3, 38.3],
+    [0.7, 38.6],
+    [0.6, 36.4],
+    [8, 404.4]
+  ];
+  const ranges_MM: [number, number][] = [
+    [21, 818],
+    [11, 669],
+    [16, 1323],
+    [7, 978],
+    [2, 777],
+    [0, 833],
+    [0, 984],
+    [1, 881],
+    [1, 764],
+    [8, 973],
+    [19, 980],
+    [14, 921],
+    [204, 10271]
+  ];
 
-  const startPosition: LatLngExpression = [21.344875, -157.908248];
-  const startZoom = 7.5,
-    zoomSnap = 0.75,
-    zoomDelta = 0.75,
-    minZoom = 6;
-  const [zoom, setZoom] = useState<number>(startZoom);
+  const colorLayer = useMemo(() => {
+    return asciiGrid ? (
+      <RainfallColorLayer
+        key={`color-layer-${selectedUnits}-${selectedPeriod}`}
+        options={{
+          cacheEmpty: true,
+          colorScale: {
+            colors: [],
+            range: selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod],
+          },
+          asciiGrid,
+        }}
+      />
+    ) : null;
+    // eslint-disable-next-line
+  }, [asciiGrid]);
+  const rfStationIcons = useMemo(() => {
+    return rfStations ? (
+      <StationIcons
+        stations={rfStations}
+        setSelectedStation={setSelectedStation}
+        show={showRFStations}
+      />
+    ) : null;
+  }, [rfStations, showRFStations]);
+  const otherStationIcons = useMemo(() => {
+    return otherStations ? (
+      <StationIcons
+        stations={otherStations}
+        other={true}
+        setSelectedStation={setSelectedStation}
+        show={showOtherStations}
+      />
+    ) : null;
+  }, [otherStations, showOtherStations]);
+  const isohyetsLayer = useMemo(() => {
+    {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */
+    }
+    return featureCollections ? (
+      <IsohyetsLayer
+        key={`isohyets-layer-${selectedUnits}-${selectedPeriod}`}
+        geojson={featureCollections[selectedPeriod]}
+      />
+    ) : null;
+  }, [featureCollections, selectedPeriod, selectedUnits]);
+
+  if (!allDataLoaded) {
+    return (
+      <p className="text-center">Loading data...</p>
+    );
+  }
 
   return (
     <div className="flex w-full h-full max-h-full">
-      <div className="min-w-[24rem]">
-        <SideBar selectedStation={selectedStation} selectedUnits={selectedUnits}/>
-      </div>
+      <SideBar
+        selectedStation={selectedStation}
+        selectedUnits={selectedUnits}
+        selectedPeriod={selectedPeriod}
+        range={selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod]}
+        units={selectedUnits == Units.IN ? 'in' : 'mm'}
+      />
       <div className="w-full h-full">
         <Map
-          startPosition={startPosition}
-          startZoom={startZoom}
+          startPosition={defaultSettings.startPosition}
+          startZoom={defaultSettings.zoom}
           zoomSnap={zoomSnap}
           zoomDelta={zoomDelta}
           minZoom={minZoom}
@@ -240,53 +503,21 @@ const RainfallMap: React.FC<Props> = (
             url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
           />
 
-          {showGrids && grids && (
-            <RainfallColorLayer 
-              options={{
-                cacheEmpty: true,
-                colorScale: {
-                  colors: [],
-                  range: [8, 404.4],
-                },
-                asciiGrid: grids[selectedUnits][0],
-              }}
-            />
-          )}
+          {showGrids && colorLayer}
 
-          {showRFStations && rfStations && (
-            <StationIcons
-              stations={rfStations}
-              setSelectedStation={setSelectedStation}
-              zoom={zoom}
-              zoomDelta={zoomDelta}
-            />
-          )}
+          {rfStationIcons}
 
-          {showOtherStations && otherStations && (
-            <StationIcons
-              stations={otherStations}
-              setSelectedStation={setSelectedStation}
-              zoom={zoom}
-              zoomDelta={zoomDelta}
-            />
-          )}
+          {otherStationIcons}
 
-          {/* "key" here is a hack to force IsohyetsLayer to re-render when the selected units change */}
-          {showIsohyets && isohyets && (
-            <IsohyetsLayer
-              key={`${selectedUnits}${selectedPeriod}`}
-              isohyets={isohyets} selectedUnits={selectedUnits}
-              selectedPeriod={selectedPeriod}
-            />
-          )}
+          {showIsohyets && isohyetsLayer}
 
-          {grids && <PopupOnClick
+          {asciiGrid && <PopupOnClick
+            grid={asciiGrid}
             selectedUnits={selectedUnits}
             selectedPeriod={selectedPeriod}
-            grids={grids}
+            selectedStation={selectedStation}
           />}
 
-          <ZoomendHandler onZoomEnd={setZoom}/>
           <MapOverlay
             selectedUnits={selectedUnits}
             setSelectedUnits={setSelectedUnits}
@@ -300,8 +531,7 @@ const RainfallMap: React.FC<Props> = (
             setShowIsohyets={setShowIsohyets}
             showGrids={showGrids}
             setShowGrids={setShowGrids}
-            mapMaximized={maximized}
-            onToggleMaximize={toggleMapMaximized}
+            isLoading={isLoading}
           />
         </Map>
       </div>

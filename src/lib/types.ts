@@ -1,6 +1,9 @@
-import { FeatureCollectionWithFilename } from "shpjs";
+import { FeatureCollection } from "geojson";
 
-export type Units = "IN" | "MM";
+export enum Units {
+  IN = 'IN',
+  MM = 'MM'
+}
 
 export enum Period {
   January = 0,
@@ -59,7 +62,7 @@ export interface Station {
 }
 
 export type Isohyets = {
-  [key in Units]: FeatureCollectionWithFilename[];
+  [key in Units]: FeatureCollection[];
 };
 
 export type AsciiGrid = {

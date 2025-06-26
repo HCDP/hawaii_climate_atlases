@@ -1,6 +1,6 @@
 export default function Rainfall() {
   return (
-    <div className="mt-14 max-w-[62rem] mx-auto">
+    <div className="mt-14 max-w-[62rem] mx-auto mb-5">
       <h1 className="text-xl font-bold -mt-5">Hawaiʻi’s Rainfall Patterns</h1>
       <img src="/images/mean_ann_rf_statemm.jpg" className="w-[680px] mt-3 pb-5 justify-self-center" />
       <a href="/how-to-cite" className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600 italic">
@@ -145,8 +145,6 @@ export default function Rainfall() {
         Check out the &#34;Rainfall Trend Maps 1920-2012&#34; tab on the&nbsp;
         <a className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600" href="/downloads">downloads</a> 
         &nbsp;page for historical trend analysis results by island.
-        <br/>
-        <br/>
       </p>
     </div>
   );
