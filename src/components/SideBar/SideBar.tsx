@@ -231,7 +231,7 @@ const SideBar: React.FC<{
       {/* Resize bar */}
       <div
         onMouseDown={() => isResizing.current = true}
-        className="w-3 h-full cursor-ew-resize bg-gray-400 flex items-center justify-center ml-[5px]"
+        className="w-3 h-full cursor-ew-resize bg-gray-400 flex items-center justify-center ml-[5px] select-none"
       >
         <div className="w-0.5 h-10 bg-black" />
       </div>

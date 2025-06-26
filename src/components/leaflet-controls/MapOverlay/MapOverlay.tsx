@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import L, { LatLng, Map } from "leaflet";
 import { useMap, ZoomControl } from "react-leaflet";
-import LocationField from "@/components/LocationField";
 import { Period, Units } from "@/lib";
-import { LEAFLET_POSITIONS } from "@/constants";
+import {
+  // defaultSettings,
+  LEAFLET_POSITIONS,
+} from "@/constants";
 import { Button, ButtonGroup } from "@heroui/button";
 import { Checkbox } from "@heroui/checkbox";
 import { Spinner } from "@heroui/spinner";
@@ -11,8 +13,10 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from 
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import Fullscreen from "@mui/icons-material/Fullscreen";
 import FullscreenExit from "@mui/icons-material/FullscreenExit";
+// import HomeFilledOutlined from '@mui/icons-material/HomeOutlined';
 import X from "@mui/icons-material/Close";
 import { LayoutContext } from "@/components/LayoutContext";
+import { Input } from "@heroui/input";
 
 /*
   20, -150 works
@@ -75,10 +79,20 @@ const MapOverlay: React.FC<Props> = (
   const toggleMapMaximized = () => setMaximized(oldMax => !oldMax);
   const map: Map = useMap();
 
-  const handleLocationChange = (input: string) => {
-    const parsedLatLng = parseLocation(input);
+  const [locationInput, setLocationInput] = useState<string>("");
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const handleLocationChange = () => {
+    console.log(locationInput);
+    if (locationInput.length === 0) {
+      setLocationError(null);
+      return;
+    }
+    const parsedLatLng = parseLocation(locationInput);
     if (parsedLatLng !== null) {
       map.setView(parsedLatLng);
+      setLocationError(null);
+    } else {
+      setLocationError("Invalid coordinates entered");
     }
   };
 
@@ -102,8 +116,37 @@ const MapOverlay: React.FC<Props> = (
       }
     }}>
       <div className={LEAFLET_POSITIONS.topleft}>
-        <div className="leaflet-control flex">
-          <LocationField onLocationChange={handleLocationChange} />
+        <div className="leaflet-control flex gap-0">
+          <form
+            className="flex flex-col gap-1.5"
+            onSubmit={e => {
+              e.preventDefault();
+              handleLocationChange();
+            }}>
+            <Input
+              name="locationInput"
+              value={locationInput}
+              onValueChange={setLocationInput}
+              color="default"
+              radius="sm"
+              placeholder="Location: Latitude, Longitude (e.g. 21.299, -157.817)"
+              className="shadow-md rounded-lg w-[24rem] p-0 bg-white"
+            />
+            {locationError && <p className="text-red-700 pl-3">{locationError}</p>}
+          </form>
+          {/*<Button*/}
+          {/*  onPress={() => {*/}
+          {/*    setLocationError(null);*/}
+          {/*    map.setView(defaultSettings.startPosition);*/}
+          {/*  }}*/}
+          {/*  radius="sm"*/}
+          {/*  size="md"*/}
+          {/*  isIconOnly*/}
+          {/*  title={`Return to starting location (${defaultSettings.startPosition.lat.toFixed(4)}, ${defaultSettings.startPosition.lng.toFixed(4)})`}*/}
+          {/*  className="bg-white shadow-md"*/}
+          {/*>*/}
+          {/*  <HomeFilledOutlined />*/}
+          {/*</Button>*/}
         </div>
       </div>
       <div className={LEAFLET_POSITIONS.topright}>
@@ -131,12 +174,15 @@ const MapOverlay: React.FC<Props> = (
                 size="sm"
                 variant="flat"
               >
-                <X />
+                <X fontSize="small" />
               </Button>
               <Table
                 hideHeader
-                aria-label=""
-                className="rounded-xl shadow-md mb-0 z-10"
+                aria-label="Map controls"
+                classNames={{
+                  base: "rounded-lg shadow-md mb-0 z-10",
+                  wrapper: "rounded-lg",
+                }}
               >
                 <TableHeader>
                   <TableColumn>Field</TableColumn>
