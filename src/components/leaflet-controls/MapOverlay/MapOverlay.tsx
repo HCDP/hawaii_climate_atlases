@@ -52,6 +52,7 @@ interface Props {
   showGrids: boolean,
   setShowGrids: (show: boolean) => void,
   isLoading: boolean,
+  isPreloading:  boolean,
 }
 
 const MapOverlay: React.FC<Props> = (
@@ -69,6 +70,7 @@ const MapOverlay: React.FC<Props> = (
     showGrids,
     setShowGrids,
     isLoading,
+    isPreloading,
   }
 ) => {
   const { maximized, setMaximized } = useContext(LayoutContext);
@@ -91,6 +93,7 @@ const MapOverlay: React.FC<Props> = (
   const [showMenu, setShowMenu] = useState<boolean>(true);
   //const [rainfall, setRainfall] = useState<boolean>(false);
   const [uncertainty, setUncertainty] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   // Array of the string keys of the Period enum ("January", "February", etc.)
   const periodNames: string[] = Object.keys(Period).filter(period => isNaN(parseInt(period)));
@@ -227,11 +230,18 @@ const MapOverlay: React.FC<Props> = (
                   <TableRow key="4">
                     <TableCell><p className="text-base pt-[1.5vh]">Period: </p></TableCell>
                     <TableCell className="pt-[2.5vh]">
-                      <Dropdown>
+                      {/* Force dropdown to open by default to prevent it from freezing during API fetching */}
+                      <Dropdown isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
                         <DropdownTrigger>
-                          <Button variant="bordered">
-                            <p className="font-bold">{periodNames[selectedPeriod]}</p>
-                          </Button>
+                          {!isPreloading ? (
+                            <Button variant="bordered">
+                              <p className="font-bold">{periodNames[selectedPeriod]}</p>
+                            </Button>
+                          ) : (
+                            <Button isDisabled variant="bordered">
+                              <p className="font-bold">Loading maps...</p>
+                            </Button>
+                          )}
                         </DropdownTrigger>
                         <DropdownMenu
                           className="max-h-[200px] overflow-y-auto"
