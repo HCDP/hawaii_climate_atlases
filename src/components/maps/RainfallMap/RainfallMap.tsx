@@ -15,6 +15,7 @@ import { Feature, FeatureCollection } from "geojson";
 import { defaultSettings } from "@/constants";
 import useRainfallData from "@/hooks/useRainfallData";
 import { renderToStaticMarkup } from "react-dom/server";
+import useAllGrids from "@/hooks/useAllGrids";
 
 const IsohyetLabels = ({
   features,
@@ -340,8 +341,8 @@ const StationIcons = ({
     if (!show) {
       if (map.hasLayer(markersGroupRef.current)) {
         map.removeLayer(markersGroupRef.current);
-        return;
       }
+      return;
     }
     if (!map.hasLayer(markersGroupRef.current)) {
       map.addLayer(markersGroupRef.current);
@@ -427,6 +428,8 @@ const RainfallMap = () => {
     [14, 921],
     [204, 10271]
   ];
+
+  const { gridsAreLoading } = useAllGrids(selectedUnits);
 
   const colorLayer = useMemo(() => {
     return asciiGrid ? (
@@ -532,6 +535,7 @@ const RainfallMap = () => {
             showGrids={showGrids}
             setShowGrids={setShowGrids}
             isLoading={isLoading}
+            isPreloading={gridsAreLoading}
           />
         </Map>
       </div>

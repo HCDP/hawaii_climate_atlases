@@ -47,7 +47,7 @@ const SideBar: React.FC<{
 
   const rainfallColumns = [
     { key: "month", label: "Month" },
-    { key: "data", label: `Rainfall (${selectedUnits.toLocaleLowerCase()})` },
+    { key: "data", label: "Station" },
   ];
 
   const rainfallRows = fullMonths.map((month, index) => {
@@ -103,7 +103,7 @@ const SideBar: React.FC<{
               <AccordionItem
                 key="rainfall-data"
                 aria-label="Rainfall Data"
-                title="Rainfall Data"
+                title={`Rainfall Data (${selectedUnits.toLocaleLowerCase()})`}
                 classNames={{ title: "font-extrabold text-gray-600", trigger: "" }}
               >
                 <Table
