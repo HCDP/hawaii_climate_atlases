@@ -1,7 +1,7 @@
 import { AsciiGrid, Period, Station, Units } from "@/lib/types";
 import { getCachedFileBuffer } from "@/lib/data_cache";
 import Papa from "papaparse";
-import shp, { FeatureCollectionWithFileName } from "shpjs";
+import shp, { FeatureCollectionWithFilename } from "shpjs";
 import { FeatureCollection } from "geojson";
 import path from "path";
 import JSZip from "jszip";
