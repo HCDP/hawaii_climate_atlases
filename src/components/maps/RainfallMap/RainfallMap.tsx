@@ -8,7 +8,7 @@ import {
 } from "@/lib";
 import SideBar from "@/components/SideBar";
 import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, Marker } from "react-leaflet";
-import L, { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
+import L, { LatLng, LatLngBounds } from "leaflet";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
@@ -97,10 +97,12 @@ const PopupOnClick = (
   {
     selectedUnits,
     selectedPeriod,
+    selectedStation,
     grid,
   }: {
     selectedUnits: Units,
     selectedPeriod: Period,
+    selectedStation?: Station | null,
     grid: AsciiGrid,
   }) => {
   const [location, setLocation] = useState<LatLng | null>(null);
@@ -146,11 +148,29 @@ const PopupOnClick = (
   });
 
   const periodText = Number(selectedPeriod) === Period.Annual ? "annual" : Period[selectedPeriod];
+  const clickedOnStation: boolean =
+    !!selectedStation &&
+    !!location &&
+    location.equals(new LatLng(selectedStation.Lat_DD, selectedStation.Lon_DD));
 
   return location ? (
     <>
       <Popup position={location}>
-        {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(3)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
+        <div className="flex flex-col gap-3">
+          Location: Lat: {location.lat.toFixed(4)},
+          Lon: {location.lng.toFixed(4)}
+          <hr />
+          {clickedOnStation && selectedStation && (
+            <>
+              Station: {selectedStation.Name}<br />
+              Status: {selectedStation.StationStatus}<br />
+              Record period: {selectedStation.MinYear} - {selectedStation.MaxYear}
+              <hr />
+            </>
+          )}
+          {/*Mean annual rainfall: {selectedStation?.AnnAvgIN}*/}
+          {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
+        </div>
       </Popup>
       {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) */}
       {gridValue ? <Marker
@@ -176,7 +196,6 @@ const PopupOnClick = (
   ) : null;
 }
 
-const startPosition: LatLngExpression = [21.344875, -157.908248];
 const zoomSnap = 0.75,
   zoomDelta = 0.75,
   minZoom = 6;
@@ -318,11 +337,13 @@ const StationIcons = ({
     markersToRemove.forEach(marker => markersGroup.removeLayer(marker));
   }, [other]);
   useEffect(() => {
-    if (!show) {
-      markersGroupRef.current.clearLayers();
-      return;
-    }
     if (!map) return;
+    if (!show) {
+      if (map.hasLayer(markersGroupRef.current)) {
+        map.removeLayer(markersGroupRef.current);
+        return;
+      }
+    }
     if (!map.hasLayer(markersGroupRef.current)) {
       map.addLayer(markersGroupRef.current);
     }
@@ -336,8 +357,7 @@ const StationIcons = ({
 
     let oldZoom = map.getZoom();
     let oldBounds = map.getBounds();
-    renderMarkers(oldZoom, oldZoom, oldBounds, oldBounds);
-
+    renderMarkers(0, oldZoom, oldBounds, oldBounds);
     function render() {
       const newZoom = map.getZoom();
       const newBounds = map.getBounds();
@@ -474,7 +494,7 @@ const RainfallMap = () => {
       />
       <div className="w-full h-full">
         <Map
-          startPosition={startPosition}
+          startPosition={defaultSettings.startPosition}
           startZoom={defaultSettings.zoom}
           zoomSnap={zoomSnap}
           zoomDelta={zoomDelta}
@@ -498,6 +518,7 @@ const RainfallMap = () => {
             grid={asciiGrid}
             selectedUnits={selectedUnits}
             selectedPeriod={selectedPeriod}
+            selectedStation={selectedStation}
           />}
 
           <MapOverlay

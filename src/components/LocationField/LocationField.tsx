@@ -1,23 +1,31 @@
-import React from "react";
+import React, { SetStateAction } from "react";
 import { Input } from "@heroui/input";
 
 const LocationField: React.FC<{
-  onLocationChange: (input: string) => void,
-}> = ({ onLocationChange }) => {
+  locationInput: string,
+  setLocationInput: React.Dispatch<SetStateAction<string>>,
+  handleLocationChange: () => void,
+  placeholder?: string,
+  error?: string | null,
+  className?: string,
+}> = ({ locationInput, setLocationInput, handleLocationChange, placeholder, error, className }) => {
   return (
-    <form onSubmit={e => {
-      e.preventDefault();
-      const input: string = new FormData(e.target as HTMLFormElement).get("locationInput") as string;
-      onLocationChange(input);
-    }}>
+    <form
+      className="flex flex-col gap-1.5"
+      onSubmit={e => {
+        e.preventDefault();
+        handleLocationChange();
+      }}>
       <Input
         name="locationInput"
+        value={locationInput}
+        onValueChange={setLocationInput}
         color="default"
         radius="sm"
-        placeholder="Location: Latitude, Longitude (degrees)"
-        className="shadow-md rounded-lg"
-        style={{ width: "20rem" }}
+        placeholder={placeholder}
+        className={className}
       />
+      {error && <p className="text-red-700 pl-3">{error}</p>}
     </form>
   );
 }
