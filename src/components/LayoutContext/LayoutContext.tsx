@@ -22,7 +22,7 @@ export const LayoutProvider: React.FC<Props> = ({ children, navLinks, navImg }: 
 
 
   const pathname: string = usePathname();
-  const isMapPage: boolean = pathname === '/interactive-map';
+  const isMapPage: boolean = pathname === '/rainfall/interactive-map';
 
   const navBar = useMemo(() => <NavBar navLinks={navLinks} navImg={navImg} />, [navLinks, navImg]);
   const footer = useMemo(() => <Footer />, []);

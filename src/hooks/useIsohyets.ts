@@ -9,8 +9,9 @@ export const useIsohyets = (units: string): {
   isLoading: boolean,
   error: Error | undefined,
 } => {
-  const { data, isLoading, error } = useSWRImmutable<FeatureCollection[], Error>(`/api/isohyets/${units}`, fetcher, {
-    keepPreviousData: true
+  const { data, isLoading, error } = useSWRImmutable<FeatureCollection[], Error>(`/rainfall/api/isohyets/${units.toLowerCase()}`, fetcher, {
+    keepPreviousData: true,
+    revalidateOnMount: false,
   });
   return {
     featureCollections: data,

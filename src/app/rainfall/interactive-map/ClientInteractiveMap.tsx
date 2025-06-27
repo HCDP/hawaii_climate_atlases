@@ -2,18 +2,9 @@
 
 // import RainfallMap from "@/components/maps/RainfallMap";
 import useRequiredConditionsOfUse from "@/hooks/useRequiredConditionsOfUse";
-import dynamic from "next/dynamic";
 import useRainfallData from "@/hooks/useRainfallData";
 import { defaultSettings } from "@/constants";
-
-
-const RainfallMap = dynamic(
-  () => import("@/components/maps/RainfallMap"),
-  {
-    ssr: false,
-    loading: () => <p className="text-center">Loading map...</p>
-  }
-);
+import RainfallMap from "@/components/maps/RainfallMap";
 
 
 const ClientInteractiveMap = () => {

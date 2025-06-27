@@ -9,7 +9,8 @@ export const useStations = (filter?: string): {
   isLoading: boolean,
   error: Error | undefined,
 } => {
-  const { data, isLoading, error } = useSWRImmutable<Station[], Error>(`/api/stations${filter ? `?filter=${filter}` : ""}`, fetcher, {
+  const { data, isLoading, error } = useSWRImmutable<Station[], Error>(`/rainfall/api/stations${filter ? `?filter=${filter}` : ""}`, fetcher, {
+    revalidateOnMount: false,
     keepPreviousData: true
   });
   return {

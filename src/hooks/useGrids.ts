@@ -9,7 +9,8 @@ export const useGrids = (units: string, period: string): {
   isLoading: boolean;
   error: Error | undefined,
 } => {
-  const { data, isLoading, error } = useSWRImmutable<AsciiGrid, Error>(`/api/grids/${units}/${period}`, fetcher, {
+  const { data, isLoading, error } = useSWRImmutable<AsciiGrid, Error>(`/rainfall/api/grids/${units.toLowerCase()}/${period.toLowerCase()}`, fetcher, {
+    revalidateOnMount: false,
     keepPreviousData: true
   });
   return {

@@ -106,7 +106,7 @@ export async function getGrids({
 }: {
   units: Units,
   period: Period
-}) {
+}): Promise<AsciiGrid | null> {
   let fileName, fetchUrl;
   if (units === Units.IN) {
     fileName = IN_GRIDS_FILE_NAME;
