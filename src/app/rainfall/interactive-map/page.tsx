@@ -15,7 +15,7 @@ const ClientInteractiveMap = dynamic(
 
 export default async function InteractiveMap() {
   const allUnits: Units[] = Object.values(Units);
-  const allPeriods: Period[] = Object.values(Period).filter(p => typeof p !== "string");
+  // const allPeriods: Period[] = Object.values(Period).filter(p => typeof p !== "string");
 
   const stationsPromises = [
     { url: "/rainfall/api/stations", promise: getStations({ other: false }) },
@@ -26,15 +26,15 @@ export default async function InteractiveMap() {
       url: `/rainfall/api/isohyets/${u.toLowerCase()}`,
       promise: getIsohyets({ units: u })
     }));
-  const gridsPromises =
-    allUnits.flatMap(u => allPeriods
-      .map(p => ({
-        url: `/rainfall/api/isohyets/${u}/${p}`,
-        promise: getGrids({ units: u, period: p })
-      })));
-  // const gridsPromises = [
-  //   { url: "/rainfall/api/grids/in/annual", promise: getGrids({ units: Units.IN, period: Period.Annual }) }
-  // ]
+  // const gridsPromises =
+  //   allUnits.flatMap(u => allPeriods
+  //     .map(p => ({
+  //       url: `/rainfall/api/isohyets/${u}/${p}`,
+  //       promise: getGrids({ units: u, period: p })
+  //     })));
+  const gridsPromises = [
+    { url: "/rainfall/api/grids/in/annual", promise: getGrids({ units: Units.IN, period: Period.Annual }) }
+  ]
 
   const dataPromises = [
     ...stationsPromises,
