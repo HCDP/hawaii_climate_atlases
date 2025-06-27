@@ -341,8 +341,8 @@ const StationIcons = ({
     if (!show) {
       if (map.hasLayer(markersGroupRef.current)) {
         map.removeLayer(markersGroupRef.current);
-        return;
       }
+      return;
     }
     if (!map.hasLayer(markersGroupRef.current)) {
       map.addLayer(markersGroupRef.current);
