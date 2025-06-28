@@ -113,12 +113,23 @@ const PopupOnClick = (
     setLocation: (loc: LatLng) => void,
     grid: AsciiGrid,
   }) => {
-  // const [location, setLocation] = useState<LatLng | null>(null);
+  const [clickedOnStation, setClickedOnStation] = useState<boolean>(false);
   const [gridValue, setGridValue] = useState<number | null>(null);
   useEffect(() => {
     if (!location) {
       setGridValue(null);
       return;
+    }
+    const newLocationOnStation: boolean =
+      !!selectedStation &&
+      !!location &&
+      location.equals(new LatLng(selectedStation.Lat_DD, selectedStation.Lon_DD));
+    if (selectedStation && !newLocationOnStation) {
+      setClickedOnStation(false);
+      setSelectedStation(null);
+    }
+    if (selectedStation && newLocationOnStation) {
+      setClickedOnStation(true);
     }
     // Credit: https://github.com/ikewai/precipitation_application/blob/prod/src/app/services/util/data-retreiver.service.ts#L34
     const { ncols, nrows, xllcorner, yllcorner, cellsize } = grid.header;
@@ -152,19 +163,13 @@ const PopupOnClick = (
     } else {
       setGridValue(null);
     }
-  }, [location, selectedUnits, grid]);
+  }, [location, selectedUnits, grid, selectedStation, setSelectedStation, setSelectedGridIndex]);
   useMapEvent("click", (e) => {
     setLocation(e.latlng);
   });
 
   const periodText = Number(selectedPeriod) === Period.Annual ? "annual" : Period[selectedPeriod];
-  const clickedOnStation: boolean =
-    !!selectedStation &&
-    !!location &&
-    location.equals(new LatLng(selectedStation.Lat_DD, selectedStation.Lon_DD));
-
   // Used to remove station data from the sidebar if only a grid is clicked on
-  if (!clickedOnStation) setSelectedStation(null);
 
   return location ? (
     <>
@@ -257,12 +262,12 @@ function createStationMarker(station: Station, zoom: number, other?: boolean): L
 const StationIcons = ({
   stations,
   other,
-  setSelectedStation,
+  handleClickStation,
   show,
 }: {
   stations: Station[],
   other?: boolean,
-  setSelectedStation: (station: Station) => void,
+  handleClickStation: (station: Station, other?: boolean) => void,
   show: boolean,
 }) => {
   // Credit: https://medium.com/@silvajohnny777/optimizing-leaflet-performance-with-a-large-number-of-markers-0dea18c2ec99
@@ -365,7 +370,7 @@ const StationIcons = ({
     allStationIcons.forEach(icon => {
       const { station, marker } = icon;
       marker.addEventListener("click", () => {
-        setSelectedStation(station);
+        handleClickStation(station, other);
       });
     });
 
@@ -389,7 +394,7 @@ const StationIcons = ({
         marker.off();
       });
     }
-  }, [map, renderMarkers, stations, show, setSelectedStation]);
+  }, [map, renderMarkers, stations, show, handleClickStation, other]);
 
   return null;
 }
@@ -402,6 +407,7 @@ const RainfallMap = () => {
   const [showGrids, setShowGrids] = useState<boolean>(defaultSettings.showGrids);
   const [showRFStations, setShowRFStations] = useState<boolean>(defaultSettings.showRFStations);
   const [showOtherStations, setShowOtherStations] = useState<boolean>(defaultSettings.showOtherStations);
+  const [selectedStationIsOther, setSelectedStationIsOther] = useState<boolean>(false);
   const [selectedGridIndex, setSelectedGridIndex] = useState<number>(-1); // -1 = default val or non-grid loc
   const [location, setLocation] = useState<LatLng | null>(null);
 
@@ -470,7 +476,10 @@ const RainfallMap = () => {
     return rfStations ? (
       <StationIcons
         stations={rfStations}
-        setSelectedStation={setSelectedStation}
+        handleClickStation={(station, other) => {
+          setSelectedStation(station)
+          setSelectedStationIsOther(!!other);
+        }}
         show={showRFStations}
       />
     ) : null;
@@ -480,7 +489,10 @@ const RainfallMap = () => {
       <StationIcons
         stations={otherStations}
         other={true}
-        setSelectedStation={setSelectedStation}
+        handleClickStation={(station, other) => {
+          setSelectedStation(station)
+          setSelectedStationIsOther(!!other);
+        }}
         show={showOtherStations}
       />
     ) : null;
@@ -506,6 +518,7 @@ const RainfallMap = () => {
     <div className="flex w-full h-full max-h-full">
       <SideBar
         selectedStation={selectedStation}
+        isOtherStation={selectedStationIsOther}
         selectedUnits={selectedUnits}
         selectedPeriod={selectedPeriod}
         asciiGrids={asciiGrids}
