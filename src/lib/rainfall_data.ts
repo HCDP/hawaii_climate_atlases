@@ -2,6 +2,7 @@ import { AsciiGrid, Period, Station, Units } from "@/lib/types";
 import { getCachedFileBuffer } from "@/lib/data_cache";
 import Papa from "papaparse";
 import shp, { FeatureCollectionWithFilename } from "shpjs";
+import { FeatureCollection } from "geojson";
 import path from "path";
 import JSZip from "jszip";
 
@@ -66,7 +67,7 @@ export async function getIsohyets({
   units
 }: {
   units: Units
-}): Promise<FeatureCollectionWithFilename[] | null> {
+}): Promise<FeatureCollection[] | null> {
   let fileName, fetchUrl;
   if (units === Units.IN) {
     fileName = IN_ISOHYETS_FILE_NAME;
