@@ -2,22 +2,27 @@ import React , { useState, useRef, useEffect } from 'react';
 import Plot from '@/components/Plot';
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, getKeyValue } from "@heroui/table";
-import { Station, Units, Period } from "@/lib";
+import { Station, Units, Period, AsciiGrid } from "@/lib";
 import { StationIcon } from "@/components/maps/Map";
+import { LatLng } from "leaflet";
 
-const fullMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const fullPeriods = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Annual'];
+const periods = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Ann'];
 
 const SideBar: React.FC<{
   selectedStation?: Station | null,
   selectedUnits: Units,
   selectedPeriod: Period,
+  asciiGrids: AsciiGrid[],
+  canShowGridValues: boolean,
+  selectedGridIndex: number,
+  location: LatLng | null,
   range: [number, number],
   units: string,
-}> = ({ selectedStation, selectedUnits, selectedPeriod, range, units }) => {
+}> = ({ selectedStation, selectedUnits, selectedPeriod, asciiGrids, canShowGridValues, selectedGridIndex, range, units, location }) => {
+  // Handles resize bar functionality
   const [width, setWidth] = useState(24);
   const isResizing = useRef(false);
-
   useEffect(() => {
     // Adjust sidebar width based on how much the user moves mouse left/right
     const handleMouseMove = (e: MouseEvent) => {
@@ -41,20 +46,29 @@ const SideBar: React.FC<{
     };
   }, []);
 
-  const stationData: number[] = selectedStation ? months.map(month =>
+  const stationData: number[] = selectedStation ? periods.map(month =>
     Math.max(Number(selectedStation[`${month}Avg${selectedUnits}` as keyof typeof selectedStation]), 0)
   ) : [];
 
+  // Grab data up to december
+  const gridData: number[] = canShowGridValues ? asciiGrids.slice(0, -1).map(asciiGrid => 
+    asciiGrid.values[selectedGridIndex]
+  ) : [];
+
   const rainfallColumns = [
-    { key: "month", label: "Month" },
-    { key: "data", label: "Station" },
+    { key: "period", label: "Month" },
+    { key: "map_data", label: "Map" },
+    { key: "map_uncertainty", label: "Uncert." },
+    { key: "station_data", label: "Station" },
+    { key: "station_uncertainty", label: "Uncert." },
   ];
 
-  const rainfallRows = fullMonths.map((month, index) => {
+  const rainfallRows = fullPeriods.map((period, index) => {
     return {
       key: index,
-      month: month,
-      data: Math.round(stationData[index] * 100) / 100,
+      period: period,
+      map_data: canShowGridValues ? Math.round(asciiGrids[index].values[selectedGridIndex] * 100) / 100 : "",
+      station_data: selectedStation ? Math.round(stationData[index] * 100) / 100 : "",
     };
   })
 
@@ -84,16 +98,17 @@ const SideBar: React.FC<{
         className="flex flex-col max-h-full"
         style={{ minWidth: `${width}rem` }}
       >
-        <div className="h-[300px] p-4 shrink-0">
+        <div className="h-[350px] p-4 shrink-0">
           <Plot
             stationName={selectedStation?.Name ?? ""}
-            xdata={months}
-            ydata={stationData}
+            xdata={periods.slice(0, -1)}
+            stationData={stationData.slice(0, -1)}
+            gridData={gridData}
             units={selectedUnits}
+            location={location}
           />
         </div>
         <div className="overflow-y-auto px-4 pt-0 mt-0">
-          {selectedStation && (
             <Accordion
               isCompact
               defaultExpandedKeys={["rainfall-data", "station-information", "legend"]}
@@ -113,8 +128,7 @@ const SideBar: React.FC<{
                   aria-label="Rainfall data table"
                 >
                   <TableHeader columns={rainfallColumns}>
-                    {(column) => <TableColumn key={column.key}
-                                              align={column.key === 'data' ? 'end' : 'start'}>{column.label}</TableColumn>}
+                    {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                   </TableHeader>
                   <TableBody items={rainfallRows}>
                     {item => (
@@ -208,7 +222,7 @@ const SideBar: React.FC<{
                   </div>
                   <div>
                     <h1 className="font-bold mb-[5px]">Rainfall Grid</h1>
-                    <h1>({selectedPeriod > 11 ? 'Annual' : fullMonths[selectedPeriod]})</h1>
+                    <h1>({selectedPeriod > 11 ? 'Annual' : fullPeriods[selectedPeriod]})</h1>
                     <div className="inline-flex flex-row mt-[5px]">
                       <div
                         className="w-[30px] h-[75px]"
@@ -225,7 +239,6 @@ const SideBar: React.FC<{
                 </div>
               </AccordionItem>
             </Accordion>
-          )}
         </div>
       </div>
       {/* Resize bar */}

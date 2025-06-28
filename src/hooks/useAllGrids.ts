@@ -23,8 +23,11 @@ export default function useAllGrids(selectedUnits: Units) {
     useGrids(selectedUnits, Period[11]),
     useGrids(selectedUnits, Period[12]),
   ];
+
+  const asciiGrids: AsciiGrid[] = results.flatMap(r => r.asciiGrid ? [r.asciiGrid] : []);
   
   return {
-    gridsAreLoading: Object.values(results).some(r => r.isLoading)
+    asciiGrids,
+    gridsAreLoading: Object.values(results).some(r => r.isLoading),
   }
 }

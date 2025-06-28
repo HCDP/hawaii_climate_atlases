@@ -98,14 +98,22 @@ const PopupOnClick = (
     selectedUnits,
     selectedPeriod,
     selectedStation,
+    setSelectedStation,
+    location,
+    setLocation,
+    setSelectedGridIndex,
     grid,
   }: {
     selectedUnits: Units,
     selectedPeriod: Period,
     selectedStation?: Station | null,
+    setSelectedStation: (station: Station | null) => void,
+    setSelectedGridIndex: (index: number) => void,
+    location: LatLng | null,
+    setLocation: (loc: LatLng) => void,
     grid: AsciiGrid,
   }) => {
-  const [location, setLocation] = useState<LatLng | null>(null);
+  // const [location, setLocation] = useState<LatLng | null>(null);
   const [gridValue, setGridValue] = useState<number | null>(null);
   useEffect(() => {
     if (!location) {
@@ -136,8 +144,10 @@ const PopupOnClick = (
       const value: number | undefined = grid.values[index];
       if (value) {
         setGridValue(value);
+        setSelectedGridIndex(index);
       } else {
         setGridValue(null);
+        setSelectedGridIndex(-1);
       }
     } else {
       setGridValue(null);
@@ -152,6 +162,9 @@ const PopupOnClick = (
     !!selectedStation &&
     !!location &&
     location.equals(new LatLng(selectedStation.Lat_DD, selectedStation.Lon_DD));
+
+  // Used to remove station data from the sidebar if only a grid is clicked on
+  if (!clickedOnStation) setSelectedStation(null);
 
   return location ? (
     <>
@@ -172,8 +185,9 @@ const PopupOnClick = (
           {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
         </div>
       </Popup>
-      {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) */}
-      {gridValue ? <Marker
+      {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) 
+          Some stations may appear off of the grid spaces, so include marker in those cases */}
+      {gridValue || clickedOnStation ? <Marker
         position={location}
         icon={
           L.divIcon({
@@ -388,6 +402,8 @@ const RainfallMap = () => {
   const [showGrids, setShowGrids] = useState<boolean>(defaultSettings.showGrids);
   const [showRFStations, setShowRFStations] = useState<boolean>(defaultSettings.showRFStations);
   const [showOtherStations, setShowOtherStations] = useState<boolean>(defaultSettings.showOtherStations);
+  const [selectedGridIndex, setSelectedGridIndex] = useState<number>(-1); // -1 = default val or non-grid loc
+  const [location, setLocation] = useState<LatLng | null>(null);
 
   const {
     rfStations,
@@ -397,6 +413,11 @@ const RainfallMap = () => {
     allDataLoaded,
     isLoading,
   } = useRainfallData(selectedUnits, selectedPeriod);
+
+  const { 
+    asciiGrids, 
+    gridsAreLoading 
+  } = useAllGrids(selectedUnits);
 
   const ranges_IN: [number, number][] = [
     [0.8, 32.2],
@@ -428,8 +449,6 @@ const RainfallMap = () => {
     [14, 921],
     [204, 10271]
   ];
-
-  const { gridsAreLoading } = useAllGrids(selectedUnits);
 
   const colorLayer = useMemo(() => {
     return asciiGrid ? (
@@ -489,6 +508,10 @@ const RainfallMap = () => {
         selectedStation={selectedStation}
         selectedUnits={selectedUnits}
         selectedPeriod={selectedPeriod}
+        asciiGrids={asciiGrids}
+        canShowGridValues={!gridsAreLoading && selectedGridIndex != -1}
+        selectedGridIndex={selectedGridIndex}
+        location={location}
         range={selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod]}
         units={selectedUnits == Units.IN ? 'in' : 'mm'}
       />
@@ -519,6 +542,10 @@ const RainfallMap = () => {
             selectedUnits={selectedUnits}
             selectedPeriod={selectedPeriod}
             selectedStation={selectedStation}
+            setSelectedStation={setSelectedStation}
+            location={location}
+            setLocation={setLocation}
+            setSelectedGridIndex={setSelectedGridIndex}
           />}
 
           <MapOverlay
@@ -535,7 +562,7 @@ const RainfallMap = () => {
             showGrids={showGrids}
             setShowGrids={setShowGrids}
             isLoading={isLoading}
-            isPreloading={gridsAreLoading}
+            gridsAreLoading={gridsAreLoading}
           />
         </Map>
       </div>

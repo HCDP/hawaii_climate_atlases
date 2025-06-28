@@ -56,7 +56,7 @@ interface Props {
   showGrids: boolean,
   setShowGrids: (show: boolean) => void,
   isLoading: boolean,
-  isPreloading:  boolean,
+  gridsAreLoading:  boolean,
 }
 
 const MapOverlay: React.FC<Props> = (
@@ -74,7 +74,7 @@ const MapOverlay: React.FC<Props> = (
     showGrids,
     setShowGrids,
     isLoading,
-    isPreloading,
+    gridsAreLoading,
   }
 ) => {
   const { maximized, setMaximized } = useContext(LayoutContext);
@@ -279,7 +279,7 @@ const MapOverlay: React.FC<Props> = (
                       {/* Force dropdown to open by default to prevent it from freezing during API fetching */}
                       <Dropdown isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
                         <DropdownTrigger>
-                          {!isPreloading ? (
+                          {!gridsAreLoading ? (
                             <Button variant="bordered">
                               <p className="font-bold">{periodNames[selectedPeriod]}</p>
                             </Button>
