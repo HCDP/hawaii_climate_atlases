@@ -2,7 +2,7 @@ export default function Rainfall() {
   return (
     <div className="mt-14 max-w-[62rem] mx-auto mb-5">
       <h1 className="text-xl font-bold -mt-5">Hawaiʻi’s Rainfall Patterns</h1>
-      <img src="/images/mean_ann_rf_statemm.jpg" className="w-[680px] mt-3 pb-5 justify-self-center" />
+      <img src="/images/mean_ann_rf_statemm.jpg" className="w-[680px] mt-3 pb-5 justify-self-center" alt="Mean Annual Rainfall: State of Hawaiʻi" />
       <a href="/how-to-cite" className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600 italic">
         How to cite this information
       </a>
@@ -43,7 +43,7 @@ export default function Rainfall() {
         level (LCL).
       </p>
       <div>
-        <img src="/images/rainfall/rainfall2_s.jpg" className="w-[325px] float-right" />
+        <img src="/images/rainfall/rainfall2_s.jpg" className="w-[325px] float-right" alt="Mean Monthly Rainfall (station: Mountain View)" />
         <p className="mt-4">
           So, the question is, what are the main causes of lifting of air over Hawaiʻi? Air can be lifted in several ways, each resulting in 
           cooling of the lifted air. First and foremost, when wind blows against the slopes of mountains, air is forced to rise (orographic 
@@ -55,7 +55,7 @@ export default function Rainfall() {
         </p>
         {/* className="w-[680px] mt-3 pb-5 justify-self-center" */}
       </div>
-      <img src="/images/rainfall/rainfall_patterns.jpg" className="w-[680px] pt-5 justify-self-center" />
+      <img src="/images/rainfall/rainfall_patterns.jpg" className="w-[680px] pt-5 justify-self-center" alt="Rainfall patterns" />
       <p className="mt-4">
         Orographic lifting is not the whole story. For example, on high mountains, such as Haleakalā, Mauna Kea, and Mauna Loa, the maximum 
         rainfall zones are found at the mid-slopes, above which rainfall declines steeply. As mentioned above, the Mauna Kea summit has the 
@@ -73,7 +73,7 @@ export default function Rainfall() {
         convergence of surface winds forces air to rise over the island.
       </p>
       <div>
-        <img src="/images/rainfall/rainfall4_s.jpg" className="w-[325px] float-right" />
+        <img src="/images/rainfall/rainfall4_s.jpg" className="w-[325px] float-right" alt="Mean Monthly Rainfall (station: Hono Wb Airport)"  />
         <p className="mt-4">
           When weather disturbances, such as cold fronts, Kona storms, upper-level low-pressure systems, or tropical storms, affect the 
           islands, extensive lifting can occur causing widespread clouds and rain. These disturbances often disrupt the TWI, allowing lifting 
@@ -87,8 +87,8 @@ export default function Rainfall() {
       </div>
       <div>
         <p className="float-right ml-5">
-          <img src="/images/rainfall/rainfall5_s.jpg" className="w-[325px] mt-8" />
-          <img src="/images/rainfall/rainfall6_s.jpg" className="w-[325px] mt-16" />
+          <img src="/images/rainfall/rainfall5_s.jpg" className="w-[325px] mt-8" alt="Big Island rainfall map" />
+          <img src="/images/rainfall/rainfall6_s.jpg" className="w-[325px] mt-16" alt="Mean Monthly Rainfall (station: Honaunau)" />
         </p>
         <p className="mt-4 pr-5">
           The North and South Kona Districts on the Island of Hawaiʻi have a unique rainfall pattern. The west-facing slopes of Hualalai 
@@ -129,7 +129,7 @@ export default function Rainfall() {
         </p>
         {/* className="w-[680px] mt-3 pb-5 justify-self-center" */}
       </div>
-      <img src="/images/State_RFTrends_1920_2012_Ann2.jpg" className="w-[680px] mt-3 pb-5 justify-self-center" />
+      <img src="/images/State_RFTrends_1920_2012_Ann2.jpg" className="w-[680px] mt-3 pb-5 justify-self-center" alt="State Annual Rainfall Trends 1920-2012" />
       <p>
         In the Kona coffee growing region of the Island of Hawaiʻi, some stations have experienced dramatic rainfall declines since the early 
         1980s. Many believe that this change can be traced to the effects of the eruption of Kilauea Volcano, which has been in its current active 
