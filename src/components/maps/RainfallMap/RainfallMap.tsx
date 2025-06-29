@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import "leaflet-path-drag";
+import "@/lib/leaflet-path-drag-patch";
 import Map, { StationIcon } from "../Map";
 import {
   Station,
