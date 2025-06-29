@@ -56,6 +56,13 @@ export async function getStations({
         error: (error: never) => reject(error),
       });
     });
+    stations.forEach((station) => {
+      Object.values(station).forEach(value => {
+        if ((value as string).includes("*")) {
+          console.log(station.Name, value);
+        }
+      });
+    });
     return stations;
   } catch (error) {
     console.error("Error parsing CSV data", error);

@@ -535,6 +535,7 @@ const RainfallMap = () => {
           zoomSnap={zoomSnap}
           zoomDelta={zoomDelta}
           minZoom={minZoom}
+          maxBounds={defaultSettings.maxBounds}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -576,6 +577,7 @@ const RainfallMap = () => {
             setShowGrids={setShowGrids}
             isLoading={isLoading}
             gridsAreLoading={gridsAreLoading}
+            minimap={true}
           />
         </Map>
       </div>
