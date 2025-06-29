@@ -52,15 +52,13 @@ export async function getStations({
         worker: true,
         header: true, // treats top line of CSV as names for columns
         skipEmptyLines: true,
+        // Some random values have an asterisk appended to the end of the string
+        transform(value: string): string {
+          const newValue = value.replaceAll("*", "");
+          return newValue;
+        },
         complete: (result) => resolve(result.data as Station[]),
         error: (error: never) => reject(error),
-      });
-    });
-    stations.forEach((station) => {
-      Object.values(station).forEach(value => {
-        if ((value as string).includes("*")) {
-          console.log(station.Name, value);
-        }
       });
     });
     return stations;
