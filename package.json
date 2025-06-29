@@ -28,6 +28,7 @@
     "jszip": "^3.10.1",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
+    "leaflet-path-drag": "^1.9.5",
     "next": "^14.2.14",
     "papaparse": "^5.5.2",
     "plotly.js": "^2.35.2",

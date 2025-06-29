@@ -1,6 +1,6 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import L, { LatLng, Map } from "leaflet";
-import { useMap, MapContainer, ZoomControl, TileLayer, useMapEvent, Rectangle } from "react-leaflet";
+import { useMap, MapContainer, ZoomControl, TileLayer, useMapEvent } from "react-leaflet";
 import { Period, Units } from "@/lib";
 import {
   // defaultSettings,
@@ -18,6 +18,12 @@ import X from "@mui/icons-material/Close";
 import { LayoutContext } from "@/components/LayoutContext";
 import { Input } from "@heroui/input";
 import { LeafletContextInterface, useEventHandlers, useLeafletContext } from "@react-leaflet/core";
+
+declare module "leaflet" {
+  interface PathOptions {
+    draggable?: boolean;
+  }
+}
 
 /*
   20, -150 works
@@ -49,6 +55,8 @@ function MinimapBounds({ parentMap, parentMapContext, zoom }: {
   zoom: number
 }) {
   const minimap = useMap();
+  const rectangleRef = useRef<L.Polygon | null>(null);
+  const moveCausedByDragRef = useRef<boolean>(false);
 
   // Clicking a point on the minimap sets the parent's map center
   useMapEvent('click', (e) => {
@@ -56,9 +64,17 @@ function MinimapBounds({ parentMap, parentMapContext, zoom }: {
   })
 
   // Keep track of bounds in state to trigger renders
-  const [bounds, setBounds] = useState(parentMap.getBounds())
   const onChange = useCallback(() => {
-    setBounds(parentMap.getBounds())
+    const newBounds = parentMap.getBounds();
+    if (!moveCausedByDragRef.current && !rectangleRef.current?.getBounds().equals(newBounds)) {
+      rectangleRef.current?.setLatLngs([
+        newBounds.getNorthWest(),
+        newBounds.getNorthEast(),
+        newBounds.getSouthEast(),
+        newBounds.getSouthWest(),
+        newBounds.getNorthWest(),
+      ])
+    }
     // Update the minimap's view to match the parent map's center and zoom
     minimap.setView(parentMap.getCenter(), zoom)
   }, [minimap, parentMap, zoom]);
@@ -70,9 +86,34 @@ function MinimapBounds({ parentMap, parentMapContext, zoom }: {
   }, {
     move: onChange,
     zoom: onChange,
+    moveend: () => {
+      moveCausedByDragRef.current = false;
+    },
   });
 
-  return <Rectangle bounds={bounds} pathOptions={{ weight: 3 }} />
+  useEffect(() => {
+    const bounds = parentMap.getBounds();
+    const rectangle = new (L.Polygon)([
+      bounds.getNorthWest(),
+      bounds.getNorthEast(),
+      bounds.getSouthEast(),
+      bounds.getSouthWest(),
+      bounds.getNorthWest(),
+    ], { weight: 3, draggable: true })
+      .on("dragend", () => {
+        moveCausedByDragRef.current = true;
+        parentMap.setView(rectangle.getCenter());
+        minimap.setView(rectangle.getCenter(), zoom);
+      });
+    rectangle.addTo(minimap);
+    rectangleRef.current = rectangle;
+    return () => {
+      rectangle.removeFrom(minimap);
+      rectangleRef.current = null;
+    }
+  }, [minimap, onChange, parentMap, zoom]);
+
+  return null;
 }
 
 interface Props {
