@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import "leaflet-path-drag";
 import Map, { StationIcon } from "../Map";
 import {
   Station,
@@ -98,19 +99,38 @@ const PopupOnClick = (
     selectedUnits,
     selectedPeriod,
     selectedStation,
+    setSelectedStation,
+    location,
+    setLocation,
+    setSelectedGridIndex,
     grid,
   }: {
     selectedUnits: Units,
     selectedPeriod: Period,
     selectedStation?: Station | null,
+    setSelectedStation: (station: Station | null) => void,
+    setSelectedGridIndex: (index: number) => void,
+    location: LatLng | null,
+    setLocation: (loc: LatLng) => void,
     grid: AsciiGrid,
   }) => {
-  const [location, setLocation] = useState<LatLng | null>(null);
+  const [clickedOnStation, setClickedOnStation] = useState<boolean>(false);
   const [gridValue, setGridValue] = useState<number | null>(null);
   useEffect(() => {
     if (!location) {
       setGridValue(null);
       return;
+    }
+    const newLocationOnStation: boolean =
+      !!selectedStation &&
+      !!location &&
+      location.equals(new LatLng(selectedStation.Lat_DD, selectedStation.Lon_DD));
+    if (selectedStation && !newLocationOnStation) {
+      setClickedOnStation(false);
+      setSelectedStation(null);
+    }
+    if (selectedStation && newLocationOnStation) {
+      setClickedOnStation(true);
     }
     // Credit: https://github.com/ikewai/precipitation_application/blob/prod/src/app/services/util/data-retreiver.service.ts#L34
     const { ncols, nrows, xllcorner, yllcorner, cellsize } = grid.header;
@@ -136,22 +156,21 @@ const PopupOnClick = (
       const value: number | undefined = grid.values[index];
       if (value) {
         setGridValue(value);
+        setSelectedGridIndex(index);
       } else {
         setGridValue(null);
+        setSelectedGridIndex(-1);
       }
     } else {
       setGridValue(null);
     }
-  }, [location, selectedUnits, grid]);
+  }, [location, selectedUnits, grid, selectedStation, setSelectedStation, setSelectedGridIndex]);
   useMapEvent("click", (e) => {
     setLocation(e.latlng);
   });
 
   const periodText = Number(selectedPeriod) === Period.Annual ? "annual" : Period[selectedPeriod];
-  const clickedOnStation: boolean =
-    !!selectedStation &&
-    !!location &&
-    location.equals(new LatLng(selectedStation.Lat_DD, selectedStation.Lon_DD));
+  // Used to remove station data from the sidebar if only a grid is clicked on
 
   return location ? (
     <>
@@ -172,8 +191,9 @@ const PopupOnClick = (
           {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
         </div>
       </Popup>
-      {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) */}
-      {gridValue ? <Marker
+      {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) 
+          Some stations may appear off of the grid spaces, so include marker in those cases */}
+      {gridValue || clickedOnStation ? <Marker
         position={location}
         icon={
           L.divIcon({
@@ -243,12 +263,12 @@ function createStationMarker(station: Station, zoom: number, other?: boolean): L
 const StationIcons = ({
   stations,
   other,
-  setSelectedStation,
+  handleClickStation,
   show,
 }: {
   stations: Station[],
   other?: boolean,
-  setSelectedStation: (station: Station) => void,
+  handleClickStation: (station: Station, other?: boolean) => void,
   show: boolean,
 }) => {
   // Credit: https://medium.com/@silvajohnny777/optimizing-leaflet-performance-with-a-large-number-of-markers-0dea18c2ec99
@@ -351,7 +371,7 @@ const StationIcons = ({
     allStationIcons.forEach(icon => {
       const { station, marker } = icon;
       marker.addEventListener("click", () => {
-        setSelectedStation(station);
+        handleClickStation(station, other);
       });
     });
 
@@ -375,7 +395,7 @@ const StationIcons = ({
         marker.off();
       });
     }
-  }, [map, renderMarkers, stations, show, setSelectedStation]);
+  }, [map, renderMarkers, stations, show, handleClickStation, other]);
 
   return null;
 }
@@ -388,6 +408,9 @@ const RainfallMap = () => {
   const [showGrids, setShowGrids] = useState<boolean>(defaultSettings.showGrids);
   const [showRFStations, setShowRFStations] = useState<boolean>(defaultSettings.showRFStations);
   const [showOtherStations, setShowOtherStations] = useState<boolean>(defaultSettings.showOtherStations);
+  const [selectedStationIsOther, setSelectedStationIsOther] = useState<boolean>(false);
+  const [selectedGridIndex, setSelectedGridIndex] = useState<number>(-1); // -1 = default val or non-grid loc
+  const [location, setLocation] = useState<LatLng | null>(null);
 
   const {
     rfStations,
@@ -397,6 +420,11 @@ const RainfallMap = () => {
     allDataLoaded,
     isLoading,
   } = useRainfallData(selectedUnits, selectedPeriod);
+
+  const { 
+    asciiGrids, 
+    gridsAreLoading 
+  } = useAllGrids(selectedUnits);
 
   const ranges_IN: [number, number][] = [
     [0.8, 32.2],
@@ -429,8 +457,6 @@ const RainfallMap = () => {
     [204, 10271]
   ];
 
-  const { gridsAreLoading } = useAllGrids(selectedUnits);
-
   const colorLayer = useMemo(() => {
     return asciiGrid ? (
       <RainfallColorLayer
@@ -451,7 +477,10 @@ const RainfallMap = () => {
     return rfStations ? (
       <StationIcons
         stations={rfStations}
-        setSelectedStation={setSelectedStation}
+        handleClickStation={(station, other) => {
+          setSelectedStation(station)
+          setSelectedStationIsOther(!!other);
+        }}
         show={showRFStations}
       />
     ) : null;
@@ -461,7 +490,10 @@ const RainfallMap = () => {
       <StationIcons
         stations={otherStations}
         other={true}
-        setSelectedStation={setSelectedStation}
+        handleClickStation={(station, other) => {
+          setSelectedStation(station)
+          setSelectedStationIsOther(!!other);
+        }}
         show={showOtherStations}
       />
     ) : null;
@@ -487,8 +519,13 @@ const RainfallMap = () => {
     <div className="flex w-full h-full max-h-full">
       <SideBar
         selectedStation={selectedStation}
+        isOtherStation={selectedStationIsOther}
         selectedUnits={selectedUnits}
         selectedPeriod={selectedPeriod}
+        asciiGrids={asciiGrids}
+        canShowGridValues={!gridsAreLoading && selectedGridIndex != -1}
+        selectedGridIndex={selectedGridIndex}
+        location={location}
         range={selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod]}
         units={selectedUnits == Units.IN ? 'in' : 'mm'}
       />
@@ -499,6 +536,7 @@ const RainfallMap = () => {
           zoomSnap={zoomSnap}
           zoomDelta={zoomDelta}
           minZoom={minZoom}
+          maxBounds={defaultSettings.maxBounds}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -519,6 +557,10 @@ const RainfallMap = () => {
             selectedUnits={selectedUnits}
             selectedPeriod={selectedPeriod}
             selectedStation={selectedStation}
+            setSelectedStation={setSelectedStation}
+            location={location}
+            setLocation={setLocation}
+            setSelectedGridIndex={setSelectedGridIndex}
           />}
 
           <MapOverlay
@@ -535,7 +577,8 @@ const RainfallMap = () => {
             showGrids={showGrids}
             setShowGrids={setShowGrids}
             isLoading={isLoading}
-            isPreloading={gridsAreLoading}
+            gridsAreLoading={gridsAreLoading}
+            minimap={true}
           />
         </Map>
       </div>

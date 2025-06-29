@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import L, { LatLng, Map } from "leaflet";
-import { useMap, ZoomControl } from "react-leaflet";
+import { useMap, MapContainer, ZoomControl, TileLayer, useMapEvent } from "react-leaflet";
 import { Period, Units } from "@/lib";
 import {
   // defaultSettings,
@@ -17,6 +17,13 @@ import FullscreenExit from "@mui/icons-material/FullscreenExit";
 import X from "@mui/icons-material/Close";
 import { LayoutContext } from "@/components/LayoutContext";
 import { Input } from "@heroui/input";
+import { LeafletContextInterface, useEventHandlers, useLeafletContext } from "@react-leaflet/core";
+
+declare module "leaflet" {
+  interface PathOptions {
+    draggable?: boolean;
+  }
+}
 
 /*
   20, -150 works
@@ -42,6 +49,73 @@ const parseLocation = (input: string): LatLng | null => {
   }
 }
 
+function MinimapBounds({ parentMap, parentMapContext, zoom }: {
+  parentMap: Map,
+  parentMapContext: LeafletContextInterface,
+  zoom: number
+}) {
+  const minimap = useMap();
+  const rectangleRef = useRef<L.Polygon | null>(null);
+  const moveCausedByDragRef = useRef<boolean>(false);
+
+  // Clicking a point on the minimap sets the parent's map center
+  useMapEvent('click', (e) => {
+    parentMap.setView(e.latlng, parentMap.getZoom());
+  })
+
+  // Keep track of bounds in state to trigger renders
+  const onChange = useCallback(() => {
+    const newBounds = parentMap.getBounds();
+    if (!moveCausedByDragRef.current && !rectangleRef.current?.getBounds().equals(newBounds)) {
+      rectangleRef.current?.setLatLngs([
+        newBounds.getNorthWest(),
+        newBounds.getNorthEast(),
+        newBounds.getSouthEast(),
+        newBounds.getSouthWest(),
+        newBounds.getNorthWest(),
+      ])
+    }
+    // Update the minimap's view to match the parent map's center and zoom
+    minimap.setView(parentMap.getCenter(), zoom)
+  }, [minimap, parentMap, zoom]);
+
+  // Listen to events on the parent map
+  useEventHandlers({
+    instance: parentMap,
+    context: parentMapContext
+  }, {
+    move: onChange,
+    zoom: onChange,
+    moveend: () => {
+      moveCausedByDragRef.current = false;
+    },
+  });
+
+  useEffect(() => {
+    const bounds = parentMap.getBounds();
+    const rectangle = new (L.Polygon)([
+      bounds.getNorthWest(),
+      bounds.getNorthEast(),
+      bounds.getSouthEast(),
+      bounds.getSouthWest(),
+      bounds.getNorthWest(),
+    ], { weight: 3, draggable: true })
+      .on("dragend", () => {
+        moveCausedByDragRef.current = true;
+        parentMap.setView(rectangle.getCenter());
+        minimap.setView(rectangle.getCenter(), zoom);
+      });
+    rectangle.addTo(minimap);
+    rectangleRef.current = rectangle;
+    return () => {
+      rectangle.removeFrom(minimap);
+      rectangleRef.current = null;
+    }
+  }, [minimap, onChange, parentMap, zoom]);
+
+  return null;
+}
+
 interface Props {
   selectedUnits: Units,
   setSelectedUnits: (units: Units) => void,
@@ -56,7 +130,8 @@ interface Props {
   showGrids: boolean,
   setShowGrids: (show: boolean) => void,
   isLoading: boolean,
-  isPreloading:  boolean,
+  gridsAreLoading: boolean,
+  minimap: boolean,
 }
 
 const MapOverlay: React.FC<Props> = (
@@ -74,17 +149,18 @@ const MapOverlay: React.FC<Props> = (
     showGrids,
     setShowGrids,
     isLoading,
-    isPreloading,
+    gridsAreLoading,
+    minimap
   }
 ) => {
   const { maximized, setMaximized } = useContext(LayoutContext);
   const toggleMapMaximized = () => setMaximized(oldMax => !oldMax);
   const map: Map = useMap();
+  const mapContext = useLeafletContext();
 
   const [locationInput, setLocationInput] = useState<string>("");
   const [locationError, setLocationError] = useState<string | null>(null);
   const handleLocationChange = () => {
-    console.log(locationInput);
     if (locationInput.length === 0) {
       setLocationError(null);
       return;
@@ -111,6 +187,28 @@ const MapOverlay: React.FC<Props> = (
 
   // Array of the string keys of the Period enum ("January", "February", etc.)
   const periodNames: string[] = Object.keys(Period).filter(period => isNaN(parseInt(period)));
+  const minimapControl = useMemo(
+    () => {
+      const zoom = map.getZoom();
+      return (
+        <MapContainer
+          style={{ width: 320, height: 180 }}
+          center={map.getCenter()}
+          zoom={zoom - (0.75 * 3)}
+          dragging={false}
+          doubleClickZoom={false}
+          scrollWheelZoom={false}
+          attributionControl={false}
+          zoomControl={false}
+          bounds={map.getBounds()}
+        >
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <MinimapBounds parentMap={map} parentMapContext={mapContext} zoom={zoom - (0.75 * 3)} />
+        </MapContainer>
+      );
+    },
+    [map, mapContext],
+  );
 
   return (
     <div ref={overlay => {
@@ -121,7 +219,7 @@ const MapOverlay: React.FC<Props> = (
       <div className={LEAFLET_POSITIONS.topleft}>
         <div className="leaflet-control flex gap-0">
           <form
-            className="flex flex-col gap-1.5"
+            className="flex flex-col gap-2.5"
             onSubmit={e => {
               e.preventDefault();
               handleLocationChange();
@@ -153,7 +251,8 @@ const MapOverlay: React.FC<Props> = (
         </div>
       </div>
       <div className={LEAFLET_POSITIONS.topright}>
-        <div className="leaflet-control rounded-full shadow-md">
+        <div className="leaflet-control flex flex-col gap-2.5 items-end">
+          {minimap && minimapControl}
           <Button
             onPress={toggleMapMaximized}
             radius="full"
@@ -279,7 +378,7 @@ const MapOverlay: React.FC<Props> = (
                       {/* Force dropdown to open by default to prevent it from freezing during API fetching */}
                       <Dropdown isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
                         <DropdownTrigger>
-                          {!isPreloading ? (
+                          {!gridsAreLoading ? (
                             <Button variant="bordered">
                               <p className="font-bold">{periodNames[selectedPeriod]}</p>
                             </Button>

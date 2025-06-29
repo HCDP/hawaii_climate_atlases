@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MapContainer } from "react-leaflet";
-import { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
+import { LatLngBounds, LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -13,6 +13,7 @@ export interface Props {
   zoomSnap?: number,
   zoomDelta?: number,
   minZoom?: number,
+  maxBounds?: LatLngBounds,
   children?: React.ReactNode,
 }
 
@@ -23,6 +24,7 @@ const Map: React.FC<Props> = (
     zoomSnap = 0.75,
     zoomDelta = 0.75,
     minZoom = 6,
+    maxBounds,
     children,
   }: Props
 ) => {
@@ -36,18 +38,8 @@ const Map: React.FC<Props> = (
       zoomSnap={zoomSnap}
       zoomDelta={zoomDelta}
       minZoom={minZoom}
+      maxBounds={maxBounds}
       maxBoundsViscosity={0.75}
-      ref={map => {
-        if (map) {
-          const oldBounds: LatLngBounds = map.getBounds(),
-            oldSouthWest = oldBounds.getSouthWest(),
-            oldNorthEast = oldBounds.getNorthEast();
-          const newSouthWest: LatLng = new LatLng(oldSouthWest.lat - 5, oldSouthWest.lng - 5);
-          const newNorthEast: LatLng = new LatLng(oldNorthEast.lat + 5, oldNorthEast.lng + 5);
-          const newBounds: LatLngBounds = new LatLngBounds(newSouthWest, newNorthEast);
-          map.setMaxBounds(newBounds);
-        }
-      }}
       className="w-full h-full focus:outline-none z-40"
     >
       {children}
