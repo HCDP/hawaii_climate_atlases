@@ -79,7 +79,7 @@ const SideBar: React.FC<{
     return {
       key: index,
       period: period,
-      map_data: canShowGridValues ? Math.round(asciiGrids[index].values[selectedGridIndex] * 100) / 100 : "",
+      map_data: canShowGridValues ? Math.round((asciiGrids[index]?.values[selectedGridIndex] ?? 0) * 100) / 100 : "",
       station_data: selectedStation ? Math.round(stationData[index] * 100) / 100 : "",
     };
   })
