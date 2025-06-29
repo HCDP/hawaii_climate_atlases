@@ -12,5 +12,6 @@ export default function useRequiredConditionsOfUse() {
     if (!dontShowConditionsOfUse) {
       onOpenRequiredConditionsOfUse();
     }
+    // eslint-disable-next-line
   }, []);
 }

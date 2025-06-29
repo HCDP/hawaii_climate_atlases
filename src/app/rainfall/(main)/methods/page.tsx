@@ -50,34 +50,34 @@ export default function Methods() {
         <tbody>
           <tr>
             <td>
-              <img src="/images/methods/kriging_estimate.png" className="w-[350px] h-[271] float-right" />
+              <img src="/images/methods/kriging_estimate.png" className="w-[350px] h-[271] float-right" alt="Kriging Estimate" />
             </td>
             <td>
-              <img src="/images/methods/kriging_variance.png" className="w-[350px] h-[271] float-right" /> 
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <img src="/images/methods/prism_estimate.png" className="w-[350px] h-[271] float-right" />
-            </td>
-            <td>
-              <img src="/images/methods/prism_variance.png" className="w-[350px] h-[271] float-right" /> 
+              <img src="/images/methods/kriging_variance.png" className="w-[350px] h-[271] float-right" alt="Kriging Variance" />
             </td>
           </tr>
           <tr>
             <td>
-              <img src="/images/methods/radar_estimate.png" className="w-[350px] h-[271] float-right" />
+              <img src="/images/methods/prism_estimate.png" className="w-[350px] h-[271] float-right" alt="PRISM Estimate" />
             </td>
             <td>
-              <img src="/images/methods/radar_variance.png" className="w-[350px] h-[271] float-right" /> 
+              <img src="/images/methods/prism_variance.png" className="w-[350px] h-[271] float-right" alt="PRISM Variance" />
             </td>
           </tr>
           <tr>
             <td>
-              <img src="/images/methods/mm5_estimate.png" className="w-[350px] h-[271] float-right" />
+              <img src="/images/methods/radar_estimate.png" className="w-[350px] h-[271] float-right" alt="Radar Estimate" />
             </td>
             <td>
-              <img src="/images/methods/mm5_variance.png" className="w-[350px] h-[271] float-right" /> 
+              <img src="/images/methods/radar_variance.png" className="w-[350px] h-[271] float-right" alt="Radar Variance" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="/images/methods/mm5_estimate.png" className="w-[350px] h-[271] float-right" alt="MM5 Estimate" />
+            </td>
+            <td>
+              <img src="/images/methods/mm5_variance.png" className="w-[350px] h-[271] float-right" alt="MM5 Variance" />
             </td>
           </tr>
         </tbody>
@@ -95,7 +95,7 @@ export default function Methods() {
         few months to many decades, and the majority of stations are eventually discontinued. The types of gages and the methods of recording are 
         numerous, with manually read daily raingages the most common overall.
       </p>    
-      <img src="/images/methods/rainfall_chart.png" className="w-[575px] float-right" />
+      <img src="/images/methods/rainfall_chart.png" className="w-[575px] float-right" alt="Number of Rainfall Stations Operating Each Year chart" />
       <p className="mt-4">
         The monthly rainfall database that we compiled for the 2011 Rainfall Atlas of Hawaiʻi includes 1067 stations, with 517,017 station
         -months (43,085 station-years) of data over the period 1874-2007. These stations on average had 485 months of data (40 years of data) 
@@ -280,10 +280,10 @@ export default function Methods() {
         <tbody>
           <tr>
             <td>
-              <img src="/images/methods/raingage_stations.png" className="w-[303px] h-[327] float-right mr-16" />
+              <img src="/images/methods/raingage_stations.png" className="w-[303px] h-[327] float-right mr-16" alt="Raingage stations" />
             </td>
             <td>
-              <img src="/images/methods/all_stations.png" className="w-[303px] h-[327] float-right" /> 
+              <img src="/images/methods/all_stations.png" className="w-[303px] h-[327] float-right" alt="All stations" />
             </td>
           </tr>
         </tbody>
@@ -343,8 +343,8 @@ export default function Methods() {
         combined to give the total uncertainty in each station mean.
       </p>
       <p className="float-right ml-4">
-          <img src="/images/methods/rainfall_map.png" className="w-[390px] mt-4" />
-          <img src="/images/methods/uncertainty_map.png" className="w-[390px] mt-8" />
+          <img src="/images/methods/rainfall_map.png" className="w-[390px] mt-4" alt="Rainfall map" />
+          <img src="/images/methods/uncertainty_map.png" className="w-[390px] mt-8" alt="Uncertainty map" />
       </p>
       <p className="mt-3">
         Uncertainty in mapped rainfall results from the combined uncertainty in all of the predictors used to produce the map. The most important predictor was the map of interpolated 

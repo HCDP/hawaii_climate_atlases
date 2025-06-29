@@ -14,7 +14,7 @@ const Person = ({
     </h2>
     <div className="flex">
       <p>
-        <img src={img} className="w-[120px] h-[173px] m-4 mt-0 pb-8 float-left" />
+        <img src={img} className="w-[120px] h-[173px] m-4 mt-0 pb-8 float-left" alt={name} />
         {children}
       </p>
     </div>
