@@ -5,6 +5,7 @@ import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, getKey
 import { Station, Units, Period, AsciiGrid } from "@/lib";
 import { StationIcon } from "@/components/maps/Map";
 import { LatLng } from "leaflet";
+import { Button } from '@heroui/button';
 
 const fullPeriods = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Annual'];
 const periods = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Ann'];
@@ -32,6 +33,8 @@ const SideBar: React.FC<{
   units,
   location
 }) => {
+  const [showErrorBars, setShowErrorBars] = useState(false);
+
   // Handles resize bar functionality
   const [width, setWidth] = useState(24);
   const isResizing = useRef(false);
@@ -58,8 +61,12 @@ const SideBar: React.FC<{
     };
   }, []);
 
-  const stationData: number[] = selectedStation ? periods.map(month =>
+  const stationAverages: number[] = selectedStation ? periods.map(month =>
     Math.max(Number(selectedStation[`${month}Avg${selectedUnits}` as keyof typeof selectedStation]), 0)
+  ) : [];
+  
+  const stationUncertainty: number[] = selectedStation ? periods.map(month => 
+    Math.max(Number(selectedStation[`${month}SD_${selectedUnits.toLocaleLowerCase()}` as keyof typeof selectedStation]), 0)
   ) : [];
 
   // Grab data up to december
@@ -70,9 +77,9 @@ const SideBar: React.FC<{
   const rainfallColumns = [
     { key: "period", label: "Month" },
     { key: "map_data", label: "Map" },
-    { key: "map_uncertainty", label: "Uncert." },
-    { key: "station_data", label: "Station" },
-    { key: "station_uncertainty", label: "Uncert." },
+    { key: "map_uncert", label: "Uncert." },
+    { key: "station_avg", label: "Station" },
+    { key: "station_uncert", label: "Uncert." },
   ];
 
   const rainfallRows = fullPeriods.map((period, index) => {
@@ -80,7 +87,8 @@ const SideBar: React.FC<{
       key: index,
       period: period,
       map_data: canShowGridValues ? Math.round(asciiGrids[index].values[selectedGridIndex] * 100) / 100 : "",
-      station_data: selectedStation ? Math.round(stationData[index] * 100) / 100 : "",
+      station_avg: selectedStation ? Math.round(stationAverages[index] * 100) / 100 : "",
+      station_uncert: selectedStation ? Math.round(stationUncertainty[index] * 100) / 100 : "",
     };
   })
 
@@ -110,15 +118,25 @@ const SideBar: React.FC<{
         className="flex flex-col max-h-full"
         style={{ minWidth: `${width}rem` }}
       >
-        <div className="h-[350px] p-4 shrink-0">
+        <div className="h-[375px] p-4 shrink-0 flex flex-col justify-items-center">
           <Plot
             stationName={selectedStation?.Name ?? ""}
             xdata={periods.slice(0, -1)}
-            stationData={stationData.slice(0, -1)}
+            stationAverages={stationAverages.slice(0, -1)}
+            stationUncertainty={stationUncertainty.slice(0, -1)}
             gridData={gridData}
             units={selectedUnits}
             location={location}
+            showErrorBars={showErrorBars}
           />
+          {selectedStation && (
+            <Button 
+              className="w-[300px] mx-auto"
+              onPress={() => setShowErrorBars(!showErrorBars)}
+            >
+              {!showErrorBars ? "Show uncert." : "Hide uncert."}
+            </Button>
+          )}
         </div>
         <div className="overflow-y-auto px-4 pt-0 mt-0">
           <Accordion

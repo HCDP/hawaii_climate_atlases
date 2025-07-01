@@ -383,7 +383,7 @@ const MapOverlay: React.FC<Props> = (
                               <p className="font-bold">{periodNames[selectedPeriod]}</p>
                             </Button>
                           ) : (
-                            <Button isDisabled variant="bordered">
+                            <Button isLoading variant="bordered">
                               <p className="font-bold">Loading maps...</p>
                             </Button>
                           )}

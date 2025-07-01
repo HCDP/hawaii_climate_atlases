@@ -10,20 +10,24 @@ const emptyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 export interface Props {
   stationName: string,
   xdata: string[],
-  stationData: number[],
+  stationAverages: number[],
+  stationUncertainty: number[],
   gridData: number[],
   units: Units,
   location: LatLng | null,
+  showErrorBars: boolean,
 }
 
 const PlotlyPlot: React.FC<Props> = (
   {
     stationName,
     xdata,
-    stationData,
+    stationAverages,
+    stationUncertainty,
     gridData,
     units,
-    location
+    location,
+    showErrorBars
   }: Props
 ) => {
   return (
@@ -32,9 +36,14 @@ const PlotlyPlot: React.FC<Props> = (
         {
           type: 'bar',
           x: xdata,
-          y: stationData || emptyData,
+          y: stationAverages || emptyData,
           name: `Station: ${stationName}`,
-          showlegend: true
+          showlegend: true,
+          error_y: {
+            type: 'data',
+            array: stationUncertainty,
+            visible: showErrorBars,
+          }
         },
         {
           type: 'bar',
@@ -71,6 +80,7 @@ const PlotlyPlot: React.FC<Props> = (
         ],
         yaxis: {
           rangemode: 'nonnegative',
+          //range: [0, 20]
         },
         autosize: true,
         margin: {
