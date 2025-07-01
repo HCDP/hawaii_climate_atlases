@@ -379,12 +379,23 @@ const MapOverlay: React.FC<Props> = (
                       <Dropdown isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
                         <DropdownTrigger>
                           {!gridsAreLoading ? (
-                            <Button variant="bordered">
+                            <Button 
+                              variant="bordered" 
+                              endContent={
+                              <svg fill="none" height="18" viewBox="0 0 15 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                                <g transform="scale(1, -1) translate(0, -24)">
+                                  <path
+                                    d="M17.9188 8.17969H11.6888H6.07877C5.11877 8.17969 4.63877 9.33969 5.31877 10.0197L10.4988 15.1997C11.3288 16.0297 12.6788 16.0297 13.5088 15.1997L15.4788 13.2297L18.6888 10.0197C19.3588 9.33969 18.8788 8.17969 17.9188 8.17969Z"
+                                    fill="currentColor"
+                                  />
+                                </g>
+                              </svg>
+                            }>
                               <p className="font-bold">{periodNames[selectedPeriod]}</p>
                             </Button>
                           ) : (
-                            <Button isLoading variant="bordered">
-                              <p className="font-bold">Loading maps...</p>
+                            <Button isLoading variant="bordered" spinnerPlacement="end">
+                              <p className="font-bold">Loading maps</p>
                             </Button>
                           )}
                         </DropdownTrigger>
