@@ -96,6 +96,7 @@ const IsohyetsLayer = (
 
 const PopupOnClick = (
   {
+    isLoading,
     selectedUnits,
     selectedPeriod,
     selectedStation,
@@ -105,6 +106,7 @@ const PopupOnClick = (
     setSelectedGridIndex,
     grid,
   }: {
+    isLoading: boolean,
     selectedUnits: Units,
     selectedPeriod: Period,
     selectedStation?: Station | null,
@@ -188,7 +190,7 @@ const PopupOnClick = (
             </>
           )}
           {/*Mean annual rainfall: {selectedStation?.AnnAvgIN}*/}
-          {gridValue ? `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}` : "No data here"}
+          {!gridValue ? "No data here" : isLoading ? `Loading mean ${periodText} rainfall values (in ${selectedUnits.toLocaleLowerCase()})...` : `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`}
         </div>
       </Popup>
       {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) 
@@ -553,6 +555,7 @@ const RainfallMap = () => {
           {showIsohyets && isohyetsLayer}
 
           {asciiGrid && <PopupOnClick
+            isLoading={isLoading}
             grid={asciiGrid}
             selectedUnits={selectedUnits}
             selectedPeriod={selectedPeriod}
