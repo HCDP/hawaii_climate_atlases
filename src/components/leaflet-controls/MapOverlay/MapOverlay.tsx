@@ -296,8 +296,12 @@ const MapOverlay: React.FC<Props> = (
                     <TableCell><p className="text-base">Units: </p></TableCell>
                     <TableCell>
                       <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
+                        {/* Disabled unit switching until inch grids are fully loaded. Otherwise, loading speeds 
+                          are slower because mm grids also start fetching, forcing the user to wait longer 
+                          before accessing other layers. */}
                         {Object.keys(Units).map(u => (
                           <Button
+                            isDisabled={gridsAreLoading && selectedUnits == Units.IN}
                             key={u}
                             variant={selectedUnits === u ? "bordered" : "ghost"}
                             onPress={() => setSelectedUnits(u as Units)}
