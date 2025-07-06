@@ -80,7 +80,6 @@ const PlotlyPlot: React.FC<Props> = (
         ],
         yaxis: {
           rangemode: 'nonnegative',
-          //range: [0, 20]
         },
         autosize: true,
         margin: {
@@ -93,8 +92,19 @@ const PlotlyPlot: React.FC<Props> = (
       useResizeHandler
       config={{
         editable: false,
-        displayModeBar: false,
+        displayModeBar: true,
+        modeBarButtonsToRemove: [
+          'zoomIn2d', 
+          'zoomOut2d', 
+          'zoom2d',
+          'autoScale2d', 
+          'select2d', 
+          'lasso2d', 
+          'pan2d', 
+          'resetScale2d',
+        ],
         responsive: true,
+        displaylogo: false,
       }}
       className="w-full h-full"
     />
