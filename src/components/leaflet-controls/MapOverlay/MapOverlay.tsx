@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import L, { LatLng, LatLngBounds, Map } from "leaflet";
+import L, { Rectangle, LatLng, LatLngBounds, Map } from "leaflet";
 import { useMap, MapContainer, ZoomControl, TileLayer, useMapEvent } from "react-leaflet";
 import { Period, Units } from "@/lib";
 import {
@@ -50,30 +50,61 @@ const parseLocation = (input: string): LatLng | null => {
   }
 }
 
+// Snap rectangle to inside maxBounds
+function snapRectangleToMaxBounds(rectangle: Rectangle, maxBounds: L.LatLngBounds) {
+  const rectangleBounds = rectangle.getBounds();
+  const rectangleNorth = rectangleBounds.getNorth();
+  const rectangleSouth = rectangleBounds.getSouth();
+  const rectangleWest = rectangleBounds.getWest();
+  const rectangleEast = rectangleBounds.getEast();
+
+  const maxNorth = maxBounds.getNorth();
+  const maxSouth = maxBounds.getSouth();
+  const maxWest = maxBounds.getWest();
+  const maxEast = maxBounds.getEast();
+
+  const rectangleHeight = rectangleNorth - rectangleSouth;
+  const rectangleWidth = rectangleEast - rectangleWest;
+  let newSouth = rectangleSouth;
+  let newWest = rectangleWest;
+
+  if (rectangleSouth < maxSouth) {
+    newSouth = maxSouth;
+  } else if (rectangleNorth > maxNorth) {
+    newSouth = maxNorth - rectangleHeight;
+  }
+
+  if (rectangleWest < maxWest) {
+    newWest = maxWest;
+  } else if (rectangleEast > maxEast) {
+    newWest = maxEast - rectangleWidth;
+  }
+
+  const newSouthWest = new LatLng(newSouth, newWest);
+  const newNorthEast = new LatLng(newSouth + rectangleHeight, newWest + rectangleWidth);
+
+  const newRectangleBounds = new LatLngBounds(newSouthWest, newNorthEast);
+  rectangle.setBounds(newRectangleBounds);
+}
+
 function MinimapBounds({ parentMap, parentMapContext, zoom }: {
   parentMap: Map,
   parentMapContext: LeafletContextInterface,
   zoom: number
 }) {
   const minimap = useMap();
-  const rectangleRef = useRef<L.Polygon | null>(null);
+  const rectangleRef = useRef<Rectangle | null>(null);
   const moveCausedByDragRef = useRef<boolean>(false);
 
   // Clicking a point on the minimap sets the parent's map center
   useMapEvent('click', (e) => {
     parentMap.setView(e.latlng, parentMap.getZoom());
-  })
+  });
 
   const onParentMapChange = useCallback(() => {
     const newBounds = parentMap.getBounds();
     if (!moveCausedByDragRef.current && !rectangleRef.current?.getBounds().equals(newBounds)) {
-      rectangleRef.current?.setLatLngs([
-        newBounds.getNorthWest(),
-        newBounds.getNorthEast(),
-        newBounds.getSouthEast(),
-        newBounds.getSouthWest(),
-        newBounds.getNorthWest(),
-      ])
+      rectangleRef.current?.setBounds(newBounds)
     }
     // Update the minimap's view to match the parent map's center and zoom
     minimap.setView(parentMap.getCenter(), zoom)
@@ -83,47 +114,11 @@ function MinimapBounds({ parentMap, parentMapContext, zoom }: {
     if (rectangleRef.current) {
       moveCausedByDragRef.current = true;
 
+      // If the rectangle is out of bounds, snap it back into bounds, mimicking the snapping behavior of the actual map
       const rectangleBounds = rectangleRef.current.getBounds();
       const isOutOfBounds = !defaultSettings.maxBounds.contains(rectangleBounds);
       if (isOutOfBounds) {
-        const rectangleNorth = rectangleBounds.getNorth();
-        const rectangleSouth = rectangleBounds.getSouth();
-        const rectangleWest = rectangleBounds.getWest();
-        const rectangleEast = rectangleBounds.getEast();
-
-        const maxNorth = defaultSettings.maxBounds.getNorth();
-        const maxSouth = defaultSettings.maxBounds.getSouth();
-        const maxWest = defaultSettings.maxBounds.getWest();
-        const maxEast = defaultSettings.maxBounds.getEast();
-
-        const rectangleHeight = rectangleNorth - rectangleSouth;
-        const rectangleWidth = rectangleEast - rectangleWest;
-        let newSouth = rectangleSouth;
-        let newWest = rectangleWest;
-
-        if (rectangleSouth < maxSouth) {
-          newSouth = maxSouth;
-        } else if (rectangleNorth > maxNorth) {
-          newSouth = maxNorth - rectangleHeight;
-        }
-
-        if (rectangleWest < maxWest) {
-          newWest = maxWest;
-        } else if (rectangleEast > maxEast) {
-          newWest = maxEast - rectangleWidth;
-        }
-
-        const newSouthWest = new LatLng(newSouth, newWest);
-        const newNorthEast = new LatLng(newSouth + rectangleHeight, newWest + rectangleWidth);
-
-        const newRectangleBounds = new LatLngBounds(newSouthWest, newNorthEast);
-        rectangleRef.current.setLatLngs([
-          newRectangleBounds.getNorthWest(),
-          newRectangleBounds.getNorthEast(),
-          newRectangleBounds.getSouthEast(),
-          newRectangleBounds.getSouthWest(),
-          newRectangleBounds.getNorthWest(),
-        ]);
+        snapRectangleToMaxBounds(rectangleRef.current, defaultSettings.maxBounds);
       }
 
       parentMap.setView(rectangleRef.current.getCenter());
@@ -145,13 +140,7 @@ function MinimapBounds({ parentMap, parentMapContext, zoom }: {
 
   useEffect(() => {
     const bounds = parentMap.getBounds();
-    const rectangle = new (L.Polygon)([
-      bounds.getNorthWest(),
-      bounds.getNorthEast(),
-      bounds.getSouthEast(),
-      bounds.getSouthWest(),
-      bounds.getNorthWest(),
-    ], { weight: 3, draggable: true })
+    const rectangle = L.rectangle(bounds, { weight: 3, draggable: true })
       .on("dragend", onRectangleDragEnd);
     rectangle.addTo(minimap);
     rectangleRef.current = rectangle;
