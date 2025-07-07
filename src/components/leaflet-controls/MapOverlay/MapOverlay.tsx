@@ -146,6 +146,7 @@ function MinimapBounds({ parentMap, parentMapContext, zoom }: {
     rectangleRef.current = rectangle;
     return () => {
       rectangle.removeFrom(minimap);
+      rectangle.off();
       rectangleRef.current = null;
     }
   }, [minimap, onParentMapChange, onRectangleDragEnd, parentMap, zoom]);
