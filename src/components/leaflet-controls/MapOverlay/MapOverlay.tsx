@@ -1,9 +1,9 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import L, { LatLng, Map } from "leaflet";
+import L, { LatLng, LatLngBounds, Map } from "leaflet";
 import { useMap, MapContainer, ZoomControl, TileLayer, useMapEvent } from "react-leaflet";
 import { Period, Units } from "@/lib";
 import {
-  // defaultSettings,
+  defaultSettings,
   LEAFLET_POSITIONS,
 } from "@/constants";
 import { Button, ButtonGroup } from "@heroui/button";
@@ -19,6 +19,7 @@ import { LayoutContext } from "@/components/LayoutContext";
 import { Input } from "@heroui/input";
 import { LeafletContextInterface, useEventHandlers, useLeafletContext } from "@react-leaflet/core";
 
+// For the draggable property to be recognized by typescript
 declare module "leaflet" {
   interface PathOptions {
     draggable?: boolean;
@@ -63,8 +64,7 @@ function MinimapBounds({ parentMap, parentMapContext, zoom }: {
     parentMap.setView(e.latlng, parentMap.getZoom());
   })
 
-  // Keep track of bounds in state to trigger renders
-  const onChange = useCallback(() => {
+  const onParentMapChange = useCallback(() => {
     const newBounds = parentMap.getBounds();
     if (!moveCausedByDragRef.current && !rectangleRef.current?.getBounds().equals(newBounds)) {
       rectangleRef.current?.setLatLngs([
@@ -79,13 +79,65 @@ function MinimapBounds({ parentMap, parentMapContext, zoom }: {
     minimap.setView(parentMap.getCenter(), zoom)
   }, [minimap, parentMap, zoom]);
 
+  const onRectangleDragEnd = useCallback(() => {
+    if (rectangleRef.current) {
+      moveCausedByDragRef.current = true;
+
+      const rectangleBounds = rectangleRef.current.getBounds();
+      const isOutOfBounds = !defaultSettings.maxBounds.contains(rectangleBounds);
+      if (isOutOfBounds) {
+        const rectangleNorth = rectangleBounds.getNorth();
+        const rectangleSouth = rectangleBounds.getSouth();
+        const rectangleWest = rectangleBounds.getWest();
+        const rectangleEast = rectangleBounds.getEast();
+
+        const maxNorth = defaultSettings.maxBounds.getNorth();
+        const maxSouth = defaultSettings.maxBounds.getSouth();
+        const maxWest = defaultSettings.maxBounds.getWest();
+        const maxEast = defaultSettings.maxBounds.getEast();
+
+        const rectangleHeight = rectangleNorth - rectangleSouth;
+        const rectangleWidth = rectangleEast - rectangleWest;
+        let newSouth = rectangleSouth;
+        let newWest = rectangleWest;
+
+        if (rectangleSouth < maxSouth) {
+          newSouth = maxSouth;
+        } else if (rectangleNorth > maxNorth) {
+          newSouth = maxNorth - rectangleHeight;
+        }
+
+        if (rectangleWest < maxWest) {
+          newWest = maxWest;
+        } else if (rectangleEast > maxEast) {
+          newWest = maxEast - rectangleWidth;
+        }
+
+        const newSouthWest = new LatLng(newSouth, newWest);
+        const newNorthEast = new LatLng(newSouth + rectangleHeight, newWest + rectangleWidth);
+
+        const newRectangleBounds = new LatLngBounds(newSouthWest, newNorthEast);
+        rectangleRef.current.setLatLngs([
+          newRectangleBounds.getNorthWest(),
+          newRectangleBounds.getNorthEast(),
+          newRectangleBounds.getSouthEast(),
+          newRectangleBounds.getSouthWest(),
+          newRectangleBounds.getNorthWest(),
+        ]);
+      }
+
+      parentMap.setView(rectangleRef.current.getCenter());
+      minimap.setView(rectangleRef.current.getCenter());
+    }
+  }, [minimap, parentMap]);
+
   // Listen to events on the parent map
   useEventHandlers({
     instance: parentMap,
     context: parentMapContext
   }, {
-    move: onChange,
-    zoom: onChange,
+    move: onParentMapChange,
+    zoom: onParentMapChange,
     moveend: () => {
       moveCausedByDragRef.current = false;
     },
@@ -100,18 +152,14 @@ function MinimapBounds({ parentMap, parentMapContext, zoom }: {
       bounds.getSouthWest(),
       bounds.getNorthWest(),
     ], { weight: 3, draggable: true })
-      .on("dragend", () => {
-        moveCausedByDragRef.current = true;
-        parentMap.setView(rectangle.getCenter());
-        minimap.setView(rectangle.getCenter(), zoom);
-      });
+      .on("dragend", onRectangleDragEnd);
     rectangle.addTo(minimap);
     rectangleRef.current = rectangle;
     return () => {
       rectangle.removeFrom(minimap);
       rectangleRef.current = null;
     }
-  }, [minimap, onChange, parentMap, zoom]);
+  }, [minimap, onParentMapChange, onRectangleDragEnd, parentMap, zoom]);
 
   return null;
 }
@@ -383,18 +431,19 @@ const MapOverlay: React.FC<Props> = (
                       <Dropdown isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
                         <DropdownTrigger>
                           {!gridsAreLoading ? (
-                            <Button 
-                              variant="bordered" 
+                            <Button
+                              variant="bordered"
                               endContent={
-                              <svg fill="none" height="18" viewBox="0 0 15 24" width="18" xmlns="http://www.w3.org/2000/svg">
-                                <g transform="scale(1, -1) translate(0, -24)">
-                                  <path
-                                    d="M17.9188 8.17969H11.6888H6.07877C5.11877 8.17969 4.63877 9.33969 5.31877 10.0197L10.4988 15.1997C11.3288 16.0297 12.6788 16.0297 13.5088 15.1997L15.4788 13.2297L18.6888 10.0197C19.3588 9.33969 18.8788 8.17969 17.9188 8.17969Z"
-                                    fill="currentColor"
-                                  />
-                                </g>
-                              </svg>
-                            }>
+                                <svg fill="none" height="18" viewBox="0 0 15 24" width="18"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                  <g transform="scale(1, -1) translate(0, -24)">
+                                    <path
+                                      d="M17.9188 8.17969H11.6888H6.07877C5.11877 8.17969 4.63877 9.33969 5.31877 10.0197L10.4988 15.1997C11.3288 16.0297 12.6788 16.0297 13.5088 15.1997L15.4788 13.2297L18.6888 10.0197C19.3588 9.33969 18.8788 8.17969 17.9188 8.17969Z"
+                                      fill="currentColor"
+                                    />
+                                  </g>
+                                </svg>
+                              }>
                               <p className="font-bold">{periodNames[selectedPeriod]}</p>
                             </Button>
                           ) : (
