@@ -369,12 +369,37 @@ const StationIcons = ({
     if (!map.hasLayer(markersGroupRef.current)) {
       map.addLayer(markersGroupRef.current);
     }
+    let popupOpen = false;
+    let popupLocation: LatLng | null = null;
+    map.on("popupopen", (e) => {
+      popupOpen = true;
+      popupLocation = e.popup.getLatLng() ?? null;
+    })
+      .on("popupclose", () => {
+        popupOpen = false;
+      });
     const allStationIcons = allStationIconsRef.current;
     allStationIcons.forEach(icon => {
       const { station, marker } = icon;
-      marker.addEventListener("click", () => {
-        handleClickStation(station, other);
-      });
+      marker
+        .on("click", () => {
+          handleClickStation(station, other);
+          marker.closeTooltip();
+        })
+        .on("mouseover", () => {
+          const popupIsOnThisStation = popupOpen && popupLocation?.equals([station.Lat_DD, station.Lon_DD]);
+          if (!popupIsOnThisStation && !marker.isTooltipOpen()) {
+            marker.openTooltip();
+          }
+        })
+        .on("mouseout", () => {
+          if (marker.isTooltipOpen()) {
+            marker.closeTooltip();
+          }
+        })
+        .bindTooltip(`Station: ${station.Name}`, {
+          direction: "top"
+        });
     });
 
     let oldZoom = map.getZoom();
@@ -423,9 +448,9 @@ const RainfallMap = () => {
     isLoading,
   } = useRainfallData(selectedUnits, selectedPeriod);
 
-  const { 
-    asciiGrids, 
-    gridsAreLoading 
+  const {
+    asciiGrids,
+    gridsAreLoading
   } = useAllGrids(selectedUnits);
 
   const ranges_IN: [number, number][] = [
