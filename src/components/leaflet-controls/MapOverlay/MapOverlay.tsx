@@ -303,15 +303,18 @@ const MapOverlay: React.FC<Props> = (
     ))
   };
 
+  const disableClickPropagation = useCallback((el: HTMLElement | null) => {
+    if (el) {
+      L.DomEvent.disableClickPropagation(el);
+    }
+  }, []);
+
   return (
-    <div ref={overlay => {
-      if (overlay) {
-        L.DomEvent.disableClickPropagation(overlay);
-      }
-    }}>
-      <div className={LEAFLET_POSITIONS.topleft}>
+    <>
+      <div ref={disableClickPropagation} className={LEAFLET_POSITIONS.topleft}>
         <div className="leaflet-control flex gap-0">
           <form
+            ref={disableClickPropagation}
             className="flex flex-col gap-2.5"
             onSubmit={e => {
               e.preventDefault();
@@ -343,9 +346,14 @@ const MapOverlay: React.FC<Props> = (
           {/*</Button>*/}
         </div>
       </div>
-      <div className={LEAFLET_POSITIONS.topright}>
-        <div className="leaflet-control flex flex-col gap-2.5 items-end">
-          {minimap && minimapControl}
+      <div ref={disableClickPropagation} className={LEAFLET_POSITIONS.topright}>
+        {/*<div className="leaflet-control flex flex-col gap-2.5 items-end pointer-events-none">*/}
+        <div className="leaflet-control">
+          <div>
+            {minimap && minimapControl}
+          </div>
+        </div>
+        <div className="leaflet-control">
           <Button
             onPress={toggleMapMaximized}
             radius="full"
@@ -358,7 +366,7 @@ const MapOverlay: React.FC<Props> = (
           </Button>
         </div>
       </div>
-      <div className={LEAFLET_POSITIONS.bottomleft}>
+      <div ref={disableClickPropagation} className={LEAFLET_POSITIONS.bottomleft}>
         <div className="leaflet-control">
           {showMenu && (
             <div className="relative">
@@ -389,8 +397,8 @@ const MapOverlay: React.FC<Props> = (
                     <TableCell><p className="text-base">Units: </p></TableCell>
                     <TableCell>
                       <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
-                        {/* Disabled unit switching until inch grids are fully loaded. Otherwise, loading speeds 
-                          are slower because mm grids also start fetching, forcing the user to wait longer 
+                        {/* Disabled unit switching until inch grids are fully loaded. Otherwise, loading speeds
+                          are slower because mm grids also start fetching, forcing the user to wait longer
                           before accessing other layers. */}
                         {Object.keys(Units).map(u => (
                           <Button
@@ -547,6 +555,7 @@ const MapOverlay: React.FC<Props> = (
           )}
           {!showMenu && (
             <Button
+              ref={disableClickPropagation}
               color="primary"
               isIconOnly
               onPress={() => setShowMenu(!showMenu)}
@@ -575,7 +584,7 @@ const MapOverlay: React.FC<Props> = (
       <div className={LEAFLET_POSITIONS.bottomright}>
         <ZoomControl position="bottomright" />
       </div>
-    </div>
+    </>
   )
 }
 
