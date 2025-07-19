@@ -105,7 +105,7 @@ R.GridLayer.RasterLayer = L.GridLayer.extend({
       color.r = Math.round(r);
       color.g = Math.round(g);
       color.b = Math.round(b);
-      color.a = Math.round(((a * 255) / 2) + 50);
+      color.a = Math.round(((a * 255) / 2) + 30);
       colors.push(color);
     }
 
@@ -173,12 +173,19 @@ R.gridLayer.RasterLayer = function(options: RasterOptions) {
 
 const createRainfallComponent = (props: any, context: any) => {
   let rasterLayer = R.gridLayer.RasterLayer(props.options);
+
+  /* Prevents selected basemap from overlapping the raster layer
+  setTimeout here allows bringToFront() to run after re-renders are done */
+  setTimeout(() => {
+    rasterLayer.bringToFront();
+  }, 0);
+
   return {
     instance: rasterLayer,
-    context: { 
+    context: {
       __version: 1,
       map: context.map,
-      layerContainer: rasterLayer 
+      layerContainer: rasterLayer
     }
   };
 }

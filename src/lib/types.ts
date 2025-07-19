@@ -82,3 +82,10 @@ export type AsciiGrid = {
 export type Grids = {
   [key in Units]: AsciiGrid[];
 }
+
+export type TileLayerProps = {
+  name: string,
+  url: string,
+  attribution?: string,
+  maxZoom?: number
+}

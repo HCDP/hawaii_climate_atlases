@@ -6,6 +6,7 @@ import {
   Units,
   Period,
   AsciiGrid,
+  TileLayerProps,
 } from "@/lib";
 import SideBar from "@/components/SideBar";
 import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, Marker } from "react-leaflet";
@@ -369,37 +370,12 @@ const StationIcons = ({
     if (!map.hasLayer(markersGroupRef.current)) {
       map.addLayer(markersGroupRef.current);
     }
-    let popupOpen = false;
-    let popupLocation: LatLng | null = null;
-    map.on("popupopen", (e) => {
-      popupOpen = true;
-      popupLocation = e.popup.getLatLng() ?? null;
-    })
-      .on("popupclose", () => {
-        popupOpen = false;
-      });
     const allStationIcons = allStationIconsRef.current;
     allStationIcons.forEach(icon => {
       const { station, marker } = icon;
-      marker
-        .on("click", () => {
-          handleClickStation(station, other);
-          marker.closeTooltip();
-        })
-        .on("mouseover", () => {
-          const popupIsOnThisStation = popupOpen && popupLocation?.equals([station.Lat_DD, station.Lon_DD]);
-          if (!popupIsOnThisStation && !marker.isTooltipOpen()) {
-            marker.openTooltip();
-          }
-        })
-        .on("mouseout", () => {
-          if (marker.isTooltipOpen()) {
-            marker.closeTooltip();
-          }
-        })
-        .bindTooltip(`Station: ${station.Name}`, {
-          direction: "top"
-        });
+      marker.addEventListener("click", () => {
+        handleClickStation(station, other);
+      });
     });
 
     let oldZoom = map.getZoom();
@@ -438,6 +414,11 @@ const RainfallMap = () => {
   const [selectedStationIsOther, setSelectedStationIsOther] = useState<boolean>(false);
   const [selectedGridIndex, setSelectedGridIndex] = useState<number>(-1); // -1 = default val or non-grid loc
   const [location, setLocation] = useState<LatLng | null>(null);
+  const [tileLayerProps, setTileLayerProps] = useState<TileLayerProps>({
+    name: "Street",
+    url: "https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  });
 
   const {
     rfStations,
@@ -565,10 +546,12 @@ const RainfallMap = () => {
           minZoom={minZoom}
           maxBounds={defaultSettings.maxBounds}
         >
+          {/* Use key prop to allow basemap to change instantly upon selection (any unique value is good) */}
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            url="https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}"
+            key={tileLayerProps.name}
+            url={tileLayerProps.url}
+            attribution={tileLayerProps.attribution}
+            maxZoom={tileLayerProps.maxZoom ?? 13}
           />
 
           {showGrids && colorLayer}
@@ -602,6 +585,8 @@ const RainfallMap = () => {
             setShowOtherStations={setShowOtherStations}
             showIsohyets={showIsohyets}
             setShowIsohyets={setShowIsohyets}
+            tileLayerProps={tileLayerProps}
+            setTileLayerProps={setTileLayerProps}
             showGrids={showGrids}
             setShowGrids={setShowGrids}
             isLoading={isLoading}

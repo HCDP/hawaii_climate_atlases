@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import L, { Rectangle, LatLng, LatLngBounds, Map } from "leaflet";
 import { useMap, MapContainer, ZoomControl, TileLayer, useMapEvent } from "react-leaflet";
-import { Period, Units } from "@/lib";
+import { Period, TileLayerProps, Units } from "@/lib";
 import {
   defaultSettings,
   LEAFLET_POSITIONS,
@@ -165,6 +165,8 @@ interface Props {
   setShowOtherStations: (show: boolean) => void,
   showIsohyets: boolean,
   setShowIsohyets: (show: boolean) => void,
+  tileLayerProps: TileLayerProps,
+  setTileLayerProps: (props: TileLayerProps) => void,
   showGrids: boolean,
   setShowGrids: (show: boolean) => void,
   isLoading: boolean,
@@ -184,6 +186,8 @@ const MapOverlay: React.FC<Props> = (
     setShowOtherStations,
     showIsohyets,
     setShowIsohyets,
+    tileLayerProps,
+    setTileLayerProps,
     showGrids,
     setShowGrids,
     isLoading,
@@ -217,11 +221,11 @@ const MapOverlay: React.FC<Props> = (
     map.invalidateSize()
   }, [map, maximized]);
 
-  // For menu and options/fields behavior (temp)
+  // For menu and options/fields behavior
   const [showMenu, setShowMenu] = useState<boolean>(true);
-  //const [rainfall, setRainfall] = useState<boolean>(false);
   const [uncertainty, setUncertainty] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = useState(true);
+  const [basemapListOpen, setBasemapListOpen] = useState(true);
+  const [periodListOpen, setPeriodListOpen] = useState(false);
 
   // Array of the string keys of the Period enum ("January", "February", etc.)
   const periodNames: string[] = Object.keys(Period).filter(period => isNaN(parseInt(period)));
@@ -247,6 +251,57 @@ const MapOverlay: React.FC<Props> = (
     },
     [map, mapContext],
   );
+
+  const baseLayers: Record<string, TileLayerProps> = {
+    "Satellite (Google)": {
+      name: "Satellite",
+      url: "http://www.google.com/maps/vt?lyrs=y@189&gl=en&x={x}&y={y}&z={z}",
+    },
+    "Street (Google)": {
+      name: "Street",
+      url: "https://www.google.com/maps/vt?lyrs=m@221097413,traffic&x={x}&y={y}&z={z}",
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    },
+    "World Imagery (ESRI)": {
+      name: "World Imagery",
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      maxZoom: 19,
+    },
+    "USGS Topo (USGS)": {
+      name: "USGS Topo",
+      url: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
+      attribution: 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>',
+      maxZoom: 16,
+    },
+    "Shaded Relief (ESRI)": {
+      name: "Shaded Relief",
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri',
+      maxZoom: 13
+    }
+  };
+
+  const DropdownChevron = ({isOpen} : {isOpen: boolean}) => {
+    return (!isOpen ? (
+      <svg fill="none" height="15" viewBox="0 0 24 24" width="15"
+          xmlns="http://www.w3.org/2000/svg">
+        <g transform="scale(1, -1) translate(0, -24)">
+          <path
+            d="M17.9188 8.17969H11.6888H6.07877C5.11877 8.17969 4.63877 9.33969 5.31877 10.0197L10.4988 15.1997C11.3288 16.0297 12.6788 16.0297 13.5088 15.1997L15.4788 13.2297L18.6888 10.0197C19.3588 9.33969 18.8788 8.17969 17.9188 8.17969Z"
+            fill="currentColor"
+          />
+        </g>
+      </svg>
+    ) : (
+      <svg fill="none" height="15" viewBox="0 0 24 24" width="15" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M17.9188 8.17969H11.6888H6.07877C5.11877 8.17969 4.63877 9.33969 5.31877 10.0197L10.4988 15.1997C11.3288 16.0297 12.6788 16.0297 13.5088 15.1997L15.4788 13.2297L18.6888 10.0197C19.3588 9.33969 18.8788 8.17969 17.9188 8.17969Z"
+          fill="currentColor"
+        />
+      </svg>
+    ))
+  };
 
   return (
     <div ref={overlay => {
@@ -330,7 +385,7 @@ const MapOverlay: React.FC<Props> = (
                 </TableHeader>
                 <TableBody>
 
-                  <TableRow key="1">
+                  <TableRow key="Units">
                     <TableCell><p className="text-base">Units: </p></TableCell>
                     <TableCell>
                       <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
@@ -352,7 +407,7 @@ const MapOverlay: React.FC<Props> = (
                     </TableCell>
                   </TableRow>
 
-                  <TableRow key="2">
+                  <TableRow key="Show">
                     <TableCell><p className="text-base pb-[55px] pt-[2.5vh]">Show: </p></TableCell>
                     <TableCell className="pt-[2.5vh]">
                       {/* Place in div instead of checkbox group for expected disabling behavior */}
@@ -392,7 +447,7 @@ const MapOverlay: React.FC<Props> = (
                     </TableCell>
                   </TableRow>
 
-                  <TableRow key="3">
+                  <TableRow key="Stations">
                     <TableCell><p className="text-base pb-[30px] pt-[1.5vh]">Stations: </p></TableCell>
                     <TableCell className="pt-[1.5vh]">
                       <div className="inline-flex flex-col">
@@ -414,49 +469,75 @@ const MapOverlay: React.FC<Props> = (
                     </TableCell>
                   </TableRow>
 
-                  <TableRow key="4">
-                    <TableCell><p className="text-base pt-[1.5vh]">Period: </p></TableCell>
+                  <TableRow key="Basemap">
+                    <TableCell><p className="text-base pb-[4px] pt-[1.5vh]">Basemap: </p></TableCell>
+                    <TableCell className="pb-[12px] pt-[2.5vh]">
+                      <ButtonGroup variant="bordered" size="sm" disableRipple>
+                        <Button disableRipple disableAnimation className="w-[120px]">
+                          {tileLayerProps.name}
+                        </Button>
+                        <Dropdown isOpen={basemapListOpen} onOpenChange={(open) => setBasemapListOpen(open)}>
+                          <DropdownTrigger>
+                            {/* Since menu won't render while grids are loading, disable for now */}
+                            <Button isIconOnly isDisabled={gridsAreLoading}>
+                              <DropdownChevron isOpen={basemapListOpen}/>
+                            </Button>
+                          </DropdownTrigger>
+                          <DropdownMenu
+                            className="max-h-[200px] overflow-y-auto"
+                            aria-label="Month Selector"
+                            onAction={(key) => setTileLayerProps(baseLayers[key])}
+                          >
+                            {Object.keys(baseLayers).map((layerName) => (
+                              <DropdownItem
+                                key={layerName}
+                                className="hover:outline-white hover:bg-gray-100"
+                              >
+                                {layerName}
+                              </DropdownItem>
+                            ))}
+                          </DropdownMenu>
+                        </Dropdown>
+                      </ButtonGroup>
+                    </TableCell>
+                  </TableRow>
+
+                  <TableRow key="Period">
+                    <TableCell><p className="text-base pt-[1.95vh]">Period: </p></TableCell>
                     <TableCell className="pt-[2.5vh]">
                       {/* Force dropdown to open by default to prevent it from freezing during API fetching */}
-                      <Dropdown isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)}>
-                        <DropdownTrigger>
+                      <ButtonGroup variant="bordered" size="sm" disableRipple>
+                        <Button disableRipple disableAnimation className="w-[120px]">
                           {!gridsAreLoading ? (
-                            <Button
-                              variant="bordered"
-                              endContent={
-                                <svg fill="none" height="18" viewBox="0 0 15 24" width="18"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                  <g transform="scale(1, -1) translate(0, -24)">
-                                    <path
-                                      d="M17.9188 8.17969H11.6888H6.07877C5.11877 8.17969 4.63877 9.33969 5.31877 10.0197L10.4988 15.1997C11.3288 16.0297 12.6788 16.0297 13.5088 15.1997L15.4788 13.2297L18.6888 10.0197C19.3588 9.33969 18.8788 8.17969 17.9188 8.17969Z"
-                                      fill="currentColor"
-                                    />
-                                  </g>
-                                </svg>
-                              }>
-                              <p className="font-bold">{periodNames[selectedPeriod]}</p>
-                            </Button>
-                          ) : (
-                            <Button isLoading variant="bordered" spinnerPlacement="end">
-                              <p className="font-bold">Loading maps</p>
-                            </Button>
-                          )}
-                        </DropdownTrigger>
-                        <DropdownMenu
-                          className="max-h-[200px] overflow-y-auto"
-                          aria-label="Month Selector"
-                          onAction={(key) => setSelectedPeriod(key as Period)}
-                        >
-                          {periodNames.map((period: string) => (
-                            <DropdownItem
-                              key={Period[period as keyof typeof Period]}
-                              className="hover:outline-white hover:bg-gray-100"
+                            periodNames[selectedPeriod]
+                          ) : "Loading maps..."}
+                        </Button>
+                        <Dropdown isOpen={periodListOpen} onOpenChange={(open) => setPeriodListOpen(open)}>
+                          <DropdownTrigger>
+                            <Button 
+                              isIconOnly
+                              isLoading={gridsAreLoading}
+                              spinnerPlacement="start"
                             >
-                              {period}
-                            </DropdownItem>
-                          ))}
-                        </DropdownMenu>
-                      </Dropdown>
+                              {!gridsAreLoading && <DropdownChevron isOpen={periodListOpen}/>}
+                            </Button>
+                          </DropdownTrigger>
+                          <DropdownMenu
+                            className="max-h-[200px] overflow-y-auto"
+                            aria-label="Month Selector"
+                            onAction={(key) => setSelectedPeriod(key as Period)}
+                          >
+                            {periodNames.map((period: string) => (
+                              <DropdownItem
+                                key={Period[period as keyof typeof Period]}
+                                className="hover:outline-white hover:bg-gray-100"
+                              >
+                                {period}
+                              </DropdownItem>
+                            ))}
+                          </DropdownMenu>
+                        </Dropdown>
+                      </ButtonGroup>
                     </TableCell>
                   </TableRow>
 
