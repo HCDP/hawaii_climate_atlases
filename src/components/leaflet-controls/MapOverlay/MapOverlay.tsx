@@ -15,6 +15,8 @@ import Fullscreen from "@mui/icons-material/Fullscreen";
 import FullscreenExit from "@mui/icons-material/FullscreenExit";
 // import HomeFilledOutlined from '@mui/icons-material/HomeOutlined';
 import X from "@mui/icons-material/Close";
+import Add from "@mui/icons-material/Add";
+import Remove from "@mui/icons-material/Remove";
 import { LayoutContext } from "@/components/LayoutContext";
 import { Input } from "@heroui/input";
 import { LeafletContextInterface, useEventHandlers, useLeafletContext } from "@react-leaflet/core";
@@ -582,7 +584,30 @@ const MapOverlay: React.FC<Props> = (
         </div>
       </div>
       <div className={LEAFLET_POSITIONS.bottomright}>
-        <ZoomControl position="bottomright" />
+        <div className="leaflet-control">
+          <div ref={disableClickPropagation} className="flex flex-col mb-4">
+            <Button
+              onPress={() => map.zoomIn()}
+              radius="md"
+              size="md"
+              isIconOnly
+              title="Maximize map (hide header and footer)"
+              className="bg-white shadow-lg rounded-lg rounded-b-none"
+            >
+              <Add />
+            </Button>
+            <Button
+              onPress={() => map.zoomOut()}
+              radius="md"
+              size="md"
+              isIconOnly
+              title="Maximize map (hide header and footer)"
+              className="bg-white shadow-lg rounded-lg rounded-t-none"
+            >
+              <Remove />
+            </Button>
+          </div>
+        </div>
       </div>
     </>
   )
