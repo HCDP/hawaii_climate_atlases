@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import L, { Rectangle, LatLng, LatLngBounds, Map } from "leaflet";
-import { useMap, MapContainer, ZoomControl, TileLayer, useMapEvent } from "react-leaflet";
+import { useMap, MapContainer, TileLayer, useMapEvent } from "react-leaflet";
 import { Period, TileLayerProps, Units } from "@/lib";
 import {
   defaultSettings,
