@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, Dispatch, SetStateAction, useMemo, useState } from 'react';
+import React, { createContext, Dispatch, SetStateAction, useMemo, useState, useEffect } from 'react';
 import NavBar, { NavBarProps } from "@/components/NavBar";
 import { usePathname } from "next/navigation";
 import Footer from "@/components/Footer";
@@ -19,10 +19,14 @@ interface Props extends NavBarProps {
 
 export const LayoutProvider: React.FC<Props> = ({ children, navLinks, navImg }: Props) => {
   const [maximized, setMaximized] = useState<boolean>(false);
-
-
   const pathname: string = usePathname();
-  const isMapPage: boolean = pathname === '/interactive-map';
+  const [isMapPage, setIsMapPage] = useState<boolean>(false);
+
+
+  useEffect(() => {
+    setIsMapPage(pathname.endsWith('/interactive-map'));
+  }, [pathname]);
+
 
   const navBar = useMemo(() => <NavBar navLinks={navLinks} navImg={navImg} />, [navLinks, navImg]);
   const footer = useMemo(() => <Footer />, []);
