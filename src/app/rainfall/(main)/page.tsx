@@ -200,7 +200,7 @@ export default function Home() {
     //       <Image
     //         aria-hidden
     //         src="https://nextjs.org/icons/window.svg"
-    //         alt="Window icon"
+    //         alt=" icon"
     //         width={16}
     //         height={16}
     //       />

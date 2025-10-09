@@ -14,10 +14,13 @@ import L, { LatLng, LatLngBounds } from "leaflet";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
 import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
-import { defaultSettings } from "@/constants";
-import useRainfallData from "@/hooks/useRainfallData";
+
 import { renderToStaticMarkup } from "react-dom/server";
 import useAllGrids from "@/hooks/useAllGrids";
+import useRainfallData from "@/hooks/useRainfallData";
+import { defaultSettings } from "@/constants";
+import { GridLoader } from "react-spinners";
+
 
 const IsohyetLabels = ({
   features,
@@ -175,7 +178,7 @@ const PopupOnClick = (
   const periodText = Number(selectedPeriod) === Period.Annual ? "annual" : Period[selectedPeriod];
   // Used to remove station data from the sidebar if only a grid is clicked on
 
-  return location ? (
+  return gridValue && location ? (
     <>
       <Popup position={location}>
         <div className="flex flex-col gap-3">
@@ -191,7 +194,7 @@ const PopupOnClick = (
             </>
           )}
           {/*Mean annual rainfall: {selectedStation?.AnnAvgIN}*/}
-          {!gridValue ? "No data here" : isLoading ? `Loading mean ${periodText} rainfall values (in ${selectedUnits.toLocaleLowerCase()})...` : `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`}
+          {isLoading ? `Loading mean ${periodText} rainfall values (in ${selectedUnits.toLocaleLowerCase()})...` : `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`}
         </div>
       </Popup>
       {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) 
@@ -404,6 +407,8 @@ const StationIcons = ({
 }
 
 const RainfallMap = () => {
+  // useRainfallData(defaultSettings.selectedUnits, defaultSettings.selectedPeriod);
+
   const [selectedStation, setSelectedStation] = useState<Station | null>(defaultSettings.selectedStation);
   const [selectedUnits, setSelectedUnits] = useState<Units>(defaultSettings.selectedUnits);
   const [selectedPeriod, setSelectedPeriod] = useState<Period>(defaultSettings.selectedPeriod);
@@ -519,7 +524,11 @@ const RainfallMap = () => {
 
   if (!allDataLoaded) {
     return (
-      <p className="text-center">Loading data...</p>
+      <div style={{padding: "20px"}} className="text-center">
+        <p style={{padding: "10px"}}>Loading Data</p>
+        <GridLoader/>
+      </div>
+      
     );
   }
 

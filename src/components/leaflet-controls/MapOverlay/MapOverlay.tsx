@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import L, { Rectangle, LatLng, LatLngBounds, Map } from "leaflet";
-import { useMap, MapContainer, ZoomControl, TileLayer, useMapEvent } from "react-leaflet";
+import { useMap, MapContainer, TileLayer, useMapEvent } from "react-leaflet";
 import { Period, TileLayerProps, Units } from "@/lib";
 import {
   defaultSettings,
@@ -226,7 +226,7 @@ const MapOverlay: React.FC<Props> = (
   // For menu and options/fields behavior
   const [showMenu, setShowMenu] = useState<boolean>(true);
   const [uncertainty, setUncertainty] = useState<boolean>(false);
-  const [basemapListOpen, setBasemapListOpen] = useState(true);
+  const [basemapListOpen, setBasemapListOpen] = useState(false);
   const [periodListOpen, setPeriodListOpen] = useState(false);
 
   // Array of the string keys of the Period enum ("January", "February", etc.)
