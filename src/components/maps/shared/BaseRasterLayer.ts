@@ -110,7 +110,7 @@ export const createBaseRasterLayer = (layerName: string) => {
       let colors: Color[] = [];
 
       // Default color scheme is rainbow if no scheme is specified
-      const colorScheme = this.options.colorScheme || ['red', 'yellow', 'green', 'blue', 'purple'];
+      const colorScheme = this.options.colorScheme || ['red', 'yellow', 'green', 'blue', 'purple', 'indigo'];
       const range = this.options.colorScale.range;
       const colorScale = chroma.scale(colorScheme).domain(range);
 

@@ -294,7 +294,7 @@ const SideBar: React.FC<{
                         className="w-[30px] h-[75px]"
                         style={{
                           background: units.includes('²')
-                            ? 'linear-gradient(to bottom, #fee5d9, #fcbba1, #fc9272, #fb6a4a, #de2d26, #a50f15)'
+                            ? 'linear-gradient(to bottom, #ffeda0, #fed976, #feb24c, #fd8d3c, #fc4e2a, #e31a1c, #bd0026, #800026)'
                             : 'linear-gradient(to bottom, indigo, purple, blue, green, yellow, red)'
                         }}
                       />
