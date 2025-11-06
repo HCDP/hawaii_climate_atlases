@@ -4,17 +4,13 @@ import L from "leaflet";
 import { createLayerComponent } from "@react-leaflet/core";
 import { createBaseRasterLayer, RasterOptions, ColorScale } from "../shared/BaseRasterLayer";
 
-// Re-export types for backward compatibility
-export type { RasterOptions, ColorScale };
-
 let R: any = L;
 
 // Create the uncertainty-specific GridLayer using the shared base
-// The red color scheme will be applied via options.colorScheme when initialized
 R.GridLayer.UncertaintyRasterLayer = createBaseRasterLayer("UncertaintyRasterLayer");
 
 R.gridLayer.UncertaintyRasterLayer = function (options: RasterOptions) {
-  // Set the red color scheme for uncertainty maps (white to dark red)
+  // Set the red color scheme for uncertainty maps (yellow to dark red)
   const uncertaintyOptions: RasterOptions = {
     ...options,
     colorScheme: options.colorScheme || ['#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026'],

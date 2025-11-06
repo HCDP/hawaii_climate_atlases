@@ -1,15 +1,12 @@
 import { AsciiGrid } from "@/lib";
+import chroma from "chroma-js";
 import L from "leaflet";
 import { createLayerComponent } from "@react-leaflet/core";
 import { createBaseRasterLayer, RasterOptions, ColorScale } from "../shared/BaseRasterLayer";
 
-// Re-export types for backward compatibility
-export type { RasterOptions, ColorScale };
-
 let R: any = L;
 
 // Create the rainfall-specific GridLayer using the shared base
-// The rainbow color scheme will be applied via options.colorScheme when initialized
 R.GridLayer.RainfallRasterLayer = createBaseRasterLayer("RainfallRasterLayer");
 
 R.gridLayer.RainfallRasterLayer = function (options: RasterOptions) {
