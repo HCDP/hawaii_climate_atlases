@@ -12,12 +12,21 @@ import SideBar from "@/components/SideBar";
 import { GeoJSON, Popup, TileLayer, useMap, useMapEvent, Marker } from "react-leaflet";
 import L, { LatLng, LatLngBounds } from "leaflet";
 import MapOverlay from "@/components/leaflet-controls/MapOverlay";
-import { RainfallColorLayer } from "./RainfallColorLayer";
 import { Feature, FeatureCollection } from "geojson";
 
+// Import layer definitions to register them with Leaflet (side effects needed)
+import "./RainfallColorLayer";
+import "../UncertaintyMap/UncertaintyColorLayer";
+import { RainfallColorLayer } from "./RainfallColorLayer";
+import { UncertaintyColorLayer } from "../UncertaintyMap/UncertaintyColorLayer";
+
 import { renderToStaticMarkup } from "react-dom/server";
-import useAllGrids from "@/hooks/useAllGrids";
-import useRainfallData from "@/hooks/useRainfallData";
+import { 
+  useRainfallAllGrids, 
+  useRainfallComposite,
+  useRainfallUncertaintyAllGrids,
+  useRainfallUncertaintyComposite
+} from "@/hooks/rainfall";
 import { defaultSettings } from "@/constants";
 import { GridLoader } from "react-spinners";
 
@@ -72,7 +81,7 @@ const IsohyetLabels = ({
   );
 };
 
-const IsohyetsLayer = (
+export const IsohyetsLayer = (
   {
     geojson,
   }: {
@@ -98,7 +107,7 @@ const IsohyetsLayer = (
   );
 }
 
-const PopupOnClick = (
+export const PopupOnClick = (
   {
     isLoading,
     selectedUnits,
@@ -266,7 +275,7 @@ function createStationMarker(station: Station, zoom: number, other?: boolean): L
   });
 }
 
-const StationIcons = ({
+export const StationIcons = ({
   stations,
   other,
   handleClickStation,
@@ -414,6 +423,7 @@ const RainfallMap = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>(defaultSettings.selectedPeriod);
   const [showIsohyets, setShowIsohyets] = useState<boolean>(defaultSettings.showIsohyets);
   const [showGrids, setShowGrids] = useState<boolean>(defaultSettings.showGrids);
+  const [showUncertainty, setShowUncertainty] = useState<boolean>(false);
   const [showRFStations, setShowRFStations] = useState<boolean>(defaultSettings.showRFStations);
   const [showOtherStations, setShowOtherStations] = useState<boolean>(defaultSettings.showOtherStations);
   const [selectedStationIsOther, setSelectedStationIsOther] = useState<boolean>(false);
@@ -430,14 +440,29 @@ const RainfallMap = () => {
     otherStations,
     featureCollections,
     asciiGrid,
-    allDataLoaded,
-    isLoading,
-  } = useRainfallData(selectedUnits, selectedPeriod);
+    allDataLoaded: rainfallDataLoaded,
+    isLoading: rainfallIsLoading,
+  } = useRainfallComposite(selectedUnits, selectedPeriod);
 
   const {
     asciiGrids,
-    gridsAreLoading
-  } = useAllGrids(selectedUnits);
+    gridsAreLoading: rainfallGridsAreLoading
+  } = useRainfallAllGrids(selectedUnits);
+
+  const {
+    asciiGrid: uncertaintyGrid,
+    allDataLoaded: uncertaintyDataLoaded,
+    isLoading: uncertaintyIsLoading,
+  } = useRainfallUncertaintyComposite(selectedUnits, selectedPeriod);
+
+  const {
+    asciiGrids: uncertaintyGrids,
+    gridsAreLoading: uncertaintyGridsAreLoading
+  } = useRainfallUncertaintyAllGrids(selectedUnits);
+
+  const isLoading = rainfallIsLoading || uncertaintyIsLoading;
+  const gridsAreLoading = rainfallGridsAreLoading || uncertaintyGridsAreLoading;
+  const allDataLoaded = rainfallDataLoaded && uncertaintyDataLoaded;
 
   const ranges_IN: [number, number][] = [
     [0.8, 32.2],
@@ -454,38 +479,99 @@ const RainfallMap = () => {
     [0.6, 36.4],
     [8, 404.4]
   ];
+
   const ranges_MM: [number, number][] = [
-    [21, 818],
-    [11, 669],
-    [16, 1323],
-    [7, 978],
-    [2, 777],
-    [0, 833],
-    [0, 984],
-    [1, 881],
-    [1, 764],
-    [8, 973],
-    [19, 980],
-    [14, 921],
-    [204, 10271]
+    [21, 818],       // January
+    [11, 669],       // February 
+    [16, 1323],      // March
+    [7, 978],        // April
+    [2, 777],        // May
+    [0, 833],        // June
+    [0, 984],        // July 
+    [1, 881],        // August
+    [1, 764],        // September
+    [8, 973],        // October
+    [19, 980],       // November
+    [14, 921],       // December
+    [204, 10271]     // Annual
   ];
 
-  const colorLayer = useMemo(() => {
-    return asciiGrid ? (
+  const uncertainty_ranges_IN: [number, number][] = [
+    [0.0005019, 3.354232],    // January
+    [0.0014641, 2.839714],    // February
+    [0.0009792, 4.090142],    // March
+    [0.0001895, 11.3037],     // April
+    [0.0007213, 2.740073],    // May
+    [0.0008297, 3.273416],    // June
+    [0.0001819, 3.422752],    // July
+    [0.00446305, 3.086848],   // August
+    [0.0007306, 2.773549],    // September
+    [0.0011364, 2.597468],    // October
+    [0.004848769, 3.840706],  // November
+    [0.001260578, 3.433185],  // December
+    [0.05284176, 11.87222]    // Annual
+  ];
+
+  const uncertainty_ranges_MM: [number, number][] = [
+    [0.01274, 85.18],     // January
+    [0.0371, 72.09],      // February
+    [0.0248, 103.89],     // March
+    [0.0048, 287.11],     // April
+    [0.0183, 69.58],      // May
+    [0.0210, 83.14],      // June
+    [0.0046, 86.98],      // July
+    [0.1134, 78.41],      // August
+    [0.0185, 70.47],      // September
+    [0.0289, 65.92],      // October
+    [0.1232, 97.51],      // November
+    [0.0320, 87.18],      // December
+    [1.3422, 301.5]       // Annual
+  ];
+
+  // Memoize rainfall layer
+  const rainfallLayer = useMemo(() => {
+    // Only render when we have valid data and it's not loading
+    if (!showGrids || showUncertainty || !asciiGrid || rainfallIsLoading) return null;
+    
+    const range = selectedUnits === Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod];
+    
+    return (
       <RainfallColorLayer
-        key={`color-layer-${selectedUnits}-${selectedPeriod}`}
+        key={`rainfall-layer-${selectedUnits}-${selectedPeriod}`}
         options={{
           cacheEmpty: true,
           colorScale: {
             colors: [],
-            range: selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod],
+            range,
           },
           asciiGrid,
         }}
       />
-    ) : null;
-    // eslint-disable-next-line
-  }, [asciiGrid]);
+    );
+  }, [showGrids, showUncertainty, asciiGrid, selectedUnits, selectedPeriod, rainfallIsLoading]);
+
+  // Memoize uncertainty layer
+  const uncertaintyLayer = useMemo(() => {
+    // Only render when we have valid data and it's not loading
+    if (!showUncertainty || !uncertaintyGrid || uncertaintyIsLoading) return null;
+    
+    const range = selectedUnits === Units.IN ? uncertainty_ranges_IN[selectedPeriod] : uncertainty_ranges_MM[selectedPeriod];
+    
+    return (
+      <UncertaintyColorLayer
+        key={`uncertainty-layer-${selectedUnits}-${selectedPeriod}`}
+        options={{
+          cacheEmpty: true,
+          colorScale: {
+            colors: [],
+            range,
+          },
+          asciiGrid: uncertaintyGrid,
+        }}
+      />
+    );
+  }, [showUncertainty, uncertaintyGrid, selectedUnits, selectedPeriod, uncertaintyIsLoading]);
+
   const rfStationIcons = useMemo(() => {
     return rfStations ? (
       <StationIcons
@@ -532,6 +618,13 @@ const RainfallMap = () => {
     );
   }
 
+  // Determine which grid is active based on user selection
+  let activeGrid = showUncertainty ? uncertaintyGrid : asciiGrid;
+  let activeGrids = showUncertainty ? uncertaintyGrids : asciiGrids;
+  let activeRanges = showUncertainty 
+    ? (selectedUnits === Units.IN ? uncertainty_ranges_IN : uncertainty_ranges_MM)
+    : (selectedUnits === Units.IN ? ranges_IN : ranges_MM);
+
   return (
     <div className="flex w-full h-full max-h-full">
       <SideBar
@@ -539,12 +632,12 @@ const RainfallMap = () => {
         isOtherStation={selectedStationIsOther}
         selectedUnits={selectedUnits}
         selectedPeriod={selectedPeriod}
-        asciiGrids={asciiGrids}
+        asciiGrids={activeGrids}
         canShowGridValues={!gridsAreLoading && selectedGridIndex != -1}
         selectedGridIndex={selectedGridIndex}
         location={location}
-        range={selectedUnits == Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod]}
-        units={selectedUnits == Units.IN ? 'in' : 'mm'}
+        range={activeRanges[selectedPeriod]}
+        units={showUncertainty ? (selectedUnits == Units.IN ? 'in²' : 'mm²') : (selectedUnits == Units.IN ? 'in' : 'mm')}
       />
       <div className="w-full h-full">
         <Map
@@ -563,7 +656,9 @@ const RainfallMap = () => {
             maxZoom={tileLayerProps.maxZoom ?? 13}
           />
 
-          {showGrids && colorLayer}
+          {/* Render either rainfall or uncertainty layer (mutually exclusive) */}
+          {rainfallLayer}
+          {uncertaintyLayer}
 
           {rfStationIcons}
 
@@ -571,9 +666,9 @@ const RainfallMap = () => {
 
           {showIsohyets && isohyetsLayer}
 
-          {asciiGrid && <PopupOnClick
+          {activeGrid && <PopupOnClick
             isLoading={isLoading}
-            grid={asciiGrid}
+            grid={activeGrid}
             selectedUnits={selectedUnits}
             selectedPeriod={selectedPeriod}
             selectedStation={selectedStation}
@@ -598,6 +693,8 @@ const RainfallMap = () => {
             setTileLayerProps={setTileLayerProps}
             showGrids={showGrids}
             setShowGrids={setShowGrids}
+            showUncertainty={showUncertainty}
+            setShowUncertainty={setShowUncertainty}
             isLoading={isLoading}
             gridsAreLoading={gridsAreLoading}
             minimap={true}

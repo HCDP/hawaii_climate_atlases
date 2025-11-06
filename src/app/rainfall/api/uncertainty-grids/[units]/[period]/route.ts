@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AsciiGrid, Period } from "@/lib";
+import { AsciiGrid, Period, Units } from "@/lib";
 import { isUnits, isPeriod } from "@/utils";
 import { invalidUnitsResponse, invalidPeriodResponse, unableToRetrieveResponse } from "@/lib/responses";
-import { getGrids } from "@/lib/extract_data";
+import { getUncertaintyGrids } from "@/lib/extract_data";
 
 export async function GET(_: NextRequest, { params }: {
   params: {
@@ -10,12 +10,26 @@ export async function GET(_: NextRequest, { params }: {
     period: string,
   },
 }): Promise<NextResponse<{ error: string } | AsciiGrid>> {
+  console.log('Received request with params:', params);
+  
   const units: string = params.units;
-  if (!isUnits(units)) return invalidUnitsResponse;
+  console.log('Checking units:', units);
+  if (!isUnits(units)) {
+    console.log('Invalid units');
+    return invalidUnitsResponse;
+  }
+  
   const period: string = params.period;
-  if (!isPeriod(period)) return invalidPeriodResponse;
+  console.log('Checking period:', period);
+  if (!isPeriod(period)) {
+    console.log('Invalid period');
+    return invalidPeriodResponse;
+  }
 
-  const asciiGrids = await getGrids({ units, period: Period[period] });
+  const asciiGrids = await getUncertaintyGrids({ 
+    units: Units[units], 
+    period: Period[period] 
+  });
   if (!asciiGrids) return unableToRetrieveResponse;
 
   return NextResponse.json(asciiGrids, { status: 200 });

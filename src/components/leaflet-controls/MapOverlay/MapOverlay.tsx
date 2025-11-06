@@ -171,6 +171,8 @@ interface Props {
   setTileLayerProps: (props: TileLayerProps) => void,
   showGrids: boolean,
   setShowGrids: (show: boolean) => void,
+  showUncertainty: boolean,
+  setShowUncertainty: (show: boolean) => void,
   isLoading: boolean,
   gridsAreLoading: boolean,
   minimap: boolean,
@@ -192,6 +194,8 @@ const MapOverlay: React.FC<Props> = (
     setTileLayerProps,
     showGrids,
     setShowGrids,
+    showUncertainty,
+    setShowUncertainty,
     isLoading,
     gridsAreLoading,
     minimap
@@ -225,7 +229,6 @@ const MapOverlay: React.FC<Props> = (
 
   // For menu and options/fields behavior
   const [showMenu, setShowMenu] = useState<boolean>(true);
-  const [uncertainty, setUncertainty] = useState<boolean>(false);
   const [basemapListOpen, setBasemapListOpen] = useState(false);
   const [periodListOpen, setPeriodListOpen] = useState(false);
 
@@ -236,9 +239,11 @@ const MapOverlay: React.FC<Props> = (
       const zoom = map.getZoom();
       return (
         <MapContainer
-          style={{ width: 320, height: 180 }}
+          style={{ width: 272, height: 153 }}
+          //style={{ width: 320, height: 180 }}
           center={map.getCenter()}
-          zoom={zoom - (0.75 * 3)}
+          zoom={zoom - (0.60 * 3)}
+          //zoom={zoom - (0.75 * 3)}
           dragging={false}
           doubleClickZoom={false}
           scrollWheelZoom={false}
@@ -425,9 +430,11 @@ const MapOverlay: React.FC<Props> = (
                         <Checkbox
                           value="Rainfall"
                           onValueChange={() => {
-                            setShowGrids(!showGrids);
-                            if (uncertainty) {
-                              setUncertainty(!uncertainty);
+                            if (!showGrids) {
+                              setShowGrids(true);
+                              setShowUncertainty(false);
+                            } else {
+                              setShowGrids(false);
                             }
                           }}
                           isSelected={showGrids}
@@ -437,12 +444,15 @@ const MapOverlay: React.FC<Props> = (
                         <Checkbox
                           value="Uncertainty"
                           onValueChange={() => {
-                            setUncertainty(!uncertainty);
-                            if (showGrids) {
-                              setShowGrids(!showGrids);
+                            if (!showUncertainty) {
+                              setShowUncertainty(true);
+                              setShowGrids(false);
+                            } else {
+                              setShowUncertainty(false);
+                              setShowGrids(true);
                             }
                           }}
-                          isSelected={uncertainty}
+                          isSelected={showUncertainty}
                         >
                           Uncertainty
                         </Checkbox>

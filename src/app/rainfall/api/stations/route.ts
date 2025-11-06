@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Station } from "@/lib";
 import { unableToRetrieveResponse } from "@/lib/responses";
-import { getStations } from "@/lib/rainfall_data";
+import { getStations } from "@/lib/extract_data";
 
 export async function GET(request: NextRequest): Promise<NextResponse<{ error: string } | Station[]>> {
   const searchParams = request.nextUrl.searchParams;
