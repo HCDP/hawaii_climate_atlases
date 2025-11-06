@@ -4,16 +4,16 @@ components/maps/
 │
 ├── README.md                         Architecture and Template
 │
-├── shared/                             
-│   ├── RasterColorLayer.ts
-│   ├── PopupOnClick.tsx
-│   ├── MapControls.tsx
-│   └── useMapState.ts
-│
-│
-├── evaporation/                      All evaporation data
-│   ├──  index.ts                     → Exports all evaporation hooks
-│   ├──  grids.ts
-│   ├──  stations.ts
-│   └──  composite.ts
+├── shared/
+│   ├── RasterColorLayer.ts       ← Shared color layer
+│   ├── PopupOnClick.tsx          ← Shared popup
+│   ├── MapControls.tsx           ← Shared controls
+│   └── useMapState.ts            ← Shared state logic
+|
+├── RainfallMap/
+│   ├── RainfallMap.tsx           ← Uses shared components
+│   ├── StationIcons.tsx          ← Rainfall-specific
+│   └── IsohyetLabels.tsx         ← Rainfall-specific
+|   └── UncertaintyMap/
+        └── UncertaintyMap.tsx    ← Uses shared components
 ==============================================================================================

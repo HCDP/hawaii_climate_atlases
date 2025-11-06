@@ -2,7 +2,7 @@ import { AsciiGrid } from "@/lib";
 import chroma from "chroma-js";
 import L from "leaflet";
 import { createLayerComponent } from "@react-leaflet/core";
-import { createBaseRasterLayer, RasterOptions, ColorScale } from "../shared/BaseRasterLayer";
+import { createBaseRasterLayer, RasterOptions, ColorScale } from "../../shared/BaseRasterLayer";
 
 let R: any = L;
 

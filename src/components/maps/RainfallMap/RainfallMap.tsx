@@ -16,9 +16,9 @@ import { Feature, FeatureCollection } from "geojson";
 
 // Import layer definitions to register them with Leaflet (side effects needed)
 import "./RainfallColorLayer";
-import "../UncertaintyMap/UncertaintyColorLayer";
+import "./UncertaintyMap/UncertaintyColorLayer";
 import { RainfallColorLayer } from "./RainfallColorLayer";
-import { UncertaintyColorLayer } from "../UncertaintyMap/UncertaintyColorLayer";
+import { UncertaintyColorLayer } from "./UncertaintyMap/UncertaintyColorLayer";
 
 import { renderToStaticMarkup } from "react-dom/server";
 import { 
