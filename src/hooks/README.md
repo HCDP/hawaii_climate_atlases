@@ -1,36 +1,20 @@
 
 ## ARCHITECTURE OF SRC/HOOKS/  
 ==============================================================================================
-src/hooks/
-│
-├── index.ts                          Exports
-├── README.md                         Template for subject types
-├── useRequiredConditionsofUse.ts     Conditions of Use Component
-│
-├── core/                             
-│   └── (for any generic or shared hooks among climate folders)
-│
-├── rainfall/                         All rainfall data
-│   ├── index.ts                      → Exports all rainfall hooks
-│   ├── grids.ts                      → useRainfallGrids, useRainfallAllGrids  
-│   ├── stations.ts                   → useRainfallStations
-│   ├── isohyets.ts                   → useRainfallIsohyets
-│   ├── composite.ts                  → useRainfallComposite
-│   └── uncertainty/                  Rainfall uncertainty
-│       ├── grids.ts                  → useRainfallUncertaintyGrids, useRainfallUncertaintyAllGrids
-│       └── composite.ts              → useRainfallUncertaintyComposite
-│
-├── solar-radiation/                  All solar radiation data
-│   ├──  index.ts                     → Exports all solar hooks
-│   ├──  grids.ts                     
-│   ├──  stations.ts
-│   └──  composite.ts
-│
-├── evaporation/                      All evaporation data
-│   ├──  index.ts                     → Exports all evaporation hooks
-│   ├──  grids.ts
-│   ├──  stations.ts
-│   └──  composite.ts
+hooks/
+├── index.ts                    # Main exports
+├── useStations.ts             # Generic station fetching
+├── useAllGrids.ts             # Keep if still used
+├── useRequiredConditionsOfUse.ts
+├── core/                      # Shared utilities
+├── rainfall/
+│   ├── composite.ts           # Main rainfall composite
+│   ├── grids.ts              # Rainfall grids
+│   ├── isohyets.ts           # Rainfall isohyets  
+│   ├── stations.ts           # Rainfall stations
+│   └── uncertainty/          # Uncertainty data
+├── evaporation/              # Evaporation hooks
+└── solar-radiation/          # Solar hooks
 ==============================================================================================
 
 
