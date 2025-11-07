@@ -27,8 +27,6 @@ import {
   useRainfallUncertaintyAllGrids,
   useRainfallUncertaintyComposite
 } from "@/hooks/rainfall";
-import { useResearchDataPrefetch } from "@/hooks/rainfall/research-prefetch";
-import { useSmartLoadingState } from "@/hooks/rainfall/smart-loading";
 import { defaultSettings } from "@/constants";
 import { GridLoader } from "react-spinners";
 
@@ -440,25 +438,20 @@ const RainfallMap = () => {
   // Load BOTH unit systems simultaneously for research workflows
   // This ensures instant switching between inches and millimeters
   
-  // Load stations and isohyets (unit-agnostic data) once
+  // Load BOTH unit systems simultaneously for instant switching
   const {
     rfStations,
     otherStations,
     featureCollections,
-  } = useRainfallComposite(selectedUnits, selectedPeriod);
-
-  // Load BOTH unit systems simultaneously for research workflows
-  // This ensures instant switching between inches and millimeters
-  const {
     asciiGrid: asciiGridIN,
+    allDataLoaded: rainfallDataLoadedIN,
     isLoading: rainfallIsLoadingIN,
-    allDataLoaded: rainfallDataLoadedIN
   } = useRainfallComposite(Units.IN, selectedPeriod);
 
   const {
     asciiGrid: asciiGridMM,
+    allDataLoaded: rainfallDataLoadedMM,
     isLoading: rainfallIsLoadingMM,
-    allDataLoaded: rainfallDataLoadedMM
   } = useRainfallComposite(Units.MM, selectedPeriod);
 
   const {
@@ -473,14 +466,14 @@ const RainfallMap = () => {
 
   const {
     asciiGrid: uncertaintyGridIN,
+    allDataLoaded: uncertaintyDataLoadedIN,
     isLoading: uncertaintyIsLoadingIN,
-    allDataLoaded: uncertaintyDataLoadedIN
   } = useRainfallUncertaintyComposite(Units.IN, selectedPeriod);
 
   const {
     asciiGrid: uncertaintyGridMM,
+    allDataLoaded: uncertaintyDataLoadedMM,
     isLoading: uncertaintyIsLoadingMM,
-    allDataLoaded: uncertaintyDataLoadedMM
   } = useRainfallUncertaintyComposite(Units.MM, selectedPeriod);
 
   const {
@@ -493,26 +486,26 @@ const RainfallMap = () => {
     gridsAreLoading: uncertaintyGridsAreLoadingMM
   } = useRainfallUncertaintyAllGrids(Units.MM);
 
-  // Use the data for the currently selected units
+  // Use data for currently selected units
   const asciiGrid = selectedUnits === Units.IN ? asciiGridIN : asciiGridMM;
-  const rainfallIsLoading = selectedUnits === Units.IN ? rainfallIsLoadingIN : rainfallIsLoadingMM;
-  const rainfallDataLoaded = selectedUnits === Units.IN ? rainfallDataLoadedIN : rainfallDataLoadedMM;
   const asciiGrids = selectedUnits === Units.IN ? asciiGridsIN : asciiGridsMM;
-  const rainfallGridsAreLoading = selectedUnits === Units.IN ? rainfallGridsAreLoadingIN : rainfallGridsAreLoadingMM;
-  
   const uncertaintyGrid = selectedUnits === Units.IN ? uncertaintyGridIN : uncertaintyGridMM;
-  const uncertaintyIsLoading = selectedUnits === Units.IN ? uncertaintyIsLoadingIN : uncertaintyIsLoadingMM;
-  const uncertaintyDataLoaded = selectedUnits === Units.IN ? uncertaintyDataLoadedIN : uncertaintyDataLoadedMM;
   const uncertaintyGrids = selectedUnits === Units.IN ? uncertaintyGridsIN : uncertaintyGridsMM;
+
+  const rainfallIsLoading = selectedUnits === Units.IN ? rainfallIsLoadingIN : rainfallIsLoadingMM;
+  const uncertaintyIsLoading = selectedUnits === Units.IN ? uncertaintyIsLoadingIN : uncertaintyIsLoadingMM;
+  const rainfallDataLoaded = selectedUnits === Units.IN ? rainfallDataLoadedIN : rainfallDataLoadedMM;
+  const uncertaintyDataLoaded = selectedUnits === Units.IN ? uncertaintyDataLoadedIN : uncertaintyDataLoadedMM;
+  const rainfallGridsAreLoading = selectedUnits === Units.IN ? rainfallGridsAreLoadingIN : rainfallGridsAreLoadingMM;
   const uncertaintyGridsAreLoading = selectedUnits === Units.IN ? uncertaintyGridsAreLoadingIN : uncertaintyGridsAreLoadingMM;
 
   const isLoading = rainfallIsLoading || uncertaintyIsLoading;
   const gridsAreLoading = rainfallGridsAreLoading || uncertaintyGridsAreLoading;
   const allDataLoaded = rainfallDataLoaded && uncertaintyDataLoaded;
 
-  // Smart loading state - only show loading screen if both unit systems are loading
-  const bothUnitsLoading = (rainfallIsLoadingIN || uncertaintyIsLoadingIN) && (rainfallIsLoadingMM || uncertaintyIsLoadingMM);
-  const showLoadingScreen = bothUnitsLoading;
+  // Only show loading screen if BOTH unit systems are still loading (first load only)
+  const bothUnitsStillLoading = (rainfallIsLoadingIN && rainfallIsLoadingMM) || (uncertaintyIsLoadingIN && uncertaintyIsLoadingMM);
+  const showLoadingScreen = bothUnitsStillLoading;
 
   const ranges_IN: [number, number][] = [
     [0.8, 32.2],

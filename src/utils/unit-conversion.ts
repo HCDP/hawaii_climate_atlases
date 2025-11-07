@@ -1,7 +1,6 @@
-// Utility for background prefetching of unit data for research workflows
-import { Units, Period } from "@/lib/types";
+import { Units, Period } from '@/lib/types';
 
-export class ResearchDataManager {
+export class DataManager {
   private loadingStates = new Map<string, Promise<any>>();
   private prefetchQueue: Array<() => Promise<any>> = [];
   private isPrefetching = false;
@@ -27,46 +26,65 @@ export class ResearchDataManager {
   }
   
   // Generate cache keys for data requests
-  public getCacheKey(type: 'grids' | 'isohyets' | 'uncertainty', units: Units, period?: Period): string {
-    return `${type}-${units}${period !== undefined ? `-${period}` : ''}`;
+  public getCacheKey(
+    dataType: 'grids' | 'isohyets' | 'uncertainty', 
+    units: Units, 
+    period?: Period,
+    category?: 'rainfall' | 'solar' | 'evapotranspiration'
+  ): string {
+    const categoryPrefix = category ? `${category}-` : '';
+    return `${categoryPrefix}${dataType}-${units}${period !== undefined ? `-${period}` : ''}`;
   }
 
   // Background prefetch alternate unit system after initial load
-  public async prefetchAlternateUnits(currentUnits: Units, currentPeriod: Period): Promise<void> {
+  public async prefetchAlternateUnits(
+    currentUnits: Units, 
+    currentPeriod: Period,
+    category: 'rainfall' | 'solar' | 'evapotranspiration' = 'rainfall'
+  ): Promise<void> {
     const alternateUnits = currentUnits === Units.IN ? Units.MM : Units.IN;
     
     // Priority order: current period first, then annual, then other periods
     const prefetchOrder: Period[] = [
-      currentPeriod, // Same period, different units
-      Period.Annual, // Annual data (most important for researchers)
+      currentPeriod,
+      Period.Annual,
       ...Object.values(Period).filter((p): p is Period => 
         typeof p === 'number' && p !== currentPeriod && p !== Period.Annual
       )
     ];
 
-    // Queue prefetch tasks
+    // Queue prefetch tasks based on category
     for (const period of prefetchOrder) {
-      this.queuePrefetch('grids', alternateUnits, period);
-      this.queuePrefetch('uncertainty', alternateUnits, period);
+      this.queuePrefetch('grids', alternateUnits, period, category);
+      if (category === 'rainfall') {
+        this.queuePrefetch('uncertainty', alternateUnits, period, category);
+      }
     }
     
-    // Prefetch isohyets (not period-specific)
-    this.queuePrefetch('isohyets', alternateUnits);
+    // Prefetch isohyets (rainfall only, not period-specific)
+    if (category === 'rainfall') {
+      this.queuePrefetch('isohyets', alternateUnits, undefined, category);
+    }
     
     this.processPrefetchQueue();
   }
 
-  private queuePrefetch(type: string, units: Units, period?: Period): void {
-    const key = this.getCacheKey(type as any, units, period);
+  private queuePrefetch(
+    type: string, 
+    units: Units, 
+    period?: Period, 
+    category: 'rainfall' | 'solar' | 'evapotranspiration' = 'rainfall'
+  ): void {
+    const key = this.getCacheKey(type as any, units, period, category);
     
     // Skip if already loaded or loading
     if (this.loadingStates.has(key)) return;
-    
+
     const prefetchFn = () => {
       switch (type) {
         case 'grids':
           return this.loadWithDeduplication(key, () => 
-            fetch(`/api/grids/${units}/${Period[period!]}`).then(res => res.json())
+            fetch(`/api/grids/${units}/${period !== undefined ? Period[period] : ''}`).then(res => res.json())
           );
         case 'uncertainty':
           return this.loadWithDeduplication(key, () => 
@@ -77,7 +95,7 @@ export class ResearchDataManager {
             fetch(`/api/isohyets/${units}`).then(res => res.json())
           );
         default:
-          return Promise.resolve(null);
+          return Promise.resolve();
       }
     };
     
@@ -108,40 +126,53 @@ export class ResearchDataManager {
     this.isPrefetching = false;
   }
 
-  // Call this when user first loads data to start background prefetching
-  public startResearchPrefetch(initialUnits: Units, initialPeriod: Period): void {
-    // Start prefetching immediately but with lower priority
+  // Start background prefetching after initial load
+  public startBackgroundPrefetch(
+    initialUnits: Units, 
+    initialPeriod: Period,
+    category: 'rainfall' | 'solar' | 'evapotranspiration' = 'rainfall'
+  ): void {
+    // Start prefetching with slight delay to prioritize initial load
     setTimeout(() => {
-      this.prefetchAlternateUnits(initialUnits, initialPeriod);
-    }, 500); // Reduced delay to 500ms
+      this.prefetchAlternateUnits(initialUnits, initialPeriod, category);
+    }, 500); 
   }
 
-  // Aggressive prefetch for immediate unit switching
-  public prefetchCurrentPeriodAlternateUnit(currentUnits: Units, currentPeriod: Period): Promise<void> {
+  // Immediate prefetch for current period when user switches
+  public prefetchCurrentPeriodAlternateUnit(
+    currentUnits: Units, 
+    currentPeriod: Period,
+    category: 'rainfall' | 'solar' | 'evapotranspiration' = 'rainfall'
+  ): Promise<void> {
     const alternateUnits = currentUnits === Units.IN ? Units.MM : Units.IN;
     
     // Prefetch only the current period data for immediate switching
     const promises = [
-      this.queuePrefetchImmediate('grids', alternateUnits, currentPeriod),
-      this.queuePrefetchImmediate('uncertainty', alternateUnits, currentPeriod),
-      this.queuePrefetchImmediate('isohyets', alternateUnits)
+      this.queuePrefetchImmediate('grids', alternateUnits, currentPeriod, category)
     ];
     
-    return Promise.allSettled(promises).then(() => void 0);
+    if (category === 'rainfall') {
+      promises.push(
+        this.queuePrefetchImmediate('uncertainty', alternateUnits, currentPeriod, category),
+        this.queuePrefetchImmediate('isohyets', alternateUnits, undefined, category)
+      );
+    }
+    
+    return Promise.allSettled(promises).then(() => {});
   }
 
-  private queuePrefetchImmediate(type: string, units: Units, period?: Period): Promise<any> {
-    const key = this.getCacheKey(type as any, units, period);
-    
-    // If already loaded or loading, return existing promise
-    if (this.loadingStates.has(key)) {
-      return this.loadingStates.get(key)!;
-    }
+  private queuePrefetchImmediate(
+    type: string, 
+    units: Units, 
+    period?: Period, 
+    category: 'rainfall' | 'solar' | 'evapotranspiration' = 'rainfall'
+  ): Promise<any> {
+    const key = this.getCacheKey(type as any, units, period, category);
     
     switch (type) {
       case 'grids':
         return this.loadWithDeduplication(key, () => 
-          fetch(`/api/grids/${units}/${Period[period!]}`).then(res => res.json())
+          fetch(`/api/grids/${units}/${period !== undefined ? Period[period] : ''}`).then(res => res.json())
         );
       case 'uncertainty':
         return this.loadWithDeduplication(key, () => 
@@ -152,9 +183,9 @@ export class ResearchDataManager {
           fetch(`/api/isohyets/${units}`).then(res => res.json())
         );
       default:
-        return Promise.resolve(null);
+        return Promise.resolve();
     }
   }
 }
 
-export const researchDataManager = new ResearchDataManager();
+export const dataManager = new DataManager();

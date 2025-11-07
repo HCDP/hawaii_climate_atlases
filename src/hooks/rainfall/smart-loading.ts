@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { Units, Period } from '@/lib/types';
-import { researchDataManager } from '@/utils/unit-conversion';
 
 /**
  * Hook to manage smart loading states for unit switching
