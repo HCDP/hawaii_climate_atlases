@@ -27,6 +27,8 @@ import {
   useRainfallUncertaintyAllGrids,
   useRainfallUncertaintyComposite
 } from "@/hooks/rainfall";
+import { useResearchDataPrefetch } from "@/hooks/rainfall/research-prefetch";
+import { useSmartLoadingState } from "@/hooks/rainfall/smart-loading";
 import { defaultSettings } from "@/constants";
 import { GridLoader } from "react-spinners";
 
@@ -435,34 +437,82 @@ const RainfallMap = () => {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   });
 
+  // Load BOTH unit systems simultaneously for research workflows
+  // This ensures instant switching between inches and millimeters
+  
+  // Load stations and isohyets (unit-agnostic data) once
   const {
     rfStations,
     otherStations,
     featureCollections,
-    asciiGrid,
-    allDataLoaded: rainfallDataLoaded,
-    isLoading: rainfallIsLoading,
   } = useRainfallComposite(selectedUnits, selectedPeriod);
 
+  // Load BOTH unit systems simultaneously for research workflows
+  // This ensures instant switching between inches and millimeters
   const {
-    asciiGrids,
-    gridsAreLoading: rainfallGridsAreLoading
-  } = useRainfallAllGrids(selectedUnits);
+    asciiGrid: asciiGridIN,
+    isLoading: rainfallIsLoadingIN,
+    allDataLoaded: rainfallDataLoadedIN
+  } = useRainfallComposite(Units.IN, selectedPeriod);
 
   const {
-    asciiGrid: uncertaintyGrid,
-    allDataLoaded: uncertaintyDataLoaded,
-    isLoading: uncertaintyIsLoading,
-  } = useRainfallUncertaintyComposite(selectedUnits, selectedPeriod);
+    asciiGrid: asciiGridMM,
+    isLoading: rainfallIsLoadingMM,
+    allDataLoaded: rainfallDataLoadedMM
+  } = useRainfallComposite(Units.MM, selectedPeriod);
 
   const {
-    asciiGrids: uncertaintyGrids,
-    gridsAreLoading: uncertaintyGridsAreLoading
-  } = useRainfallUncertaintyAllGrids(selectedUnits);
+    asciiGrids: asciiGridsIN,
+    gridsAreLoading: rainfallGridsAreLoadingIN
+  } = useRainfallAllGrids(Units.IN);
+
+  const {
+    asciiGrids: asciiGridsMM,
+    gridsAreLoading: rainfallGridsAreLoadingMM
+  } = useRainfallAllGrids(Units.MM);
+
+  const {
+    asciiGrid: uncertaintyGridIN,
+    isLoading: uncertaintyIsLoadingIN,
+    allDataLoaded: uncertaintyDataLoadedIN
+  } = useRainfallUncertaintyComposite(Units.IN, selectedPeriod);
+
+  const {
+    asciiGrid: uncertaintyGridMM,
+    isLoading: uncertaintyIsLoadingMM,
+    allDataLoaded: uncertaintyDataLoadedMM
+  } = useRainfallUncertaintyComposite(Units.MM, selectedPeriod);
+
+  const {
+    asciiGrids: uncertaintyGridsIN,
+    gridsAreLoading: uncertaintyGridsAreLoadingIN
+  } = useRainfallUncertaintyAllGrids(Units.IN);
+
+  const {
+    asciiGrids: uncertaintyGridsMM,
+    gridsAreLoading: uncertaintyGridsAreLoadingMM
+  } = useRainfallUncertaintyAllGrids(Units.MM);
+
+  // Use the data for the currently selected units
+  const asciiGrid = selectedUnits === Units.IN ? asciiGridIN : asciiGridMM;
+  const rainfallIsLoading = selectedUnits === Units.IN ? rainfallIsLoadingIN : rainfallIsLoadingMM;
+  const rainfallDataLoaded = selectedUnits === Units.IN ? rainfallDataLoadedIN : rainfallDataLoadedMM;
+  const asciiGrids = selectedUnits === Units.IN ? asciiGridsIN : asciiGridsMM;
+  const rainfallGridsAreLoading = selectedUnits === Units.IN ? rainfallGridsAreLoadingIN : rainfallGridsAreLoadingMM;
+  
+  const uncertaintyGrid = selectedUnits === Units.IN ? uncertaintyGridIN : uncertaintyGridMM;
+  const uncertaintyIsLoading = selectedUnits === Units.IN ? uncertaintyIsLoadingIN : uncertaintyIsLoadingMM;
+  const uncertaintyDataLoaded = selectedUnits === Units.IN ? uncertaintyDataLoadedIN : uncertaintyDataLoadedMM;
+  const uncertaintyGrids = selectedUnits === Units.IN ? uncertaintyGridsIN : uncertaintyGridsMM;
+  const uncertaintyGridsAreLoading = selectedUnits === Units.IN ? uncertaintyGridsAreLoadingIN : uncertaintyGridsAreLoadingMM;
 
   const isLoading = rainfallIsLoading || uncertaintyIsLoading;
   const gridsAreLoading = rainfallGridsAreLoading || uncertaintyGridsAreLoading;
   const allDataLoaded = rainfallDataLoaded && uncertaintyDataLoaded;
+
+  // Smart loading state - only show loading screen if both unit systems are loading
+  const bothUnitsLoading = (rainfallIsLoadingIN || uncertaintyIsLoadingIN) && (rainfallIsLoadingMM || uncertaintyIsLoadingMM);
+  const showLoadingScreen = bothUnitsLoading;
 
   const ranges_IN: [number, number][] = [
     [0.8, 32.2],
@@ -608,7 +658,7 @@ const RainfallMap = () => {
     ) : null;
   }, [featureCollections, selectedPeriod, selectedUnits]);
 
-  if (!allDataLoaded) {
+  if (showLoadingScreen) {
     return (
       <div style={{padding: "20px"}} className="text-center">
         <p style={{padding: "10px"}}>Loading Data</p>
@@ -700,6 +750,23 @@ const RainfallMap = () => {
             minimap={true}
           />
         </Map>
+        
+        {/* Background prefetch indicator */}
+        {isLoading && !showLoadingScreen && (
+          <div style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            background: 'rgba(0,0,0,0.7)',
+            color: 'white',
+            padding: '8px 12px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            zIndex: 1000
+          }}>
+            Loading {selectedUnits === Units.IN ? 'inches' : 'millimeters'} data...
+          </div>
+        )}
       </div>
     </div>
   );
