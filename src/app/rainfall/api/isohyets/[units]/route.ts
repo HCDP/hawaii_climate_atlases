@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { FeatureCollection } from "geojson";
 import { isUnits } from "@/utils";
 import { invalidUnitsResponse, unableToRetrieveResponse } from "@/lib/responses";
-import { getIsohyets } from "@/lib/rainfall_data";
+import { getIsohyets } from "@/lib/extract_data";
 
 export async function GET(_: NextRequest, { params }: { params: { units: string } }): Promise<NextResponse<{ error: string } | FeatureCollection[]>> {
   const units: string = params.units;

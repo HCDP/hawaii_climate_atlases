@@ -1,35 +1,48 @@
-import { useStations } from "@/hooks/useStations";
-import { useIsohyets } from "@/hooks/useIsohyets";
-import { useGrids } from "@/hooks/useGrids";
+import { useRainfallStations } from "./stations";
+import { useRainfallIsohyets } from "./isohyets";
+import { useRainfallGrids } from "./grids";
 import { Units, Period } from "@/lib";
 
-export default function useRainfallData(selectedUnits: Units, selectedPeriod: Period) {
+/**
+ * Composite hook that fetches all rainfall-related data:
+ * - RF Atlas stations
+ * - Other stations
+ * - Isohyets
+ * - Grid data for selected period
+ */
+export function useRainfallComposite(selectedUnits: Units, selectedPeriod: Period) {
   const {
     stations: rfStations,
     isLoading: rfStationsLoading,
-  } = useStations();
+  } = useRainfallStations();
+  
   const {
     stations: otherStations,
     isLoading: otherStationsLoading,
-  } = useStations("other");
+  } = useRainfallStations("other");
+  
   const {
     featureCollections,
     isLoading: isohyetsLoading,
-  } = useIsohyets(selectedUnits);
+  } = useRainfallIsohyets(selectedUnits);
+  
   const {
     asciiGrid,
     isLoading: gridsLoading,
-  } = useGrids(selectedUnits, Period[selectedPeriod]);
+  } = useRainfallGrids(selectedUnits, Period[selectedPeriod]);
+  
   const allDataLoaded =
     !!rfStations &&
     !!otherStations &&
     !!featureCollections &&
     !!asciiGrid;
+    
   const isLoading =
     rfStationsLoading ||
     otherStationsLoading ||
     isohyetsLoading ||
     gridsLoading;
+    
   return {
     rfStations,
     otherStations,
@@ -37,5 +50,5 @@ export default function useRainfallData(selectedUnits: Units, selectedPeriod: Pe
     asciiGrid,
     allDataLoaded,
     isLoading,
-  }
+  };
 }

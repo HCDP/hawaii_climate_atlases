@@ -1,6 +1,6 @@
 "use client"
 
-// import RainfallMap from "@/components/maps/RainfallMap";
+import { ConditionsOfUseProvider } from "@/components/ConditionsOfUse";
 import useRequiredConditionsOfUse from "@/hooks/useRequiredConditionsOfUse";
 import dynamic from "next/dynamic";
 import { GridLoader } from "react-spinners";
@@ -19,12 +19,21 @@ const RainfallMap = dynamic(
   }
 );
 
-
-const ClientInteractiveMap = () => {
+const MapContent = () => {
   useRequiredConditionsOfUse();
   return (
-    // UH Manoa coordinates: 21.297, -157.817
-    <RainfallMap />
+    <>
+      {/* UH Manoa coordinates: 21.297, -157.817 */}
+      <RainfallMap />
+    </>
+  );
+}
+
+const ClientInteractiveMap = () => {
+  return (
+    <ConditionsOfUseProvider>
+      <MapContent />
+    </ConditionsOfUseProvider>
   );
 }
 
