@@ -479,7 +479,6 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   const {
     enableStations = DEFAULT_CONFIG.enableStations,
     enableIsohyets = DEFAULT_CONFIG.enableIsohyets,
-    enableUncertaintyToggle = DEFAULT_CONFIG.enableUncertaintyToggle,
     enableDualLoading = DEFAULT_CONFIG.enableDualLoading,
     defaultShowStations = DEFAULT_CONFIG.defaultShowStations,
     defaultShowOtherStations = DEFAULT_CONFIG.defaultShowOtherStations,

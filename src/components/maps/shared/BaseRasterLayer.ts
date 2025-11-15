@@ -1,7 +1,6 @@
 import { AsciiGrid } from "@/lib";
 import chroma from "chroma-js";
 import L, { LatLng } from "leaflet";
-import { createLayerComponent } from "@react-leaflet/core";
 
 export interface RasterOptions {
   cacheEmpty?: boolean;
@@ -23,7 +22,6 @@ export type ColorScale = {
   range: [number, number];
 }
 
-let R: any = L;
 
 /**
  * Converts a geographic position to a color based on the ASCII grid data and color scale

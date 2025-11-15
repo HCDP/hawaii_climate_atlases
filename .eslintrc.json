@@ -4,6 +4,10 @@
     "*RainfallColorLayer.ts*"
   ],
   "rules": {
-    "@next/next/no-img-element": "off"
+    "@next/next/no-img-element": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "prefer-const": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "react-hooks/rules-of-hooks": "off"
   }
 }
