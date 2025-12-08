@@ -59,23 +59,29 @@ export function useNetRadiationGrids(period: Period) {
 
 /**
  * Hook to fetch all solar radiation grids for all periods (Jan-Dec + Annual)
+ * Note: Calls hooks at top level to comply with React Rules of Hooks
  */
 export function useSolarRadiationAllGrids() {
-  type GridFetchResult = { 
-    asciiGrid: AsciiGrid | undefined;
-    isLoading: boolean;
-    error: Error | undefined;
-  };
+  // Call all hooks at top level (React Rules of Hooks requirement)
+  const jan = useSolarRadiationGrids(Period.January);
+  const feb = useSolarRadiationGrids(Period.February);
+  const mar = useSolarRadiationGrids(Period.March);
+  const apr = useSolarRadiationGrids(Period.April);
+  const may = useSolarRadiationGrids(Period.May);
+  const jun = useSolarRadiationGrids(Period.June);
+  const jul = useSolarRadiationGrids(Period.July);
+  const aug = useSolarRadiationGrids(Period.August);
+  const sep = useSolarRadiationGrids(Period.September);
+  const oct = useSolarRadiationGrids(Period.October);
+  const nov = useSolarRadiationGrids(Period.November);
+  const dec = useSolarRadiationGrids(Period.December);
+  const ann = useSolarRadiationGrids(Period.Annual);
 
-  const results: GridFetchResult[] = [];
-  for (let i = 0; i <= 12; i++) {
-    results.push(useSolarRadiationGrids(i as Period));
-  }
-
+  const results = [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec, ann];
   const asciiGrids = results.flatMap(r => r.asciiGrid ? [r.asciiGrid] : []);
   
   return {
     asciiGrids,
-    gridsAreLoading: Object.values(results).some(r => r.isLoading),
+    gridsAreLoading: results.some(r => r.isLoading),
   };
 }
