@@ -60,7 +60,7 @@ const DEFAULT_CONFIG: ClimateMapConfig = {
   enableStations: true,
   enableIsohyets: true,
   enableUncertaintyToggle: true,
-  enableDualLoading: true,
+  enableDualLoading: true, // Load both units for instant switching
   defaultShowStations: defaultSettings.showRFStations,
   defaultShowOtherStations: defaultSettings.showOtherStations,
   defaultShowIsohyets: defaultSettings.showIsohyets,
@@ -579,17 +579,29 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   const isLoading = rainfallIsLoading || uncertaintyIsLoading;
   const gridsAreLoading = currentRainfallGrids.gridsAreLoading || currentUncertaintyGrids.gridsAreLoading;
 
-  // Only show loading screen if BOTH unit systems are still loading (first load only) when dual loading enabled
-  const bothUnitsStillLoading = enableDualLoading 
-    ? (rainfallData.isLoading && rainfallDataMM.isLoading) || (uncertaintyDataIN.isLoading && uncertaintyDataMM.isLoading)
-    : isLoading;
+  // Only show loading screen if BOTH unit systems are still loading (first load only)
+  // This matches the original RainfallMap behavior: show map as soon as ONE unit is ready
+  const bothUnitsStillLoading = enableDualLoading
+    ? ((rainfallData.isLoading && rainfallDataMM.isLoading) || (uncertaintyDataIN.isLoading && uncertaintyDataMM.isLoading))
+    : (rainfallIsLoading || uncertaintyIsLoading);
   const showLoadingScreen = bothUnitsStillLoading;
 
   // Memoize layers
   const rainfallLayer = useMemo(() => {
-    if (!showGrids || showUncertainty || !currentRainfallData.asciiGrid || rainfallIsLoading) return null;
+    console.log('=== RAINFALL LAYER CHECK ===');
+    console.log('showGrids:', showGrids);
+    console.log('showUncertainty:', showUncertainty);
+    console.log('currentRainfallData.asciiGrid exists:', !!currentRainfallData.asciiGrid);
+    console.log('currentRainfallData:', currentRainfallData);
+    
+    if (!showGrids || showUncertainty || !currentRainfallData.asciiGrid) {
+      console.log('RETURNING NULL - layer will not render');
+      return null;
+    }
     
     const range = selectedUnits === Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod];
+    console.log('CREATING LAYER with range:', range);
+    console.log('Grid header:', currentRainfallData.asciiGrid.header);
     
     return (
       <RainfallColorLayer
@@ -601,10 +613,10 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
         }}
       />
     );
-  }, [showGrids, showUncertainty, currentRainfallData.asciiGrid, selectedUnits, selectedPeriod, rainfallIsLoading]);
+  }, [showGrids, showUncertainty, currentRainfallData.asciiGrid, selectedUnits, selectedPeriod]);
 
   const uncertaintyLayer = useMemo(() => {
-    if (!showUncertainty || !currentUncertaintyData.asciiGrid || uncertaintyIsLoading) return null;
+    if (!showUncertainty || !currentUncertaintyData.asciiGrid) return null;
     
     const range = selectedUnits === Units.IN ? uncertainty_ranges_IN[selectedPeriod] : uncertainty_ranges_MM[selectedPeriod];
     
@@ -618,7 +630,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
         }}
       />
     );
-  }, [showUncertainty, currentUncertaintyData.asciiGrid, selectedUnits, selectedPeriod, uncertaintyIsLoading]);
+  }, [showUncertainty, currentUncertaintyData.asciiGrid, selectedUnits, selectedPeriod]);
 
   const rfStationIcons = useMemo(() => {
     if (!enableStations || !currentRainfallData.rfStations) return null;
@@ -752,6 +764,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
             isLoading={isLoading}
             gridsAreLoading={gridsAreLoading}
             minimap={true}
+            setLocation={setLocation}
           />
         </Map>
         
