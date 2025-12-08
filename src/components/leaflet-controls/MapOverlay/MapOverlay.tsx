@@ -176,6 +176,7 @@ interface Props {
   isLoading: boolean,
   gridsAreLoading: boolean,
   minimap: boolean,
+  setLocation?: (location: LatLng) => void,
 }
 
 const MapOverlay: React.FC<Props> = (
@@ -198,7 +199,8 @@ const MapOverlay: React.FC<Props> = (
     setShowUncertainty,
     isLoading,
     gridsAreLoading,
-    minimap
+    minimap,
+    setLocation
   }
 ) => {
   const { maximized, setMaximized } = useContext(LayoutContext);
@@ -215,7 +217,10 @@ const MapOverlay: React.FC<Props> = (
     }
     const parsedLatLng = parseLocation(locationInput);
     if (parsedLatLng !== null) {
-      map.setView(parsedLatLng);
+      map.setView(parsedLatLng); // This moves the visual map
+      if (setLocation) {  
+        setLocation(parsedLatLng);
+      }
       setLocationError(null);
     } else {
       setLocationError("Invalid coordinates entered");
