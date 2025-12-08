@@ -3,19 +3,24 @@ import { getCachedFileBuffer } from "@/lib/data_cache";
 import JSZip from "jszip";
 import path from "path";
 
+// Cache subdirectory for ET data files
 const EVAP_CACHE_PATH = path.join('evapotranspiration', 'raw');
 
 const ZIP_FILES = {
-  AVAILABLE_ENERGY_MONTH: new URL('/data/evapotranspiration/AvailableEnergy_month_ascii.zip', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  AVAILABLE_ENERGY_ANNUAL: new URL('/data/evapotranspiration/AvailableEnergy_ann_hr_ascii.zip', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  CANOPY_CONDUCTANCE_MONTH: new URL('/data/evapotranspiration/CanopyConductance_month_ascii.zip', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  CANOPY_CONDUCTANCE_ANNUAL: new URL('/data/evapotranspiration/CanopyConductance_ann_hr_ascii.zip', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  AIR_DENSITY_MONTH: new URL('/data/evapotranspiration/AirDensity_month_ascii.zip', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  AIR_DENSITY_ANNUAL: new URL('/data/evapotranspiration/AirDensity_ann_hr_ascii.zip', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  AET_IN_MONTH: new URL('/data/evapotranspiration/AET_in_month_ascii.zip', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  AET_IN_ANNUAL: new URL('/data/evapotranspiration/AET_in_ann_hr_ascii.zip', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  AET_MM_MONTH: new URL('/data/evapotranspiration/AET_mm_month_ascii.zip', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  AET_MM_ANNUAL: new URL('/data/evapotranspiration/AET_mm_ann_hr_ascii.zip', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000')
+  AVAILABLE_ENERGY_MONTH: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AvailableEnergy_month_ascii.zip'),
+  AVAILABLE_ENERGY_ANNUAL: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AvailableEnergy_ann_hr_ascii.zip'),
+  CANOPY_CONDUCTANCE_MONTH: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/CanopyConductance_month_ascii.zip'),
+  CANOPY_CONDUCTANCE_ANNUAL: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/CanopyConductance_ann_hr_ascii.zip'),
+  AIR_DENSITY_MONTH: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AirDensity_month_ascii.zip'),
+  AIR_DENSITY_ANNUAL: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AirDensity_ann_hr_ascii.zip'),
+  AET_IN_MONTH: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_in_month_ascii.zip'),
+  AET_IN_ANNUAL: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_in_ann_hr_ascii.zip'),
+  AET_MM_MONTH: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_mm_month_ascii.zip'),
+  AET_MM_ANNUAL: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_mm_ann_hr_ascii.zip'),
+  AET_WM2_MONTH: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_wm2_month_ascii.zip'),
+  AET_WM2_ANNUAL: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_wm2_ann_hr_ascii.zip'),
+  AET_IN_MONTH_HR: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_in_month_hr_ascii.zip'),
+  AET_MM_MONTH_HR: new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_mm_month_hr_ascii.zip')
 };
 
 /**

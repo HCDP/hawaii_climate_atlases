@@ -3,7 +3,6 @@ import JSZip from "jszip";
 import path from "path";
 import { promises as fs } from 'fs';
 
-// Solar radiation ZIP file paths (relative to project root)
 const SOLAR_RADIATION_FILE_PATH = path.join(process.cwd(), 'public', 'variables', 'data', 'Solar Radiation', 'MONTHLY', 'SolarRadiation_month_ascii.zip');
 const DIFFUSE_RADIATION_FILE_PATH = path.join(process.cwd(), 'public', 'variables', 'data', 'Solar Radiation', 'MONTHLY', 'DiffuseRadiation_month_ascii.zip');
 const LONGWAVE_DOWN_FILE_PATH = path.join(process.cwd(), 'public', 'variables', 'data', 'Solar Radiation', 'MONTHLY', 'LWDown_month_ascii.zip');

@@ -20,6 +20,7 @@ export function middleware(request: NextRequest) {
 
   if (
     pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
     pathname.startsWith("/public") ||
     pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|css|js|woff|woff2|ttf|eot)$/)
   ) {
