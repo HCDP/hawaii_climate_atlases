@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import L, { Rectangle, LatLng, LatLngBounds, Map } from "leaflet";
 import { useMap, MapContainer, TileLayer, useMapEvent } from "react-leaflet";
-import { Period, TileLayerProps, Units } from "@/lib";
+import { Period, TileLayerProps, Units, Station } from "@/lib";
 import {
   defaultSettings,
   LEAFLET_POSITIONS,
@@ -176,7 +176,10 @@ interface Props {
   isLoading: boolean,
   gridsAreLoading: boolean,
   minimap: boolean,
-  setLocation?: (location: LatLng) => void,
+  setLocation?: (location: LatLng) => void, // Optional prop to set location externally
+  rfStations?: Station[],
+  otherStations?: Station[],
+  setSelectedStation?: (station: Station | null) => void, // optional setter to select a station
 }
 
 const MapOverlay: React.FC<Props> = (
@@ -200,7 +203,10 @@ const MapOverlay: React.FC<Props> = (
     isLoading,
     gridsAreLoading,
     minimap,
-    setLocation
+    setLocation,
+    rfStations,
+    otherStations,
+    setSelectedStation
   }
 ) => {
   const { maximized, setMaximized } = useContext(LayoutContext);
@@ -216,12 +222,45 @@ const MapOverlay: React.FC<Props> = (
       return;
     }
     const parsedLatLng = parseLocation(locationInput);
+
     if (parsedLatLng !== null) {
       map.setView(parsedLatLng); // This moves the visual map
+
       if (setLocation) {  
-        setLocation(parsedLatLng);
+        setLocation(parsedLatLng); // This updates the location to set location
+      }
+      // Simulate a click event so existing click handlers run (updates grid/index)
+      try {
+        map.fire('click', { latlng: parsedLatLng });
+      } catch (e) {
+        // ignore
+      }
+
+      // If a setter and station lists are provided, select the nearest station (within threshold)
+      if (setSelectedStation) {
+        const candidates = [] as Station[];
+        if (rfStations && rfStations.length) candidates.push(...rfStations);
+        if (otherStations && otherStations.length) candidates.push(...otherStations);
+        if (candidates.length > 0) {
+          let best: Station | null = null;
+          let bestDist = Infinity;
+          candidates.forEach(s => {
+            const d = map.distance(parsedLatLng, new LatLng(s.Lat_DD, s.Lon_DD));
+            if (d < bestDist) {
+              bestDist = d;
+              best = s;
+            }
+          });
+          const thresholdMeters = 20000; // 20 km
+          if (best && bestDist <= thresholdMeters) {
+            setSelectedStation(best);
+          } else {
+            setSelectedStation(null);
+          }
+        }
       }
       setLocationError(null);
+
     } else {
       setLocationError("Invalid coordinates entered");
     }

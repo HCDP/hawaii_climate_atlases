@@ -544,6 +544,10 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     ? (selectedUnits === Units.IN ? uncertaintyGridsIN : uncertaintyGridsMM)
     : uncertaintyGridsIN;
 
+  // Extract station data (same for both units, so use rainfallData)
+  const rfStations = rainfallData.rfStations;
+  const otherStations = rainfallData.otherStations;
+
   // Default data ranges
   const ranges_IN: [number, number][] = [
     [0.8, 32.2], [0.4, 26.4], [0.6, 51.9], [0.3, 38.5], [0.1, 30.7], [0, 32.8],
@@ -765,6 +769,9 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
             gridsAreLoading={gridsAreLoading}
             minimap={true}
             setLocation={setLocation}
+            rfStations={rfStations}
+            otherStations={otherStations}
+            setSelectedStation={setSelectedStation}
           />
         </Map>
         
