@@ -19,7 +19,7 @@ R.gridLayer.RainfallRasterLayer = function (options: RasterOptions) {
 };
 
 const createRainfallComponent = (props: any, context: any) => {
-    let rasterLayer = R.gridLayer.RainfallRasterLayer(props.options);
+  let rasterLayer = R.gridLayer.RainfallRasterLayer(props.options);
 
   /* Prevents selected basemap from overlapping the raster layer
   setTimeout here allows bringToFront() to run after re-renders are done */
