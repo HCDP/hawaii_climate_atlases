@@ -113,7 +113,7 @@ export class DataManager {
       const results = await Promise.allSettled(batch.map(fn => fn()));
       
       // Log any failures silently (don't throw errors for background prefetch)
-      results.forEach((result, index) => {
+      results.forEach((result) => {
         if (result.status === 'rejected') {
           console.warn('Background prefetch failed:', result.reason);
         }

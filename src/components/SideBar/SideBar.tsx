@@ -32,11 +32,9 @@ const SideBar: React.FC<{
   canShowGridValues,
   selectedGridIndex,
   range,
-  uncertaintyRange,
   units,
   location
 }) => {
-    const displayRange = range || uncertaintyRange;
     const [showErrorBars, setShowErrorBars] = useState(false);
 
     // Handles resize bar functionality
