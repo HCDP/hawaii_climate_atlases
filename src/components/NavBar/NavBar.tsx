@@ -20,7 +20,7 @@ const imagePaths: {
   },
   evapotranspiration: {
     banner: "/evapotranspiration_banner.jpg",
-    bg: "/rf_bg.gif",
+    bg: "/et_bg.gif",
   },
   solarradiation: {
     banner: "/solarradiation_banner.jpg",

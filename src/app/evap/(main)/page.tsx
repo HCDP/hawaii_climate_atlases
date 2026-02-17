@@ -1,23 +1,27 @@
-export default function Home() {
+export default function EvapPage() {
   return (
     <div className="m-14">
      
       {/* Intro Section */}
-      <div className="-mb-4 max-w-[62rem] mx-auto">
-        <h1 className="text-xl font-bold -mt-5">Evapotranspiration of Hawaiʻi</h1>
-        <table className="float-right mt-3">
-            <caption>
-              <img className="" src="/images/mean_ann_evptrsp" alt="EvpTrsp Image" width="308" height="217"/>
-            </caption>
-        </table>
-        <div>
+      <div className="max-w-[62rem] mx-auto">
+        <h1 className="text-xl font-bold mb-4">Evapotranspiration of Hawaiʻi</h1>
+        <div className="flow-root">
+          <img 
+            className="float-right ml-6 mb-4 rounded-sm" 
+            src="/images/mean_ann_evptrsp.jpg" 
+            alt="EvpTrsp Image"
+             width="350" 
+             height="270"
+          />
           <p className="pb-2 pt-3 text-blue-500 underline">
             <em><a href="/how-to-cite-et">How to cite the Evapotranspiration Atlas</a>&nbsp;</em>
           </p>
           <p>
             This website provides a set of maps of the spatial patterns of evapotranspiration for the major Hawaiian Islands. To estimate evapotranspiration, numerous other variables, such as solar radiation, air temperature, and relative humidity to name a few, had to be estimated. Those are included here, too. Most variables are mapped for each hour of the average 24-hour cycle of each month and for each hour of the average 24-hour cycle for the whole year. The average value for each month and the annual average are also mapped. In developing the evapotranspiration estimates, more than 12,000 maps were created. Many of those maps are available via this website, in the form of downloadable files and, for a selection of variables, on the interactive mapping tool.
           </p>
-          <p className="pt-3">Be sure to check out the&nbsp;
+        </div>
+        <div className="pt-3">
+          <p>Be sure to check out the&nbsp;
             <a className="text-blue-500 underline" href="/interactive-map">interactive map</a>!&nbsp;
             It may need a few minutes to load on your first visit.&nbsp;
           </p>

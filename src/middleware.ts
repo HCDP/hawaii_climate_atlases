@@ -8,10 +8,14 @@ export function middleware(request: NextRequest) {
     pathname.endsWith(".jpg") ||
     pathname.endsWith(".gif")
   )) {
+    
     switch (hostname) {
       case "rainfall.geography.hawaii.edu":
         return NextResponse.rewrite(new URL("/rainfall" + pathname, request.url));
       case "localhost":
+        if (pathname.startsWith("/evap")) {
+          return NextResponse.next();
+        }
         return NextResponse.rewrite(new URL("/rainfall" + pathname, request.url));
       case "climate.geography.hawaii.edu":
         return NextResponse.rewrite(new URL("/climate" + pathname, request.url));
