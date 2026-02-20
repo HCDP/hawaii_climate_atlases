@@ -14,10 +14,11 @@ export default function EvapPage() {
              height="270"
           />
           <p className="pb-2 pt-3 text-blue-500 underline">
-            <em><a href="/how-to-cite-et">How to cite the Evapotranspiration Atlas</a>&nbsp;</em>
+            <em><a href="/evap/how-to-cite">How to cite the Evapotranspiration Atlas</a>&nbsp;</em>
           </p>
           <p>
-            This website provides a set of maps of the spatial patterns of evapotranspiration for the major Hawaiian Islands. To estimate evapotranspiration, numerous other variables, such as solar radiation, air temperature, and relative humidity to name a few, had to be estimated. Those are included here, too. Most variables are mapped for each hour of the average 24-hour cycle of each month and for each hour of the average 24-hour cycle for the whole year. The average value for each month and the annual average are also mapped. In developing the evapotranspiration estimates, more than 12,000 maps were created. Many of those maps are available via this website, in the form of downloadable files and, for a selection of variables, on the interactive mapping tool.
+            This website provides a set of maps of the spatial patterns of evapotranspiration for the major Hawaiian Islands. To estimate evapotranspiration, numerous other variables, such as solar radiation, air temperature, and relative humidity to name a few, had to be estimated. Those are included here, too. Most variables are mapped for each hour of the average 24-hour cycle of each month and for each hour of the average 24-hour cycle for the whole year. The average value for each month and the annual average are also mapped. In developing the evapotranspiration estimates, more than 12,000 maps were created. 
+            Many of those maps are available via this website, in the form of <a className="text-blue-500 underline" href="/downloads"> downloadable files</a> and, for a selection of variables, on the <a className="text-blue-500 underline" href="/interactive-map-tool">interactive mapping tool</a>.
           </p>
         </div>
         <div className="pt-3">

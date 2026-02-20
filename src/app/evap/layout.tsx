@@ -16,7 +16,7 @@ export default function MainLayout(
           { text: 'Home', path: '/' },
           { text: 'Interactive Map', path: '/interactive-map' },
           { text: 'Downloads', path: '/downloads' },
-          { text: 'How to cite', path: '/how-to-cite-et' },
+          { text: 'How to cite', path: '/how-to-cite' },
           { text: 'History', path: '/history' },
           { text: 'Methods', path: '/methods' },
           { text: 'Evapotranspiration', path: '/evap' },

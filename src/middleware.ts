@@ -16,6 +16,9 @@ export function middleware(request: NextRequest) {
         if (pathname.startsWith("/evap")) {
           return NextResponse.next();
         }
+        if (pathname.startsWith("/evap")) {
+          return NextResponse.next();
+        }
         return NextResponse.rewrite(new URL("/rainfall" + pathname, request.url));
       case "climate.geography.hawaii.edu":
         return NextResponse.rewrite(new URL("/climate" + pathname, request.url));
