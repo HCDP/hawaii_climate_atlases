@@ -17,7 +17,7 @@ const config: Config = {
     },
     fontFamily: {
       sans: [ "ui-sans-serif, system-ui", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" ],
-      serif: [ "Times New Roman", "Times", "ui-serif", "Georgia", "Cambria", "serif" ]
+      serif: [ "Times New Roman", "Times", "ui-serif", "Georgia", "Cambria", "serif", 'Lucida Grande' ]
     },
   },
   darkMode: "class",

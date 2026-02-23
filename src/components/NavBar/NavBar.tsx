@@ -7,23 +7,28 @@ import React from "react";
 const imagePaths: {
   [key: string]: {
     banner: string,
+    color: string,
     bg: string,
   }
 } = {
   rainfall: {
     banner: "/rainfall_banner.png",
+    color: "#708090",
     bg: "/rf_bg.gif",
   },
   climate: {
     banner: "/climate_banner.jpg",
+    color: "#7097BE",
     bg: "/rf_bg.gif",
   },
   evapotranspiration: {
     banner: "/evapotranspiration_banner.jpg",
+    color: "#7097BE", 
     bg: "/et_bg.gif",
   },
   solarradiation: {
     banner: "/solarradiation_banner.jpg",
+    color: "#7097BE",
     bg: "/rf_bg.gif",
   },
 }
@@ -40,9 +45,10 @@ export interface Props {
 const NavBar: React.FC<Props> = ({ navLinks, navImg }) => {
   const path: string = usePathname();
   const imgSrc: string = baseUrl + imagePaths[navImg].banner;
+  const bcColor: string = imagePaths[navImg].color;
   const bgSrc: string = baseUrl + imagePaths[navImg].bg;
   return (
-    <div className="bg-[#7097BE]">
+    <div className={`bg-[${bcColor}]`}>
       <div className="h-[140px] overflow-visible">
         <img className="mx-auto max-h-none max-w-none" src={imgSrc} alt="Rainfall Atlas of Hawaii banner"/>
       </div>

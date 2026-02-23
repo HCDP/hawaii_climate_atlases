@@ -20,57 +20,53 @@ export default function EvapPage() {
             This website provides a set of maps of the spatial patterns of evapotranspiration for the major Hawaiian Islands. To estimate evapotranspiration, numerous other variables, such as solar radiation, air temperature, and relative humidity to name a few, had to be estimated. Those are included here, too. Most variables are mapped for each hour of the average 24-hour cycle of each month and for each hour of the average 24-hour cycle for the whole year. The average value for each month and the annual average are also mapped. In developing the evapotranspiration estimates, more than 12,000 maps were created. 
             Many of those maps are available via this website, in the form of <a className="text-blue-500 underline" href="/downloads"> downloadable files</a> and, for a selection of variables, on the <a className="text-blue-500 underline" href="/interactive-map-tool">interactive mapping tool</a>.
           </p>
-        </div>
-        <div className="pt-3">
-          <p>Be sure to check out the&nbsp;
-            <a className="text-blue-500 underline" href="/interactive-map">interactive map</a>!&nbsp;
-            It may need a few minutes to load on your first visit.&nbsp;
-          </p>
-        </div>
-      </div>
-
-      {/*
-      <div className="mt-16 px-10 flex justify-center">
-        <div className="border border-black px-6 py-4 max-w-3xl text-center">
-          <p>
-            <em><b>Updates:</b><br /> 
-            Seasonal Evapotranspiration Trend Maps from 1920-2012 and 1983-2012 available for&nbsp;
-            <a className="text-blue-500 underline" href="/downloads">download</a>&nbsp; (10/2018)<br />
-            Month-Year Evapotranspiration Maps from 1920-2012 are available for&nbsp;
-            <a className="text-blue-500 underline" href="/downloads">download</a>&nbsp; (08/2015)<br />
-            Evapotranspiration data&nbsp;<a className="text-blue-500 underline" href="/downloads">(tabular)</a>&nbsp;
-            have been updated through 2012 (04/2015)<br />
-            All Moloka‘i maps have been updated (07/2014)
-            </em>
-          </p>
+          <div className="border border-black px-3 py-2 text-center mt-6 overflow-hidden">
+            <p>Be sure to check out the&nbsp;
+              <a className="text-blue-500 underline" href="/interactive-map">interactive map</a>!&nbsp;
+              It may need a few minutes to load on your first visit.&nbsp;
+            </p>
+          </div>
         </div>
       </div>
-
 
       <div className="max-w-[62rem] mx-auto mt-16">
-        <p className="float-left mr-6">
-          <img src="/images/mean_ann_et_statemm.jpg" alt="Mean Annual Evapotranspiration Image" width="379" height="293"/>
-        </p>
+        <h1 className="text-xl font-bold mb-4">The Hydrologic Cycle</h1>
+        <table className="float-left mt-4 mr-8">
+            <caption>
+              <img className="" src="/images/hydro_cycle.jpg" alt="Hydrocycle" width="350" height="250"/>
+            </caption>
+            <tbody>
+              <tr>
+                  <td><em>Source: Anishct (Own work) [Public domain], via Wikimedia Commons</em></td>
+              </tr>
+            </tbody>
+        </table>
         <p className="pb-4">
-          The Rainfall Atlas of Hawaiʻi is a set of maps of the spatial patterns of rainfall for the major Hawaiian Islands. Maps are available for mean monthly and annual rainfall. The maps represent our best estimates of the mean rainfall for the 30-yr base period 1978–2007. However, for many reasons, it is not possible to determine the exact value of mean rainfall for any location. Therefore, for every map of mean rainfall, we provide a corresponding map of uncertainty. Uncertainty tends to be greatest where we have the poorest information about rainfall, for example in remote locations far from the nearest raingage.
+          Water in our environment is cycled by processes that move and transform water. Clouds form when moist air is cooled. Precipitation happens when water drops or ice particles become big enough to fall from clouds. Rainwater can recharge soil water, groundwater, streams, rivers, and lakes. Some is used by plants, which transpire the water back to the air. And some is evaporated directly from wet leaves and soil. All the transpired and evaporated water then becomes available to form clouds and rain. This sequence is called “the hydrologic cycle” and it sustains life on earth. Understanding and quantifying the movement of water in the hydrological cycle is needed to help manage our water resources, protect our natural environment, and anticipate how climate change, land development, and species invasion will affect natural ecosystems, agriculture, and domestic water availability in the future.
         </p>
-        <p>
-          This web site was developed to make the rainfall maps, data, and related information easily accessible. The maps depict rainfall patterns by color and/or by isohyets (lines of equal rainfall). The <a className="text-blue-500 underline" href="/interactive-map">
-          interactive map</a>&nbsp;allows 
-          users to see the patterns of mean monthly and annual rainfall and corresponding uncertainty, zoom in on areas of particular interest, navigate to specific locations with the help of a choice of different base maps, and click on any location to get the mean annual rainfall and a graph and table of mean monthly rainfall. The locations of stations can also be shown on the interactive map. Clicking on a station gives both station and mapped estimates of monthly rainfall along with station metadata.
+        <table className="float-right mt-4 ml-8 w-[230px]">
+          <caption>
+            <img className="" src="/images/trans+evap.jpg" alt="trans/evap" width="308" height="217"/>
+          </caption>
+          <tbody>
+            <tr>
+              <td className="pt-2 break-words leading-tight"><em>Source: Mwtoews (Own work) [GFDL
+(http://www.gnu.org/copyleft/fdl.html)
+or CC-BY-3.0 (http://creativecommons.org/
+licenses/by/3.0)], via Wikimedia Commons</em></td>
+            </tr>
+          </tbody>
+        </table>
+        <h1 className="text-xl font-bold mb-4 text-right">Evapotranspiration</h1>
+        <p className="">
+          Understanding the hydrologic cycle starts with measuring and mapping rainfall. In the <a className="text-blue-500 underline" href="/interactive-map">Rainfall Atlas of Hawai‘i</a>, detailed analysis of rainfall data provides a comprehensive picture of the spatial patterns of rainfall in Hawai‘i. Equally important, though much less obvious and much more difficult to assess, is evapotranspiration, the combination of processes that takes water from the surface and transforms it into water vapor in the air. These processes include the movement of water through plant roots and the evaporation of that water through pores in the plant’s leaves, a process called transpiration. Water on the outsides of leaves, such as water deposited by rain or fog interception, can be evaporated, a process called wet canopy evaporation. Water can also evaporate directly from moist soil, soil evaporation. The sum of these three components is called evapotranspiration (ET).
         </p>
       </div>
 
       <div className="max-w-[62rem] mx-auto mt-10 mb-20">
-        <p>&nbsp;</p>
-        <p className="float-right ml-6">
-          <img src="/images/rainfall_map.jpg" alt="Pixel Size" width="280" height="235"/>
-        </p>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-        <p className="">Rainfall maps can also be&nbsp;
-          <a className="text-blue-500 underline" href="/downloads">downloaded</a>
-          &nbsp;in various forms. Our analysis produced digital maps called rasters or grids. On these maps, the islands are divided into 8.1-arcsecond spatial units, or approximately 234 × 250 m (770 × 820 ft). Rainfall and uncertainty are estimated for each spatial unit. GIS (Geographic Information System) users can obtain mean and uncertainty maps as raster files. Alternatively, image files showing rainfall patterns by color and/or by isohyets can be downloaded.
+        <h1 className="text-xl font-bold mb-4">Evapotranspiration</h1>
+        <p>
+          ET is highly variable through time and from place to place. Many variables influence evapotranspiration, including those related to climate (e.g., solar radiation, air temperature, humidity, and wind), the characteristics of the vegetation (e.g., plant type, height, density, amount of leaves, and root depth), and the properties and status of the soil (e.g., soil texture, porosity, water holding capacity, and soil moisture content). Direct measurements of ET are difficult and expensive, and cannot be done extensively enough to capture the spatial ET patterns. Therefore, it is necessary to estimate ET using models that incorporate information on the climate, vegetation, and soil factors that influence ET.  More information can be found on our Methods page.
         </p>
       </div>
 
@@ -124,7 +120,6 @@ export default function EvapPage() {
           </div>
         </div>
       </div>
-    */}
     </div>
 
     /*
