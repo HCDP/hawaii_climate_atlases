@@ -48,7 +48,7 @@ const NavBar: React.FC<Props> = ({ navLinks, navImg }) => {
   const bcColor: string = imagePaths[navImg].color;
   const bgSrc: string = baseUrl + imagePaths[navImg].bg;
   return (
-    <div className={`bg-[${bcColor}]`}>
+    <div style={{ backgroundColor: bcColor }}>
       <div className="h-[140px] overflow-visible">
         <img className="mx-auto max-h-none max-w-none" src={imgSrc} alt="Rainfall Atlas of Hawaii banner"/>
       </div>

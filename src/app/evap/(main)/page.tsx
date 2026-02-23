@@ -18,7 +18,7 @@ export default function EvapPage() {
           </p>
           <p>
             This website provides a set of maps of the spatial patterns of evapotranspiration for the major Hawaiian Islands. To estimate evapotranspiration, numerous other variables, such as solar radiation, air temperature, and relative humidity to name a few, had to be estimated. Those are included here, too. Most variables are mapped for each hour of the average 24-hour cycle of each month and for each hour of the average 24-hour cycle for the whole year. The average value for each month and the annual average are also mapped. In developing the evapotranspiration estimates, more than 12,000 maps were created. 
-            Many of those maps are available via this website, in the form of <a className="text-blue-500 underline" href="/downloads"> downloadable files</a> and, for a selection of variables, on the <a className="text-blue-500 underline" href="/interactive-map-tool">interactive mapping tool</a>.
+            Many of those maps are available via this website, in the form of <a className="text-blue-500 underline" href="/evap/downloads"> downloadable files</a> and, for a selection of variables, on the <a className="text-blue-500 underline" href="/interactive-map-tool">interactive mapping tool</a>.
           </p>
           <div className="border border-black px-3 py-2 text-center mt-6 overflow-hidden">
             <p>Be sure to check out the&nbsp;
@@ -61,41 +61,37 @@ licenses/by/3.0)], via Wikimedia Commons</em></td>
         <p className="">
           Understanding the hydrologic cycle starts with measuring and mapping rainfall. In the <a className="text-blue-500 underline" href="/interactive-map">Rainfall Atlas of Hawai‘i</a>, detailed analysis of rainfall data provides a comprehensive picture of the spatial patterns of rainfall in Hawai‘i. Equally important, though much less obvious and much more difficult to assess, is evapotranspiration, the combination of processes that takes water from the surface and transforms it into water vapor in the air. These processes include the movement of water through plant roots and the evaporation of that water through pores in the plant’s leaves, a process called transpiration. Water on the outsides of leaves, such as water deposited by rain or fog interception, can be evaporated, a process called wet canopy evaporation. Water can also evaporate directly from moist soil, soil evaporation. The sum of these three components is called evapotranspiration (ET).
         </p>
-      </div>
-
-      <div className="max-w-[62rem] mx-auto mt-10 mb-20">
-        <h1 className="text-xl font-bold mb-4">Evapotranspiration</h1>
+        <h1 className="text-xl font-bold mb-4 mt-4">Estimating Evapotranspiration</h1>
         <p>
           ET is highly variable through time and from place to place. Many variables influence evapotranspiration, including those related to climate (e.g., solar radiation, air temperature, humidity, and wind), the characteristics of the vegetation (e.g., plant type, height, density, amount of leaves, and root depth), and the properties and status of the soil (e.g., soil texture, porosity, water holding capacity, and soil moisture content). Direct measurements of ET are difficult and expensive, and cannot be done extensively enough to capture the spatial ET patterns. Therefore, it is necessary to estimate ET using models that incorporate information on the climate, vegetation, and soil factors that influence ET.  More information can be found on our Methods page.
         </p>
       </div>
 
-      <div className="max-w-[62rem] mx-auto">
-        <table className="float-left mt-4 ml-12 mr-4">
-            <caption><img src="/images/raingagejpg.jpg" alt="Raingage Maui" width="309" height="232"></img></caption>
-            <tbody>
-              <tr>
-                  <td><em>Raingage in Haleakalā, Maui. Photo credit: John DeLay<br/></em></td>
-              </tr>
-            </tbody>
-        </table>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
+      <div className="max-w-[62rem] mx-auto mt-10">
+        <h1 className="text-xl font-bold mb-4">This Website</h1>
+        <p>
+          The Evapotranspiration of Hawai‘i website provides access to a set of maps of the spatial patterns of evapotranspiration (ET), its components (transpiration, wet canopy evaporation, and soil evaporation), potential evapotranspiration (PET), and the climatic and land characteristic variables used to estimate them for the major Hawaiian Islands. In general, each variable is presented in the form of mean hourly maps for each hour of the diurnal cycle of each month and of the whole year, mean monthly maps for each month, and a mean annual map. The maps represent our best estimates of the mean values of each variable based on observations taken during the past decade or two.
+        </p>
+        <img 
+          className="float-left ml-4 mr-4 mb-4 mt-4 rounded-sm" 
+          src="/images/this_web.jpg" 
+          alt="This Website"
+          width="325" 
+          height="245"
+        />
         <p className="mt-4">
-          Rainfall measurements taken at over 1,000 stations were used as the principal source of information in the development of the rainfall maps. Files containing estimated mean monthly and annual rainfall and uncertainty for each station used in the analysis are available for&nbsp;
-          <a className="text-blue-500 underline" href="/downloads">download</a>. 
-          A file with information on each station, including the name, observer, location, elevation, and period of record, is also available.
-        </p>      
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
+          This web site was developed to make the ET, PET, and climate maps, data, and related information easily accessible. The maps depict patterns by color. The interactive map allows users to see the spatial patterns of each variable, zoom in on areas of particular interest, navigate to specific locations with the help of a choice of different base maps, and click on any location to get the mean value of the selected variable, graphs of the mean annual cycle (mean monthly values) and mean diurnal cycle (mean hourly values) of the selected variable, and obtain tables of the mean hourly, monthly, and annual values of all variables for the selected location.
+        </p>
+        <p className="mt-4">
+          ET, PET, and climate maps can also be downloaded in various forms. Our analysis produced digital maps called rasters or grids. On these maps, the islands are divided into 8.1-arcsecond spatial units, or approximately 234 × 250 m (770 × 820 ft). Each variable is estimated for each spatial unit. GIS (Geographic Information Systems) users can obtain as raster files. Alternatively, image files showing spatial patterns by color can be downloaded.
+        </p>
       </div>
 
-      <div className="max-w-[62rem] mx-auto -mb-5">
+      <div className="max-w-[62rem] mx-auto -mb-5 mt-4">
         <div className="">
-          <p>This website is part of a family of websites providing data on the climate of Hawai&lsquo;i. The Rainfall Atlas of Hawai&lsquo;i covers only rainfall. The other three websites each provide data for many other variables including evapotranspiration, solar radiation, albedo, cloud frequency, temperature, relative humidity, etc.  These other three websites contain the <em>same</em> variables, but each is presented with a particular focus.</p>
+          <p>
+            This website is part of a family of websites providing data on the climate of Hawai‘i. The Rainfall Atlas of Hawai‘i covers only rainfall. The other three websites each provide data for all variables, but each is presented with a particular focus.
+          </p>
           <div className="flex flex-col items-center gap-4 mt-6">  
             <p>
               <a href="https://web.archive.org/web/20221210024735/http://rainfall.geography.hawaii.edu/" target="blank">

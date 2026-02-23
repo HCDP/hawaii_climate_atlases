@@ -8,7 +8,9 @@ import {
   ModalFooter,
 } from "@heroui/modal";
 import { Button } from "@heroui/button";
-import { ConditionsOfUseContent } from "@/components/ConditionsOfUse";
+import { usePathname } from "next/navigation";
+import ConditionsOfUseContentRain from "./ConditionsOfUseContentRain";
+import ConditionsOfUseContentEvap from "./ConditionsOfUseContentEvap";
 
 interface Props {
   isOpen: boolean,
@@ -19,6 +21,10 @@ export default function ConditionsOfUse({
   isOpen,
   onOpenChange,
 }: Props) {
+  const pathname = usePathname();
+  const ContentComponent = pathname.startsWith("/evap")
+    ? ConditionsOfUseContentEvap
+    : ConditionsOfUseContentRain;
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl" isDismissable={false}>
       <ModalContent>
@@ -26,7 +32,7 @@ export default function ConditionsOfUse({
           <>
             <ModalHeader className="flex flex-col gap-1">Please Read</ModalHeader>
             <ModalBody>
-              <ConditionsOfUseContent />
+              <ContentComponent />
             </ModalBody>
             <ModalFooter>
               <Button color="primary" variant="flat" onPress={onClose}>

@@ -13,13 +13,12 @@ export default function MainLayout(
     <ConditionsOfUseProvider>
       <LayoutProvider
         navLinks={[
-          { text: 'Home', path: '/' },
+          { text: 'Home', path: '/evap' },
           { text: 'Interactive Map', path: '/interactive-map' },
-          { text: 'Downloads', path: '/downloads' },
-          { text: 'How to cite', path: '/how-to-cite' },
+          { text: 'Downloads', path: '/evap/downloads' },
+          { text: 'How to cite', path: '/evap/how-to-cite' },
           { text: 'History', path: '/history' },
           { text: 'Methods', path: '/methods' },
-          { text: 'Evapotranspiration', path: '/evap' },
           { text: 'Acknowledgements', path: '/acknowledgements' },
           { text: 'People', path: '/people' },
         ]}
