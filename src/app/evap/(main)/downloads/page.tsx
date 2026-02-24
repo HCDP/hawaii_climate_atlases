@@ -38,53 +38,40 @@ export default function Downloads() {
         Cite</a> page for
         citation information.
       </p>
-      <p>All mean map products use the 30 year base period 1978-2007.</p>
-      <p><span className="underline">*Added October, 2018:</span> Rainfall Trend Maps from 1920-2012 &
-        1983-2012. See the Rainfall Trend Maps section
-        below.</p>
-      <p><span className="underline">*Added December, 2015:</span> Interactive map links for Month-Year
-        Rainfall Maps from 1920-2012. See the Month-Year
-        Maps section below.</p>
-      <p><span className="underline">*Added August, 2015:</span> Month-Year Rainfall Maps from
-        1920-2012. See the Month-Year Maps section below.</p>
-      <p><span className="underline">*Added April, 2015:</span> Raingage station data (through 2012).
-        See the Tabular section below.</p>
-      <p>**The Moloka‘i maps have been updated! (07/2014) Using new information from stream gauges and
-        additional
-        vegetation data, we have a produced improved maps of mean rainfall for the island of Moloka‘i. All files below
-        have been updated with these new maps.**</p>
-      <Accordion
-        itemClasses={itemClasses}
-        selectionMode="multiple"
-        variant="splitted"
-        defaultExpandedKeys="all"
-      >
-        <AccordionItem key="map-images" aria-label="Map Images" title="Map Images">
-          <MapImages />
-        </AccordionItem>
-        <AccordionItem key="gis-layers" aria-label="GIS Layers" title="GIS Layers">
-          <GISLayers />
-        </AccordionItem>
-        <AccordionItem key="google-earth-files" aria-label="Google Earth Files" title="Google Earth Files">
-          <GoogleEarthFiles />
-        </AccordionItem>
-        <AccordionItem key="tabular" aria-label="Tabular" title="Tabular">
-          <Tabular />
-        </AccordionItem>
-        <AccordionItem key="report" aria-label="Report" title="Report">
-          <Report />
-        </AccordionItem>
-        <AccordionItem key="month-year-maps" aria-label="Month-Year Maps 1920-2012" title="Month-Year Maps 1920-2012">
-          <MonthYearMaps />
-        </AccordionItem>
-        <AccordionItem
-          key="rainfall-trend-maps"
-          aria-label="Rainfall Trend Maps 1920-2012"
-          title="Rainfall Trend Maps 1920-2012"
-        >
-          <RainfallTrendMaps />
-        </AccordionItem>
-      </Accordion>
+      <details>
+        <summary>Mean Annual Map Images</summary>
+        <p>
+          Image files of mean annual maps for select variables have been created and are available for download as *.JPG files. Due to the high number of variables, temporal resolutions, and map extents possible, only mean annual map images for select variables at the statewide extent have been generated.  For the full list of variables used in this project, please see the project Report and the table of mapped variables.
+        </p>
+        <h1 className="text-l font-bold mt-3">Color Maps</h1>
+        <div className="flow-root">
+          <img 
+            className="float-left ml-4 mb-4 mr-4 mt-2 rounded-sm" 
+            src="/images/mean_ann_evptrsp.jpg" 
+            alt="EvpTrsp Image"
+             width="277" 
+             height="215"
+          />
+          <p className="pb-2 pt-3">
+            Unlike the interactive map which displays the variables on a continuous color ramp, these images display the values in categories. The categories were set based on the natural breaks in the values. The categories were set independently for different units, so the color breaks will differ slightly for different units.  
+          </p>
+        </div>
+        <p>
+          Files for download:
+        </p>
+        <p>
+          *File will open in a new window.  To save to your computer, right click and go to "Save image as..."
+        </p>
+        <table className="bordered-table">
+          <thead>
+          <tr>
+            <th>Category</th>
+            <th>Variable</th>
+            <th>Mean Annual Map</th>
+          </tr>
+          </thead>
+        </table>
+      </details>
     </div>
   );
 }

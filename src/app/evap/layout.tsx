@@ -14,7 +14,7 @@ export default function MainLayout(
       <LayoutProvider
         navLinks={[
           { text: 'Home', path: '/evap' },
-          { text: 'Interactive Map', path: '/interactive-map' },
+          { text: 'Interactive Map', path: '/evap/interactive-map' },
           { text: 'Downloads', path: '/evap/downloads' },
           { text: 'How to cite', path: '/evap/how-to-cite' },
           { text: 'History', path: '/history' },
