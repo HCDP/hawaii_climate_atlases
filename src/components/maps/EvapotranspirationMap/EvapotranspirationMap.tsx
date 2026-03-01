@@ -1,14 +1,16 @@
 import React from "react";
 import ClimateMap from "../ClimateMap";
+import { useEvapComposite, useEvapAllGrids } from "@/hooks/evaporation";
 
 /**
  * Evapotranspiration Map Configuration
  * 
- * ET maps might need:
- * - Limited station data (some weather stations measure ET)
+ * ET maps use:
+ * - ET-specific station data (weather stations that measure ET)
  * - No isohyets (not applicable)
  * - Potential uncertainty layers (modeling uncertainty)
  * - Dual loading for different ET units
+ * - Evapotranspiration data hooks (not rainfall)
  */
 const EVAPOTRANSPIRATION_CONFIG = {
   enableStations: true,            // Some weather stations measure ET
@@ -19,6 +21,9 @@ const EVAPOTRANSPIRATION_CONFIG = {
   defaultShowOtherStations: false,
   defaultShowIsohyets: false,
   defaultShowUncertainty: false,
+  // Use evapotranspiration data hooks instead of rainfall
+  useComposite: useEvapComposite,
+  useAllGrids: useEvapAllGrids,
 };
 
 /**

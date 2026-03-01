@@ -30,8 +30,31 @@ import {
 import { defaultSettings } from "@/constants";
 import { GridLoader } from "react-spinners";
 
+// Return type for composite hooks (stations + grid + optional isohyets)
+export interface CompositeHookResult {
+  rfStations: Station[] | undefined;
+  otherStations: Station[] | undefined;
+  featureCollections: FeatureCollection[] | undefined;
+  asciiGrid: AsciiGrid | undefined;
+  allDataLoaded: boolean;
+  isLoading: boolean;
+}
+
+// Return type for "all grids" hooks
+export interface AllGridsHookResult {
+  asciiGrids: AsciiGrid[];
+  gridsAreLoading: boolean;
+}
+
+// Return type for uncertainty composite hooks
+export interface UncertaintyCompositeHookResult {
+  asciiGrid: AsciiGrid | undefined;
+  allDataLoaded: boolean;
+  isLoading: boolean;
+}
+
 // Types for configuration
-interface ClimateMapConfig {
+export interface ClimateMapConfig {
   // Feature toggles
   enableStations?: boolean;
   enableIsohyets?: boolean;
@@ -53,6 +76,12 @@ interface ClimateMapConfig {
     IN: [number, number][];
     MM: [number, number][];
   };
+
+  // Hook functions — each map type provides its own data hooks
+  useComposite?: (units: Units, period: Period) => CompositeHookResult;
+  useAllGrids?: (units: Units) => AllGridsHookResult;
+  useUncertaintyComposite?: (units: Units, period: Period) => UncertaintyCompositeHookResult;
+  useUncertaintyAllGrids?: (units: Units) => AllGridsHookResult;
 }
 
 // Default configuration for full-featured rainfall map
@@ -65,6 +94,10 @@ const DEFAULT_CONFIG: ClimateMapConfig = {
   defaultShowOtherStations: defaultSettings.showOtherStations,
   defaultShowIsohyets: defaultSettings.showIsohyets,
   defaultShowUncertainty: false,
+  useComposite: useRainfallComposite,
+  useAllGrids: useRainfallAllGrids,
+  useUncertaintyComposite: useRainfallUncertaintyComposite,
+  useUncertaintyAllGrids: useRainfallUncertaintyAllGrids,
 };
 
 // Configuration for uncertainty-only map (legacy UncertaintyMap behavior)
@@ -476,6 +509,7 @@ interface ClimateMapProps {
 
 const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   // Merge config with defaults
+  const mergedConfig = { ...DEFAULT_CONFIG, ...config };
   const {
     enableStations = DEFAULT_CONFIG.enableStations,
     enableIsohyets = DEFAULT_CONFIG.enableIsohyets,
@@ -484,7 +518,11 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     defaultShowOtherStations = DEFAULT_CONFIG.defaultShowOtherStations,
     defaultShowIsohyets = DEFAULT_CONFIG.defaultShowIsohyets,
     defaultShowUncertainty = DEFAULT_CONFIG.defaultShowUncertainty,
-  } = { ...DEFAULT_CONFIG, ...config };
+    useComposite: useCompositeHook = useRainfallComposite,
+    useAllGrids: useAllGridsHook = useRainfallAllGrids,
+    useUncertaintyComposite: useUncertaintyCompositeHook = useRainfallUncertaintyComposite,
+    useUncertaintyAllGrids: useUncertaintyAllGridsHook = useRainfallUncertaintyAllGrids,
+  } = mergedConfig;
 
   // State management
   const [selectedStation, setSelectedStation] = useState<Station | null>(
@@ -506,28 +544,28 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   });
 
-  // Data loading hooks - conditional based on configuration
-  const rainfallData = useRainfallComposite(
+  // Data loading hooks - uses whichever hooks the config provides
+  const rainfallData = useCompositeHook(
     enableDualLoading ? Units.IN : selectedUnits, 
     selectedPeriod
   );
-  const rainfallDataMM = useRainfallComposite(
+  const rainfallDataMM = useCompositeHook(
     enableDualLoading ? Units.MM : selectedUnits, 
     selectedPeriod
   );
-  const rainfallGridsIN = useRainfallAllGrids(enableDualLoading ? Units.IN : selectedUnits);
-  const rainfallGridsMM = useRainfallAllGrids(enableDualLoading ? Units.MM : selectedUnits);
+  const rainfallGridsIN = useAllGridsHook(enableDualLoading ? Units.IN : selectedUnits);
+  const rainfallGridsMM = useAllGridsHook(enableDualLoading ? Units.MM : selectedUnits);
 
-  const uncertaintyDataIN = useRainfallUncertaintyComposite(
+  const uncertaintyDataIN = useUncertaintyCompositeHook(
     enableDualLoading ? Units.IN : selectedUnits,
     selectedPeriod
   );
-  const uncertaintyDataMM = useRainfallUncertaintyComposite(
+  const uncertaintyDataMM = useUncertaintyCompositeHook(
     enableDualLoading ? Units.MM : selectedUnits,
     selectedPeriod
   );
-  const uncertaintyGridsIN = useRainfallUncertaintyAllGrids(enableDualLoading ? Units.IN : selectedUnits);
-  const uncertaintyGridsMM = useRainfallUncertaintyAllGrids(enableDualLoading ? Units.MM : selectedUnits);
+  const uncertaintyGridsIN = useUncertaintyAllGridsHook(enableDualLoading ? Units.IN : selectedUnits);
+  const uncertaintyGridsMM = useUncertaintyAllGridsHook(enableDualLoading ? Units.MM : selectedUnits);
 
   // Select appropriate data based on units and dual loading configuration
   const currentRainfallData = enableDualLoading 
