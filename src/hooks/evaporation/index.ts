@@ -6,10 +6,7 @@
  */
 
 // Grid hooks
-export { useEvapGrids, useEvapAllGrids } from "./grids";
-
-// Station hooks
-export { useEvapStations } from "./stations";
+export { useAETGrids, useAETAllGrids } from "./grids";
 
 // Composite hook
 export { useEvapComposite } from "./composite";

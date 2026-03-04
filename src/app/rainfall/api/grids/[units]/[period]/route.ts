@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AsciiGrid, Period } from "@/lib";
 import { isUnits, isPeriod } from "@/utils";
 import { invalidUnitsResponse, invalidPeriodResponse, unableToRetrieveResponse } from "@/lib/responses";
-import { getGrids } from "@/lib/extract_data";
+import { getGrids } from "@/lib/extract_rain_data";
 
 export async function GET(_: NextRequest, { params }: {
   params: {

@@ -8,7 +8,7 @@ const fetcher: Fetcher<AsciiGrid, string> = (url: string): Promise<AsciiGrid> =>
 /**
  * Hook to fetch a single evapotranspiration grid for a specific unit and period
  */
-export function useEvapGrids(units: string, period: string): {
+export function useAETGrids(units: string, period: string): {
   asciiGrid: AsciiGrid | undefined;
   isLoading: boolean;
   error: Error | undefined;
@@ -27,7 +27,7 @@ export function useEvapGrids(units: string, period: string): {
 /**
  * Hook to fetch all evapotranspiration grids for all periods (Jan-Dec + Annual)
  */
-export function useEvapAllGrids(selectedUnits: Units) {
+export function useAETAllGrids(selectedUnits: Units) {
   type GridFetchResult = { 
     asciiGrid: AsciiGrid | undefined;
     isLoading: boolean;
@@ -36,7 +36,7 @@ export function useEvapAllGrids(selectedUnits: Units) {
 
   const results: GridFetchResult[] = [];
   for (let i = 0; i <= 12; i++) {
-    results.push(useEvapGrids(selectedUnits, Period[i]));
+    results.push(useAETGrids(selectedUnits, Period[i]));
   }
 
   const asciiGrids: AsciiGrid[] = results.flatMap(r => r.asciiGrid ? [r.asciiGrid] : []);
