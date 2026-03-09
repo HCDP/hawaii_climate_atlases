@@ -7,6 +7,7 @@ import { StationIcon } from "@/components/maps/Map";
 import { LatLng } from "leaflet";
 import { Button } from '@heroui/button';
 import { UncertaintyHistogram } from '@/components/Plot';
+import { data } from 'framer-motion/client';
 
 const fullPeriods = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Annual'];
 const periods = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Ann'];
@@ -23,6 +24,7 @@ const SideBar: React.FC<{
   range: [number, number],
   uncertaintyRange?: [number, number],
   units: string,
+  dataMode: 'rainfall' | 'evap',
 }> = ({
   selectedStation,
   isOtherStation,
@@ -33,8 +35,10 @@ const SideBar: React.FC<{
   selectedGridIndex,
   range,
   units,
-  location
+  location,
+  dataMode,
 }) => {
+    const isRainfall = dataMode === 'rainfall';
     const [showErrorBars, setShowErrorBars] = useState(false);
 
     // Handles resize bar functionality
@@ -125,7 +129,7 @@ const SideBar: React.FC<{
           <div className="overflow-y-auto px-4 pt-0 mt-0">
             <Accordion
               isCompact
-              defaultExpandedKeys={["uncertainty-chart", "rainfall-chart", "rainfall-data", "station-information", "legend"]}
+              defaultExpandedKeys={ ["uncertainty-chart", "rainfall-chart", "rainfall-data", "station-information", "legend"]}
               variant="light"
               selectionMode="multiple"
             >

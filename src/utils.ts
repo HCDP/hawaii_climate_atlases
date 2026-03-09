@@ -1,4 +1,4 @@
-import { Units, Period } from "@/lib";
+import { Units, Period, Month, Hour } from "@/lib";
 
 export function capitalize(str: string) {
   return str
@@ -15,4 +15,16 @@ export function isPeriod(periodString: string): periodString is keyof typeof Per
   return Object.keys(Period)
     .filter(key => isNaN(Number(key)))
     .includes(capitalize(periodString.toLowerCase()));
+}
+
+export function isMonth(monthString: string): monthString is keyof typeof Month {
+  return Object.keys(Month)
+    .filter(key => isNaN(Number(key)))
+    .includes(capitalize(monthString.toLowerCase()));
+}
+
+export function isHour(hourString: string): hourString is keyof typeof Hour {
+  return Object.keys(Hour)
+    .filter(key => isNaN(Number(key)))
+    .includes(capitalize(hourString.toLowerCase()));
 }

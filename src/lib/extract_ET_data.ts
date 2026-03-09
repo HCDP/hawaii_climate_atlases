@@ -1,4 +1,4 @@
-import { AsciiGrid, Period, Units } from "@/lib/types";
+import { AsciiGrid, Period, Month, Hour, Units } from "@/lib/types";
 import { getCachedFileBuffer } from "@/lib/data_cache";
 import path from "path";
 import JSZip from "jszip";
@@ -73,9 +73,13 @@ async function fetchAsciiGridData(asciiZip: JSZip, period: Period): Promise<Asci
 export async function getAETGrids({
   units,
   period,
+  // month,
+  // hour,
 }: {
   units: Units,
-  period: Period
+  period: Period,
+  // month: Month,
+  // hour: Hour,
 }) {
   let fileName, fetchUrl;
   if (units === Units.IN) {

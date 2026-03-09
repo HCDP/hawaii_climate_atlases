@@ -21,6 +21,50 @@ export enum Period {
   Annual,
 }
 
+export enum Month {
+  Annual = 'Annual',
+  January = '01',
+  February = '02',
+  March = '03',
+  April = '04',
+  May = '05',
+  June = '06',
+  July = '07',
+  August = '08',
+  September = '09',
+  October = '10',
+  November = '11',
+  December = '12',
+}
+
+export enum Hour {
+  HR_00 = 'Annual',
+  HR_01 = '01',
+  HR_02 = '02',
+  HR_03 = '03',
+  HR_04 = '04',
+  HR_05 = '05',
+  HR_06 = '06',
+  HR_07 = '07',
+  HR_08 = '08',
+  HR_09 = '09',
+  HR_10 = '10',
+  HR_11 = '11',
+  HR_12 = '12',
+  HR_13 = '13',
+  HR_14 = '14',
+  HR_15 = '15',
+  HR_16 = '16',
+  HR_17 = '17',
+  HR_18 = '18',
+  HR_19 = '19',
+  HR_20 = '20',
+  HR_21 = '21',
+  HR_22 = '22',
+  HR_23 = '23', 
+  HR_24 = '24', 
+}
+
 export interface Station {
   SKN: number,
   Name: string,

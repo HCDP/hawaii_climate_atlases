@@ -5,19 +5,19 @@ import { createBaseRasterLayer, RasterOptions, ColorScale } from "../shared/Base
 let R: any = L;
 
 // Create the rainfall-specific GridLayer using the shared base
-R.GridLayer.RainfallRasterLayer = createBaseRasterLayer("RainfallRasterLayer");
+R.GridLayer.EvapRasterLayer = createBaseRasterLayer("EvapRasterLayer");
 
-R.gridLayer.RainfallRasterLayer = function (options: RasterOptions) {
+R.gridLayer.EvapRasterLayer = function (options: RasterOptions) {
   // Set the rainbow color scheme for rainfall maps
-  const rainfallOptions: RasterOptions = {
+  const evapOptions: RasterOptions = {
     ...options,
-    colorScheme: options.colorScheme || ['red', 'yellow', 'green', 'blue', 'purple', 'indigo'],
+    colorScheme: options.colorScheme || ['#4041fe', '#698afe', '#6bc0ff', '#3fffff', '#aeffc7', '#ddff8f', '#ffff3f', '#ffca40', '#ff9340', '#ff9340'],
   };
-  return new R.GridLayer.RainfallRasterLayer(rainfallOptions);
+  return new R.GridLayer.EvapRasterLayer(evapOptions);
 };
 
-const createRainfallComponent = (props: any, context: any) => {
-    let rasterLayer = R.gridLayer.RainfallRasterLayer(props.options);
+const createEvapComponent = (props: any, context: any) => {
+    let rasterLayer = R.gridLayer.EvapRasterLayer(props.options);
 
   /* Prevents selected basemap from overlapping the raster layer
   setTimeout here allows bringToFront() to run after re-renders are done */
@@ -37,4 +37,4 @@ const createRainfallComponent = (props: any, context: any) => {
   };
 }
 
-export const RainfallColorLayer = createLayerComponent(createRainfallComponent);
+export const EvapColorLayer = createLayerComponent(createEvapComponent);

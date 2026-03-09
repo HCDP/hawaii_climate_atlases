@@ -19,6 +19,8 @@ import "../RainfallMap/RainfallColorLayer";
 import "../RainfallMap/UncertaintyMap/UncertaintyColorLayer";
 import { RainfallColorLayer } from "../RainfallMap/RainfallColorLayer";
 import { UncertaintyColorLayer } from "../RainfallMap/UncertaintyMap/UncertaintyColorLayer";
+import "../EvapotranspirationMap/EvapColorLayer";
+import { EvapColorLayer } from "../EvapotranspirationMap/EvapColorLayer";
 
 import { renderToStaticMarkup } from "react-dom/server";
 import { 
@@ -60,15 +62,18 @@ export interface ClimateMapConfig {
   enableIsohyets?: boolean;
   enableUncertaintyToggle?: boolean;
   enableDualLoading?: boolean;
-  
+  enableHourSelection?: boolean;
+  enableVariableSelection?: boolean;
+
   // Default states
+  defaultHour?: string;
   defaultShowStations?: boolean;
   defaultShowOtherStations?: boolean;
   defaultShowIsohyets?: boolean;
   defaultShowUncertainty?: boolean;
   
   // Data ranges
-  rainfallRanges?: {
+  dataRanges?: {
     IN: [number, number][];
     MM: [number, number][];
   };
@@ -76,6 +81,12 @@ export interface ClimateMapConfig {
     IN: [number, number][];
     MM: [number, number][];
   };
+
+  // Color layer component — defaults to RainfallColorLayer
+  ColorLayerComponent?: React.ComponentType<any>;
+
+  // Sidebar display mode
+  mode?: 'rainfall' | 'evap';
 
   // Hook functions — each map type provides its own data hooks
   useComposite?: (units: Units, period: Period) => CompositeHookResult;
@@ -94,6 +105,7 @@ const DEFAULT_CONFIG: ClimateMapConfig = {
   defaultShowOtherStations: defaultSettings.showOtherStations,
   defaultShowIsohyets: defaultSettings.showIsohyets,
   defaultShowUncertainty: false,
+  mode: 'rainfall',
   useComposite: useRainfallComposite,
   useAllGrids: useRainfallAllGrids,
   useUncertaintyComposite: useRainfallUncertaintyComposite,
@@ -514,6 +526,8 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     enableStations = DEFAULT_CONFIG.enableStations,
     enableIsohyets = DEFAULT_CONFIG.enableIsohyets,
     enableDualLoading = DEFAULT_CONFIG.enableDualLoading,
+    enableHourSelection = false,
+    enableVariableSelection = false,
     defaultShowStations = DEFAULT_CONFIG.defaultShowStations,
     defaultShowOtherStations = DEFAULT_CONFIG.defaultShowOtherStations,
     defaultShowIsohyets = DEFAULT_CONFIG.defaultShowIsohyets,
@@ -522,6 +536,8 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     useAllGrids: useAllGridsHook = useRainfallAllGrids,
     useUncertaintyComposite: useUncertaintyCompositeHook = useRainfallUncertaintyComposite,
     useUncertaintyAllGrids: useUncertaintyAllGridsHook = useRainfallUncertaintyAllGrids,
+    ColorLayerComponent: ActiveColorLayer = RainfallColorLayer,
+    mode = 'rainfall' as const,
   } = mergedConfig;
 
   // State management
@@ -530,6 +546,8 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   );
   const [selectedUnits, setSelectedUnits] = useState<Units>(defaultSettings.selectedUnits);
   const [selectedPeriod, setSelectedPeriod] = useState<Period>(defaultSettings.selectedPeriod);
+  const [selectedHour, setSelectedHour] = useState<string>('ALL');
+  const [selectedVariable, setSelectedVariable] = useState<string>('Evapotranspiration');
   const [showIsohyets, setShowIsohyets] = useState<boolean>(defaultShowIsohyets ?? false);
   const [showGrids, setShowGrids] = useState<boolean>(defaultSettings.showGrids);
   const [showUncertainty, setShowUncertainty] = useState<boolean>(defaultShowUncertainty ?? false);
@@ -581,16 +599,20 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     ? (selectedUnits === Units.IN ? uncertaintyGridsIN : uncertaintyGridsMM)
     : uncertaintyGridsIN;
 
-  // Default data ranges
-  const ranges_IN: [number, number][] = [
+  // Default data ranges (rainfall fallback)
+  const defaultRanges_IN: [number, number][] = [
     [0.8, 32.2], [0.4, 26.4], [0.6, 51.9], [0.3, 38.5], [0.1, 30.7], [0, 32.8],
     [0, 38.7], [0, 34.7], [0, 30.1], [0.3, 38.3], [0.7, 38.6], [0.6, 36.4], [8, 404.4]
   ];
 
-  const ranges_MM: [number, number][] = [
+  const defaultRanges_MM: [number, number][] = [
     [21, 818], [11, 669], [16, 1323], [7, 978], [2, 777], [0, 833],
     [0, 984], [1, 881], [1, 764], [8, 973], [19, 980], [14, 921], [204, 10271]
   ];
+
+  // Use config-provided ranges if available, otherwise fall back to defaults
+  const ranges_IN = mergedConfig.dataRanges?.IN ?? defaultRanges_IN;
+  const ranges_MM = mergedConfig.dataRanges?.MM ?? defaultRanges_MM;
 
   const uncertainty_ranges_IN: [number, number][] = [
     [0.0005019, 3.354232], [0.0014641, 2.839714], [0.0009792, 4.090142], [0.0001895, 11.3037],
@@ -629,7 +651,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     const range = selectedUnits === Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod];
     
     return (
-      <RainfallColorLayer
+      <ActiveColorLayer
         key={`rainfall-layer-${selectedUnits}-${selectedPeriod}`}
         options={{
           cacheEmpty: true,
@@ -728,6 +750,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
         location={location}
         range={activeRanges[selectedPeriod]}
         units={showUncertainty ? (selectedUnits === Units.IN ? 'in²' : 'mm²') : (selectedUnits === Units.IN ? 'in' : 'mm')}
+        mode={mode}
       />
       <div className="w-full h-full">
         <Map
@@ -774,6 +797,13 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
             setSelectedUnits={setSelectedUnits}
             selectedPeriod={selectedPeriod}
             setSelectedPeriod={setSelectedPeriod}
+            enableHourSelection={enableHourSelection}
+            selectedHour={selectedHour}
+            setSelectedHour={setSelectedHour}
+            enableVariableSelection={enableVariableSelection}
+            selectedVariable={selectedVariable}
+            setSelectedVariable={setSelectedVariable}
+            enableRainfall={enableStations}
             showRFStations={showRFStations}
             setShowRFStations={setShowRFStations}
             showOtherStations={showOtherStations}
