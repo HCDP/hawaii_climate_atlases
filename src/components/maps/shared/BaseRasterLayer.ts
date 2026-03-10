@@ -8,6 +8,7 @@ export interface RasterOptions {
   asciiGrid: AsciiGrid;
   cache?: Set<string>;
   colorScheme?: string[] | string;  // e.g., ['red', 'yellow', 'green'] or 'rainbow'
+  colorDomain?: number[];           // Custom breakpoints for non-linear color mapping (must match colorScheme length)
 }
 
 export interface Color {
@@ -110,7 +111,7 @@ export const createBaseRasterLayer = (layerName: string) => {
       // Default color scheme is rainbow if no scheme is specified
       const colorScheme = this.options.colorScheme || ['red', 'yellow', 'green', 'blue', 'purple', 'indigo'];
       const range = this.options.colorScale.range;
-      const colorScale = chroma.scale(colorScheme).domain(range);
+      const colorScale = chroma.scale(colorScheme).domain(this.options.colorDomain ?? range);
 
       let span = range[1] - range[0];
       let interval = span / 500; // 500 = numColors

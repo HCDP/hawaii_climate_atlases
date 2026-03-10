@@ -12,6 +12,7 @@ R.gridLayer.RainfallRasterLayer = function (options: RasterOptions) {
   const rainfallOptions: RasterOptions = {
     ...options,
     colorScheme: options.colorScheme || ['red', 'yellow', 'green', 'blue', 'purple', 'indigo'],
+    colorDomain: options.colorDomain,
   };
   return new R.GridLayer.RainfallRasterLayer(rainfallOptions);
 };

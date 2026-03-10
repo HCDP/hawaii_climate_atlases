@@ -81,6 +81,11 @@ export interface ClimateMapConfig {
     IN: [number, number][];
     MM: [number, number][];
   };
+  // Custom color breakpoints for non-linear color mapping (per-period, must match colorScheme length)
+  colorDomains?: {
+    IN: number[][];
+    MM: number[][];
+  };
 
   // Color layer component — defaults to RainfallColorLayer
   ColorLayerComponent?: React.ComponentType<any>;
@@ -649,6 +654,9 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     if (!showGrids || showUncertainty || !currentRainfallData.asciiGrid || rainfallIsLoading) return null;
     
     const range = selectedUnits === Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod];
+    const colorDomain = selectedUnits === Units.IN
+      ? mergedConfig.colorDomains?.IN?.[selectedPeriod]
+      : mergedConfig.colorDomains?.MM?.[selectedPeriod];
     
     return (
       <ActiveColorLayer
@@ -657,6 +665,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
           cacheEmpty: true,
           colorScale: { colors: [], range },
           asciiGrid: currentRainfallData.asciiGrid,
+          ...(colorDomain && { colorDomain }),
         }}
       />
     );
@@ -750,7 +759,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
         location={location}
         range={activeRanges[selectedPeriod]}
         units={showUncertainty ? (selectedUnits === Units.IN ? 'in²' : 'mm²') : (selectedUnits === Units.IN ? 'in' : 'mm')}
-        mode={mode}
+        dataMode={mode}
       />
       <div className="w-full h-full">
         <Map
