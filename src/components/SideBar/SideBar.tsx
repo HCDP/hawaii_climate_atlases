@@ -6,7 +6,7 @@ import { Station, Units, Period, AsciiGrid } from "@/lib";
 import { StationIcon } from "@/components/maps/Map";
 import { LatLng } from "leaflet";
 import { Button } from '@heroui/button';
-import { UncertaintyHistogram } from '@/components/Plot';
+import { UncertaintyHistogram, MonthPlot, HourPlot } from '@/components/Plot';
 import { data } from 'framer-motion/client';
 
 const fullPeriods = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Annual'];
@@ -17,6 +17,7 @@ const SideBar: React.FC<{
   isOtherStation?: boolean,
   selectedUnits: Units,
   selectedPeriod: Period,
+  selectedVariable: string,
   asciiGrids: AsciiGrid[],
   canShowGridValues: boolean,
   selectedGridIndex: number,
@@ -30,6 +31,7 @@ const SideBar: React.FC<{
   isOtherStation,
   selectedUnits,
   selectedPeriod,
+  selectedVariable,
   asciiGrids,
   canShowGridValues,
   selectedGridIndex,
@@ -129,10 +131,15 @@ const SideBar: React.FC<{
           <div className="overflow-y-auto px-4 pt-0 mt-0">
             <Accordion
               isCompact
-              defaultExpandedKeys={ ["uncertainty-chart", "rainfall-chart", "rainfall-data", "station-information", "legend"]}
+              defaultExpandedKeys=
+                {isRainfall ? ["uncertainty-chart", "data-chart", "data-table", "station-information", "legend"] 
+                  : ["graphs", "data-tables", "legend"]}
               variant="light"
               selectionMode="multiple"
             >
+
+              {/* isRainfall is used to hide charts if not applicable to rainfall map*/}
+              {isRainfall ? (
               <AccordionItem
                 key="uncertainty-chart"
                 aria-label="uncertainty-chart"
@@ -147,7 +154,12 @@ const SideBar: React.FC<{
                   />
                 </div>
               </AccordionItem>
+              ) : (
+                <AccordionItem key="Hour-hidden" className="hidden">
+                </AccordionItem>
+              )}
 
+              {isRainfall ? (
               <AccordionItem
                 key="rainfall-chart"
                 aria-label="rainfall-chart"
@@ -175,6 +187,12 @@ const SideBar: React.FC<{
                   )}
                 </div>
               </AccordionItem>
+              ) : (
+                <AccordionItem key="Hour-hidden" className="hidden">
+                </AccordionItem>
+              )}
+
+              {isRainfall ? (
               <AccordionItem
                 key="rainfall-data"
                 aria-label="Rainfall Data"
@@ -207,6 +225,12 @@ const SideBar: React.FC<{
                   </>
                 )}
               </AccordionItem>
+              ) : (
+                <AccordionItem key="Hour-hidden" className="hidden">
+                </AccordionItem>
+              )}
+
+              {isRainfall ? (
               <AccordionItem
                 key="station-information"
                 aria-label="Station Information"
@@ -235,6 +259,41 @@ const SideBar: React.FC<{
                   </TableBody>
                 </Table>
               </AccordionItem>
+              ) : (
+                <AccordionItem key="Hour-hidden" className="hidden">
+                </AccordionItem>
+              )}
+
+              {/* For non-rainfall charts */}
+              {!isRainfall ? (
+              <AccordionItem
+                key="graphs"
+                aria-label="graphs"
+                title={'Graphs'}
+                classNames={{ title: "font-extrabold text-gray-600", trigger: "" }}
+              >
+                <div className="h-[300px] shrink-0 border-2 border-gray-300 rounded">
+                  <MonthPlot
+                    data={gridData.slice(0, -1)} // First 12 months (excluding annual)
+                    units={selectedUnits.toLocaleLowerCase()}
+                    selectedVariable={selectedVariable}
+                    title={`${selectedVariable} By Month`}
+                  />
+                </div>
+                <div className="h-[300px] shrink-0 border-2 border-gray-300 rounded mt-4">
+                  <HourPlot
+                    data={gridData.slice(0, -1)} // First 12 months (excluding annual)
+                    units={selectedUnits.toLocaleLowerCase()}
+                    selectedVariable={selectedVariable}
+                    title={`Annual ${selectedVariable} Per Hour`}
+                  />
+                </div>
+              </AccordionItem>
+              ) : (
+                <AccordionItem key="Hour-hidden" className="hidden">
+                </AccordionItem>
+              )}
+
               <AccordionItem
                 key="legend"
                 aria-label="Legend"

@@ -2,7 +2,8 @@ import { FeatureCollection } from "geojson";
 
 export enum Units {
   IN = 'IN',
-  MM = 'MM'
+  MM = 'MM',
+  Others = 'Others',
 }
 
 export enum Period {
@@ -22,23 +23,23 @@ export enum Period {
 }
 
 export enum Month {
-  Annual = 'Annual',
-  January = '01',
-  February = '02',
-  March = '03',
-  April = '04',
-  May = '05',
-  June = '06',
-  July = '07',
-  August = '08',
-  September = '09',
-  October = '10',
-  November = '11',
-  December = '12',
+  Annual = 'ann',
+  January = 'jan',
+  February = 'feb',
+  March = 'mar',
+  April = 'apr',
+  May = 'may',
+  June = 'jun',
+  July = 'jul',
+  August = 'aug',
+  September = 'sep',
+  October = 'oct',
+  November = 'nov',
+  December = 'dec',
 }
 
 export enum Hour {
-  HR_00 = 'Annual',
+  HR_00 = 'All',
   HR_01 = '01',
   HR_02 = '02',
   HR_03 = '03',

@@ -16,8 +16,27 @@ const MM_AET_ANN_HR_URL = new URL('https://atlas.uhtapis.org/evapo/assets/files/
 const IN_AET_MON_NAME = "AET_in_month_ascii.zip";
 const IN_AET_MON_URL = new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_in_month_ascii.zip');
 
+const MM_AET_MON_NAME = "AET_mm_month_ascii.zip";
+const MM_AET_MON_URL = new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_mm_month_ascii.zip');
+
 const IN_AET_MON_HR_NAME = "AET_in_month_hr_ascii.zip";
 const IN_AET_MON_HR_URL = new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_in_month_hr_ascii.zip');
+
+const MONTH_SUFFIX: Record<Month, string> = {
+  [Month.January]: 'jan',
+  [Month.February]: 'feb',
+  [Month.March]: 'mar',
+  [Month.April]: 'apr',
+  [Month.May]: 'may',
+  [Month.June]: 'jun',
+  [Month.July]: 'jul',
+  [Month.August]: 'aug',
+  [Month.September]: 'sep',
+  [Month.October]: 'oct',
+  [Month.November]: 'nov',
+  [Month.December]: 'dec',
+  [Month.Annual]: 'ann',
+};
 
 // helper func parses the ascii files
 function grabAsciiData(dataAsText: string): AsciiGrid {
@@ -57,37 +76,40 @@ function grabAsciiData(dataAsText: string): AsciiGrid {
 Gets all ascii data from zip file
 Calls helper func (grabAsciiData) above to parse the ascii data
 */
-async function fetchAsciiGridData(asciiZip: JSZip, period: Period): Promise<AsciiGrid> {
+async function fetchAsciiGridData(asciiZip: JSZip, month: Month): Promise<AsciiGrid> {
   const fileNames = Object.keys(asciiZip.files)
     .filter(fileName => fileName.endsWith(".txt"))
     .sort();
 
-  const fileName = fileNames[period];
+  const fileName = fileNames.find(fileName => fileName.includes(MONTH_SUFFIX[month]));
+  if (!fileName) {
+    throw new Error(`No file found for month: ${month}`);
+  }
   const file = asciiZip.files[fileName];
   const dataAsText = await file.async("string");
+  // console.log(`!!! Fetched and parsed file: ${fileName}`);
   const asciiGrids = grabAsciiData(dataAsText);
   return asciiGrids;
 }
 
+
 // need to alter so that it can read multiple files
 export async function getAETGrids({
   units,
-  period,
-  // month,
+  month,
   // hour,
 }: {
   units: Units,
-  period: Period,
-  // month: Month,
+  month: Month,
   // hour: Hour,
 }) {
   let fileName, fetchUrl;
   if (units === Units.IN) {
-    fileName = IN_AET_ANN_HR_NAME;
-    fetchUrl = IN_AET_ANN_HR_URL;
+    fileName = IN_AET_MON_NAME;
+    fetchUrl = IN_AET_MON_URL;
   } else if (units === Units.MM) {
-    fileName = MM_AET_ANN_HR_NAME;
-    fetchUrl = MM_AET_ANN_HR_URL;
+    fileName = MM_AET_MON_NAME;
+    fetchUrl = MM_AET_MON_URL;
   } else {
     return null;
   }
@@ -98,7 +120,7 @@ export async function getAETGrids({
   }
 
   const asciiGrids: AsciiGrid = await JSZip.loadAsync(gridsFileBuffer)
-    .then(asciiZip => fetchAsciiGridData(asciiZip, period));
+    .then(asciiZip => fetchAsciiGridData(asciiZip, month));
 
   return asciiGrids;
 }

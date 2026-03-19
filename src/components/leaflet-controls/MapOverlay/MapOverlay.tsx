@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import L, { Rectangle, LatLng, LatLngBounds, Map } from "leaflet";
 import { useMap, MapContainer, TileLayer, useMapEvent } from "react-leaflet";
-import { Period, TileLayerProps, Units } from "@/lib";
+import { Hour, Month, Period, TileLayerProps, Units } from "@/lib";
 import {
   defaultSettings,
   LEAFLET_POSITIONS,
@@ -161,11 +161,12 @@ interface Props {
   setSelectedUnits: (units: Units) => void,
   selectedPeriod: Period,
   setSelectedPeriod: (period: Period) => void,
-  enableHourSelection?: boolean,
-  selectedHour?: string,
-  setSelectedHour?: (hour: string) => void,
+  enableEvap?: boolean,
+  selectedMonth: Month,
+  setSelectedMonth: (month: Month) => void,
+  selectedHour: Hour,
+  setSelectedHour: (hour: Hour) => void,
   enableRainfall?: boolean,
-  enableVariableSelection?: boolean,
   selectedVariable?: string,
   setSelectedVariable?: (variable: string) => void,
   showRFStations: boolean,
@@ -191,11 +192,12 @@ const MapOverlay: React.FC<Props> = (
     setSelectedUnits,
     selectedPeriod,
     setSelectedPeriod,
-    enableHourSelection = false,
-    selectedHour = 'ALL',
+    enableEvap = false,
+    selectedHour,
     setSelectedHour,
     enableRainfall = true,
-    enableVariableSelection = false,
+    selectedMonth,
+    setSelectedMonth,
     selectedVariable = '',
     setSelectedVariable,
     showRFStations,
@@ -245,17 +247,42 @@ const MapOverlay: React.FC<Props> = (
   const [showMenu, setShowMenu] = useState<boolean>(true);
   const [basemapListOpen, setBasemapListOpen] = useState(false);
   const [periodListOpen, setPeriodListOpen] = useState(false);
+  const [monthListOpen, setMonthListOpen] = useState(false);
   const [hourListOpen, setHourListOpen] = useState(false);
   const [variableListOpen, setVariableListOpen] = useState(false);
 
   // Variable options defined locally in MapOverlay
-  const variableOptions = ['Evapotranspiration', 'Latent Heat Flux', 'Transpiration', 'Wet-Canopy Evaporation'];
+  const variableOptions = 
+    ['Evapotranspiration', 
+      'Latent Heat Flux', 
+      'Transpiration', 
+      'Wet-Canopy Evaporation', 
+      'Soil Evaporation', 
+      'Grass Reference Surface Potential ET',
+      'Penman-Monteith Potential ET',
+      'Priestly-Taylor Potential ET',
+      'Solar Radiation',
+      'Clear Sky Radiation',
+      'Cloud Frequency',
+      'Albedo',
+      'Net Radiation',
+      'Air Temperature',
+      'Relative Humidity',
+      'Vapor Pressure Deficit',
+      'Wind Speed',
+      'Rainfall'
+    ];
 
   // Hours 01-24 and ALL for hour selection
   const hours = ['ALL', ...Array.from({ length: 24 }, (_, i) => String(i + 1).padStart(2, '0'))];
 
   // Array of the string keys of the Period enum ("January", "February", etc.)
   const periodNames: string[] = Object.keys(Period).filter(period => isNaN(parseInt(period)));
+
+  // Array of the string keys of the Month enum ("January", "February", etc.)
+  const monthNames: string[] = Object.keys(Month).filter(month => isNaN(parseInt(month)));
+
+
   const minimapControl = useMemo(
     () => {
       const zoom = map.getZoom();
@@ -421,7 +448,6 @@ const MapOverlay: React.FC<Props> = (
                   <TableColumn>Options</TableColumn>
                 </TableHeader>
                 <TableBody>
-
                   <TableRow key="Units">
                     <TableCell><p className="text-base">Units: </p></TableCell>
                     <TableCell>
@@ -444,6 +470,7 @@ const MapOverlay: React.FC<Props> = (
                     </TableCell>
                   </TableRow>
 
+                  {/* enableRainfall is used to show the variables that change for rainfall data */}
                   {enableRainfall ? (
                   <TableRow key="Show">
                     <TableCell><p className="text-base pb-[55px] pt-[2.5vh]">Show: </p></TableCell>
@@ -558,45 +585,7 @@ const MapOverlay: React.FC<Props> = (
                     </TableCell>
                   </TableRow>
 
-                  {enableVariableSelection ? (
-                    <TableRow key="Variable">
-                      <TableCell><p className="text-base pt-[1.95vh]">Variable: </p></TableCell>
-                      <TableCell className="pt-[2.5vh]">
-                        <ButtonGroup variant="bordered" size="sm" disableRipple>
-                          <Button disableRipple disableAnimation className="w-[120px]">
-                            {selectedVariable || variableOptions[0]}
-                          </Button>
-                          <Dropdown isOpen={variableListOpen} onOpenChange={(open) => setVariableListOpen(open)}>
-                            <DropdownTrigger>
-                              <Button isIconOnly>
-                                <DropdownChevron isOpen={variableListOpen}/>
-                              </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu
-                              className="max-h-[200px] overflow-y-auto"
-                              aria-label="Variable Selector"
-                              onAction={(key) => setSelectedVariable?.(String(key))}
-                            >
-                              {variableOptions.map((variable) => (
-                                <DropdownItem
-                                  key={variable}
-                                  className="hover:outline-white hover:bg-gray-100"
-                                >
-                                  {variable}
-                                </DropdownItem>
-                              ))}
-                            </DropdownMenu>
-                          </Dropdown>
-                        </ButtonGroup>
-                      </TableCell>
-                    </TableRow>
-                    ) : (
-                      <TableRow key="Variable-hidden" className="hidden">
-                        <TableCell>{null}</TableCell>
-                        <TableCell>{null}</TableCell>
-                      </TableRow>
-                  )}
-
+                  {enableRainfall ? (
                   <TableRow key="Period">
                     <TableCell><p className="text-base pt-[1.95vh]">Period: </p></TableCell>
                     <TableCell className="pt-[2.5vh]">
@@ -635,8 +624,92 @@ const MapOverlay: React.FC<Props> = (
                       </ButtonGroup>
                     </TableCell>
                   </TableRow>
+                  ) : (
+                    <TableRow key="Period-hidden" className="hidden">
+                      <TableCell>{null}</TableCell>
+                      <TableCell>{null}</TableCell>
+                    </TableRow>
+                  )}
 
-                  {enableHourSelection ? (
+                  {enableEvap ? (
+                    <TableRow key="Variable">
+                      <TableCell><p className="text-base pt-[1.95vh]">Variable: </p></TableCell>
+                      <TableCell className="pt-[2.5vh]">
+                        <ButtonGroup variant="bordered" size="sm" disableRipple>
+                          <Button disableRipple disableAnimation className="w-[120px]">
+                            {selectedVariable || variableOptions[0]}
+                          </Button>
+                          <Dropdown isOpen={variableListOpen} onOpenChange={(open) => setVariableListOpen(open)}>
+                            <DropdownTrigger>
+                              <Button isIconOnly>
+                                <DropdownChevron isOpen={variableListOpen}/>
+                              </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu
+                              className="max-h-[200px] overflow-y-auto"
+                              aria-label="Variable Selector"
+                              onAction={(key) => setSelectedVariable?.(String(key))}
+                            >
+                              {variableOptions.map((variable) => (
+                                <DropdownItem
+                                  key={variable}
+                                  className="hover:outline-white hover:bg-gray-100"
+                                >
+                                  {variable}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
+                          </Dropdown>
+                        </ButtonGroup>
+                      </TableCell>
+                    </TableRow>
+                    ) : (
+                      <TableRow key="Variable-hidden" className="hidden">
+                        <TableCell>{null}</TableCell>
+                        <TableCell>{null}</TableCell>
+                      </TableRow>
+                  )}
+
+                  {enableEvap ? (
+                    <TableRow key="Month">
+                      <TableCell><p className="text-base pt-[1.95vh]">Months: </p></TableCell>
+                      <TableCell className="pt-[2.5vh]">
+                        <ButtonGroup variant="bordered" size="sm" disableRipple>
+                          <Button disableRipple disableAnimation className="w-[120px]">
+                            {selectedMonth || monthNames[0]}
+                          </Button>
+                          <Dropdown isOpen={monthListOpen} onOpenChange={(open) => setMonthListOpen(open)}>
+                            <DropdownTrigger>
+                              <Button isIconOnly>
+                                <DropdownChevron isOpen={monthListOpen}/>
+                              </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu
+                              className="max-h-[200px] overflow-y-auto"
+                              aria-label="Month Selector"
+                              onAction={(key) => setSelectedMonth?.(key as Month)}
+                            >
+                              {monthNames.map((month) => (
+                                <DropdownItem
+                                  key={month}
+                                  className="hover:outline-white hover:bg-gray-100"
+                                >
+                                  {month}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
+                          </Dropdown>
+                        </ButtonGroup>
+                      </TableCell>
+                    </TableRow>
+                    ) : (
+                      <TableRow key="Month-hidden" className="hidden">
+                        <TableCell>{null}</TableCell>
+                        <TableCell>{null}</TableCell>
+                      </TableRow>
+                  )}
+
+                  {enableEvap ? (
                     <TableRow key="Hour">
                       <TableCell><p className="text-base pt-[1.95vh]">Hour: </p></TableCell>
                       <TableCell className="pt-[2.5vh]">
@@ -653,7 +726,7 @@ const MapOverlay: React.FC<Props> = (
                             <DropdownMenu
                               className="max-h-[200px] overflow-y-auto"
                               aria-label="Hour Selector"
-                              onAction={(key) => setSelectedHour?.(String(key))}
+                              onAction={(key) => setSelectedHour?.(Hour[key as keyof typeof Hour])}
                             >
                               {hours.map((hour) => (
                                 <DropdownItem

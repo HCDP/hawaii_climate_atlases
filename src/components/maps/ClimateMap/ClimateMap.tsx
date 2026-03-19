@@ -5,6 +5,8 @@ import {
   Station,
   Units,
   Period,
+  Month,
+  Hour,
   AsciiGrid,
   TileLayerProps,
 } from "@/lib";
@@ -62,8 +64,7 @@ export interface ClimateMapConfig {
   enableIsohyets?: boolean;
   enableUncertaintyToggle?: boolean;
   enableDualLoading?: boolean;
-  enableHourSelection?: boolean;
-  enableVariableSelection?: boolean;
+  enableEvap?: boolean;
 
   // Default states
   defaultHour?: string;
@@ -94,8 +95,8 @@ export interface ClimateMapConfig {
   mode?: 'rainfall' | 'evap';
 
   // Hook functions — each map type provides its own data hooks
-  useComposite?: (units: Units, period: Period) => CompositeHookResult;
-  useAllGrids?: (units: Units) => AllGridsHookResult;
+  useComposite?: (units: Units, period: Period, month?: Month, hour?: Hour) => CompositeHookResult;
+  useAllGrids?: (units: Units, hour?: string) => AllGridsHookResult;
   useUncertaintyComposite?: (units: Units, period: Period) => UncertaintyCompositeHookResult;
   useUncertaintyAllGrids?: (units: Units) => AllGridsHookResult;
 }
@@ -210,6 +211,7 @@ export const PopupOnClick = (
     isLoading,
     selectedUnits,
     selectedPeriod,
+    selectedMonth,
     selectedStation,
     setSelectedStation,
     location,
@@ -217,10 +219,13 @@ export const PopupOnClick = (
     setSelectedGridIndex,
     grid,
     enableStations = true,
+    enableRainfall,
+    enableEvap,
   }: {
     isLoading: boolean,
     selectedUnits: Units,
     selectedPeriod: Period,
+    selectedMonth: Month,
     selectedStation?: Station | null,
     setSelectedStation?: (station: Station | null) => void,
     setSelectedGridIndex: (index: number) => void,
@@ -228,6 +233,8 @@ export const PopupOnClick = (
     setLocation: (loc: LatLng) => void,
     grid: AsciiGrid,
     enableStations?: boolean,
+    enableRainfall?: boolean,
+    enableEvap?: boolean,
   }) => {
   const [clickedOnStation, setClickedOnStation] = useState<boolean>(false);
   const [gridValue, setGridValue] = useState<number | null>(null);
@@ -307,7 +314,8 @@ export const PopupOnClick = (
               <hr />
             </>
           )}
-          {isLoading ? `Loading mean ${periodText} rainfall values (in ${selectedUnits.toLocaleLowerCase()})...` : `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`}
+          {enableRainfall && (isLoading ? `Loading mean ${periodText} rainfall values (in ${selectedUnits.toLocaleLowerCase()})...` : `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`)}
+          {enableEvap && (isLoading ? `Loading ${selectedMonth} evapotranspiration values (in ${selectedUnits.toLocaleLowerCase()})...` : `${selectedMonth} evapotranspiration: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`)}
         </div>
       </Popup>
       {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) 
@@ -531,8 +539,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     enableStations = DEFAULT_CONFIG.enableStations,
     enableIsohyets = DEFAULT_CONFIG.enableIsohyets,
     enableDualLoading = DEFAULT_CONFIG.enableDualLoading,
-    enableHourSelection = false,
-    enableVariableSelection = false,
+    enableEvap = false,
     defaultShowStations = DEFAULT_CONFIG.defaultShowStations,
     defaultShowOtherStations = DEFAULT_CONFIG.defaultShowOtherStations,
     defaultShowIsohyets = DEFAULT_CONFIG.defaultShowIsohyets,
@@ -551,7 +558,8 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   );
   const [selectedUnits, setSelectedUnits] = useState<Units>(defaultSettings.selectedUnits);
   const [selectedPeriod, setSelectedPeriod] = useState<Period>(defaultSettings.selectedPeriod);
-  const [selectedHour, setSelectedHour] = useState<string>('ALL');
+  const [selectedMonth, setSelectedMonth] = useState<Month>(Month.Annual);
+  const [selectedHour, setSelectedHour] = useState<Hour>(Hour.HR_00);
   const [selectedVariable, setSelectedVariable] = useState<string>('Evapotranspiration');
   const [showIsohyets, setShowIsohyets] = useState<boolean>(defaultShowIsohyets ?? false);
   const [showGrids, setShowGrids] = useState<boolean>(defaultSettings.showGrids);
@@ -570,14 +578,18 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   // Data loading hooks - uses whichever hooks the config provides
   const rainfallData = useCompositeHook(
     enableDualLoading ? Units.IN : selectedUnits, 
-    selectedPeriod
+    selectedPeriod,
+    selectedMonth,
+    selectedHour
   );
   const rainfallDataMM = useCompositeHook(
     enableDualLoading ? Units.MM : selectedUnits, 
-    selectedPeriod
+    selectedPeriod,
+    selectedMonth,
+    selectedHour
   );
-  const rainfallGridsIN = useAllGridsHook(enableDualLoading ? Units.IN : selectedUnits);
-  const rainfallGridsMM = useAllGridsHook(enableDualLoading ? Units.MM : selectedUnits);
+  const rainfallGridsIN = useAllGridsHook(enableDualLoading ? Units.IN : selectedUnits, selectedHour);
+  const rainfallGridsMM = useAllGridsHook(enableDualLoading ? Units.MM : selectedUnits, selectedHour);
 
   const uncertaintyDataIN = useUncertaintyCompositeHook(
     enableDualLoading ? Units.IN : selectedUnits,
@@ -654,22 +666,21 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     if (!showGrids || showUncertainty || !currentRainfallData.asciiGrid || rainfallIsLoading) return null;
     
     const range = selectedUnits === Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod];
-    const colorDomain = selectedUnits === Units.IN
-      ? mergedConfig.colorDomains?.IN?.[selectedPeriod]
-      : mergedConfig.colorDomains?.MM?.[selectedPeriod];
+    // legacy `colorDomains` config is no longer passed through; use `colorPadding` in layer options instead
+    const colorPadding = undefined;
     
     return (
       <ActiveColorLayer
-        key={`rainfall-layer-${selectedUnits}-${selectedPeriod}`}
+        key={`rainfall-layer-${selectedUnits}-${selectedPeriod}-${selectedMonth}-${selectedHour}`}
         options={{
           cacheEmpty: true,
           colorScale: { colors: [], range },
           asciiGrid: currentRainfallData.asciiGrid,
-          ...(colorDomain && { colorDomain }),
+          ...({ colorPadding }),
         }}
       />
     );
-  }, [showGrids, showUncertainty, currentRainfallData.asciiGrid, selectedUnits, selectedPeriod, rainfallIsLoading]);
+  }, [showGrids, showUncertainty, currentRainfallData.asciiGrid, selectedUnits, selectedPeriod, selectedMonth, selectedHour, rainfallIsLoading]);
 
   const uncertaintyLayer = useMemo(() => {
     if (!showUncertainty || !currentUncertaintyData.asciiGrid || uncertaintyIsLoading) return null;
@@ -753,6 +764,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
         isOtherStation={enableStations ? selectedStationIsOther : false}
         selectedUnits={selectedUnits}
         selectedPeriod={selectedPeriod}
+        selectedVariable={selectedVariable}
         asciiGrids={activeGrids}
         canShowGridValues={!gridsAreLoading && selectedGridIndex !== -1}
         selectedGridIndex={selectedGridIndex}
@@ -792,12 +804,15 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
               grid={activeGrid}
               selectedUnits={selectedUnits}
               selectedPeriod={selectedPeriod}
+              selectedMonth={selectedMonth}
               selectedStation={enableStations ? selectedStation : undefined}
               setSelectedStation={enableStations ? setSelectedStation : undefined}
               location={location}
               setLocation={setLocation}
               setSelectedGridIndex={setSelectedGridIndex}
               enableStations={enableStations}
+              enableRainfall={mode === 'rainfall'}
+              enableEvap={enableEvap}
             />
           )}
 
@@ -806,10 +821,11 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
             setSelectedUnits={setSelectedUnits}
             selectedPeriod={selectedPeriod}
             setSelectedPeriod={setSelectedPeriod}
-            enableHourSelection={enableHourSelection}
+            enableEvap={enableEvap}
+            selectedMonth={selectedMonth}
+            setSelectedMonth={setSelectedMonth}
             selectedHour={selectedHour}
             setSelectedHour={setSelectedHour}
-            enableVariableSelection={enableVariableSelection}
             selectedVariable={selectedVariable}
             setSelectedVariable={setSelectedVariable}
             enableRainfall={enableStations}

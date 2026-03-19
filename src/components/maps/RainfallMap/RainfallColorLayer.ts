@@ -12,7 +12,8 @@ R.gridLayer.RainfallRasterLayer = function (options: RasterOptions) {
   const rainfallOptions: RasterOptions = {
     ...options,
     colorScheme: options.colorScheme || ['red', 'yellow', 'green', 'blue', 'purple', 'indigo'],
-    colorDomain: options.colorDomain,
+    // Use colorPadding (float) for chroma padding; fallback to provided value if present
+    colorPadding: (options as any).colorPadding ?? 0,
   };
   return new R.GridLayer.RainfallRasterLayer(rainfallOptions);
 };

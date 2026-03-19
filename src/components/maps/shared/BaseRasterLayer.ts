@@ -8,7 +8,7 @@ export interface RasterOptions {
   asciiGrid: AsciiGrid;
   cache?: Set<string>;
   colorScheme?: string[] | string;  // e.g., ['red', 'yellow', 'green'] or 'rainbow'
-  colorDomain?: number[];           // Custom breakpoints for non-linear color mapping (must match colorScheme length)
+  colorPadding?: number;            // Optional padding value passed to chroma.scale().padding()
 }
 
 export interface Color {
@@ -65,6 +65,7 @@ export function geoPosToColor(asciiGrid: AsciiGrid, geoPos: LatLng, colorScale: 
     colorValue > range[1] ? range[1] - range[0] :
         colorValue - range[0];
   let scale = rangePosition / (range[1] - range[0]);
+
   let actualPosition = Math.round(scale * (colors.length - 1));
 
   return colors[actualPosition];
@@ -111,12 +112,18 @@ export const createBaseRasterLayer = (layerName: string) => {
       // Default color scheme is rainbow if no scheme is specified
       const colorScheme = this.options.colorScheme || ['red', 'yellow', 'green', 'blue', 'purple', 'indigo'];
       const range = this.options.colorScale.range;
-      const colorScale = chroma.scale(colorScheme).domain(this.options.colorDomain ?? range);
+        // Build chroma scale using explicit domain and optional padding from `colorPadding`.
+        const colorScale = chroma
+          .scale(colorScheme)
+          .domain(range)
+          .padding(this.options.colorPadding ?? 0); // Optional color curve adjustment for better contrast
 
       let span = range[1] - range[0];
       let interval = span / 500; // 500 = numColors
       let value: number;
       let i: number;
+
+      const debugMapping = []; // For debugging: log value-color mappings
 
       for (i = 0, value = range[0]; i < 500; i++, value += interval) {
         let color: Color = { r: 0, g: 0, b: 0, a: 0 };
@@ -164,7 +171,11 @@ export const createBaseRasterLayer = (layerName: string) => {
             // unproject fast enough that unncessary to decouple
             let latlng: L.LatLng = this._map.unproject([x, y], coords.z);
 
-            let color = geoPosToColor(this.options.asciiGrid, latlng, this.options.colorScale);
+            let color = geoPosToColor(
+              this.options.asciiGrid,
+              latlng,
+              this.options.colorScale,
+            );
             if (color != undefined) {
               hasValue = true;
               imgData.data[colorOff++] = color.r;

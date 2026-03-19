@@ -1,20 +1,20 @@
 import { Fetcher } from "swr";
 import useSWRImmutable from "swr/immutable";
-import { AsciiGrid, Units, Period } from "@/lib";
+import { AsciiGrid, Units, Period, Hour } from "@/lib";
 
 const fetcher: Fetcher<AsciiGrid, string> = (url: string): Promise<AsciiGrid> => 
   fetch(url).then(res => res.json());
 
 /**
- * Hook to fetch a single evapotranspiration grid for a specific unit and period
+ * Hook to fetch a single evapotranspiration grid for a specific unit, month, and hour
  */
-export function useAETGrids(units: string, period: string): {
+export function useAETGrids(units: string, month: string, hour: string): {
   asciiGrid: AsciiGrid | undefined;
   isLoading: boolean;
   error: Error | undefined;
 } {
   const { data, isLoading, error } = useSWRImmutable<AsciiGrid, Error>(
-    `/evap/api/grids/${units}/${period}`, 
+    `/evap/api/grids/${units}/${month}/${hour}`, 
     fetcher
   );
   return {
@@ -25,9 +25,9 @@ export function useAETGrids(units: string, period: string): {
 }
 
 /**
- * Hook to fetch all evapotranspiration grids for all periods (Jan-Dec + Annual)
+ * Hook to fetch all evapotranspiration grids for all months (Jan-Dec and Annual) for a specific unit
  */
-export function useAETAllGrids(selectedUnits: Units) {
+export function useAETAllGrids(selectedUnits: Units, selectedHour: string = Hour.HR_00) {
   type GridFetchResult = { 
     asciiGrid: AsciiGrid | undefined;
     isLoading: boolean;
@@ -36,7 +36,7 @@ export function useAETAllGrids(selectedUnits: Units) {
 
   const results: GridFetchResult[] = [];
   for (let i = 0; i <= 12; i++) {
-    results.push(useAETGrids(selectedUnits, Period[i]));
+    results.push(useAETGrids(selectedUnits, Period[i], selectedHour));
   }
 
   const asciiGrids: AsciiGrid[] = results.flatMap(r => r.asciiGrid ? [r.asciiGrid] : []);
