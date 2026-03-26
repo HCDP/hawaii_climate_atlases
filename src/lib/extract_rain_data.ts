@@ -175,9 +175,12 @@ async function fetchAsciiGridData(asciiZip: JSZip, period: Period): Promise<Asci
     .sort();
 
   const fileName = fileNames[period];
+  console.log(`Selected rainfall ASCII file for period ${period}: ${fileName}`);
   const file = asciiZip.files[fileName];
   const dataAsText = await file.async("string");
   const asciiGrids = grabAsciiData(dataAsText);
+  // annotate with source filename so clients can confirm which file was used
+  (asciiGrids.header as any).sourceFileName = fileName;
   return asciiGrids;
 }
 

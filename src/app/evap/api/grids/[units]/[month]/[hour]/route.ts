@@ -15,16 +15,17 @@ export async function GET(_: NextRequest, { params }: {
   params: {
     units: string,
     month: string,
+    hour: string,
   },
 }): Promise<NextResponse<{ error: string } | AsciiGrid>> {
   const units: string = params.units;
   if (!isUnits(units)) return invalidUnitsResponse;
   const month: string = params.month;
   if (!isMonth(month)) return invalidMonthResponse;
-  /*const hour: string = params.hour;
-  if (!isHour(hour)) return invalidHourResponse; */
+  const hour: string = params.hour;
+  if (!isHour(hour)) return invalidHourResponse;
 
-  const asciiGrids = await getAETGrids({ units, month: Month[month] });
+  const asciiGrids = await getAETGrids({ units, month: Month[month], hour: hour as Hour });
   if (!asciiGrids) return unableToRetrieveResponse;
 
   return NextResponse.json(asciiGrids, { status: 200 });

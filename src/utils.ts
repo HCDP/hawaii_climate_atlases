@@ -23,8 +23,6 @@ export function isMonth(monthString: string): monthString is keyof typeof Month 
     .includes(capitalize(monthString.toLowerCase()));
 }
 
-export function isHour(hourString: string): hourString is keyof typeof Hour {
-  return Object.keys(Hour)
-    .filter(key => isNaN(Number(key)))
-    .includes(capitalize(hourString.toLowerCase()));
+export function isHour(hourString: string): hourString is Hour {
+  return Object.values(Hour).includes(hourString as Hour);
 }

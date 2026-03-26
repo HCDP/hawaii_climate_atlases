@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Plot from '@/components/Plot';
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, getKeyValue } from "@heroui/table";
-import { Station, Units, Period, AsciiGrid } from "@/lib";
+import { Station, Units, Period, AsciiGrid, Month, Hour } from "@/lib";
 import { StationIcon } from "@/components/maps/Map";
 import { LatLng } from "leaflet";
 import { Button } from '@heroui/button';
@@ -17,8 +17,11 @@ const SideBar: React.FC<{
   isOtherStation?: boolean,
   selectedUnits: Units,
   selectedPeriod: Period,
+  selectedMonth: Month | null,
+  selectedHour: Hour | null,
   selectedVariable: string,
   asciiGrids: AsciiGrid[],
+  hourlyAsciiGrids?: AsciiGrid[],
   canShowGridValues: boolean,
   selectedGridIndex: number,
   location: LatLng | null,
@@ -31,8 +34,11 @@ const SideBar: React.FC<{
   isOtherStation,
   selectedUnits,
   selectedPeriod,
+  selectedMonth,
+  selectedHour,
   selectedVariable,
   asciiGrids,
+  hourlyAsciiGrids = [],
   canShowGridValues,
   selectedGridIndex,
   range,
@@ -84,6 +90,10 @@ const SideBar: React.FC<{
       asciiGrid.values[selectedGridIndex]
     ) : [];
 
+    const hourlyGridData: number[] = canShowGridValues && hourlyAsciiGrids.length > 0
+      ? hourlyAsciiGrids.map(asciiGrid => asciiGrid.values[selectedGridIndex])
+      : [];
+
     const rainfallColumns = [
       { key: "period", label: "Month" },
       { key: "map_data", label: "Map" },
@@ -93,10 +103,11 @@ const SideBar: React.FC<{
     ];
 
     const rainfallRows = fullPeriods.map((period, index) => {
+      const gridValue = canShowGridValues ? asciiGrids[index]?.values[selectedGridIndex] : undefined;
       return {
         key: index,
         period: period,
-        map_data: canShowGridValues ? Math.round(asciiGrids[index].values[selectedGridIndex] * 100) / 100 : "",
+        map_data: gridValue != null ? Math.round(gridValue * 100) / 100 : "",
         station_avg: selectedStation ? Math.round(stationAverages[index] * 100) / 100 : "",
         station_uncert: selectedStation ? Math.round(stationUncertainty[index] * 100) / 100 : "",
       };
@@ -282,7 +293,7 @@ const SideBar: React.FC<{
                 </div>
                 <div className="h-[300px] shrink-0 border-2 border-gray-300 rounded mt-4">
                   <HourPlot
-                    data={gridData.slice(0, -1)} // First 12 months (excluding annual)
+                    data={hourlyGridData}
                     units={selectedUnits.toLocaleLowerCase()}
                     selectedVariable={selectedVariable}
                     title={`Annual ${selectedVariable} Per Hour`}
@@ -294,9 +305,10 @@ const SideBar: React.FC<{
                 </AccordionItem>
               )}
 
+              {isRainfall ? (
               <AccordionItem
                 key="legend"
-                aria-label="Legend"
+                aria-label="rainfall-Legend"
                 title="Legend"
                 classNames={{
                   title: "font-extrabold text-gray-600"
@@ -367,6 +379,10 @@ const SideBar: React.FC<{
                   </div>
                 </div>
               </AccordionItem>
+              ) : (
+                <AccordionItem key="legend-hidden" className="hidden">
+                </AccordionItem>
+              )}
             </Accordion>
           </div>
         </div>

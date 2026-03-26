@@ -274,13 +274,19 @@ const MapOverlay: React.FC<Props> = (
     ];
 
   // Hours 01-24 and ALL for hour selection
-  const hours = ['ALL', ...Array.from({ length: 24 }, (_, i) => String(i + 1).padStart(2, '0'))];
+  const hours = Object.values(Hour);
 
   // Array of the string keys of the Period enum ("January", "February", etc.)
   const periodNames: string[] = Object.keys(Period).filter(period => isNaN(parseInt(period)));
 
   // Array of the string keys of the Month enum ("January", "February", etc.)
   const monthNames: string[] = Object.keys(Month).filter(month => isNaN(parseInt(month)));
+
+  // Helper to display the selected month as a full name (e.g., "January")
+  const selectedMonthDisplay = (() => {
+    const entry = Object.entries(Month).find(([key, value]) => value === (selectedMonth as any));
+    return entry ? entry[0] : monthNames[0];
+  })();
 
 
   const minimapControl = useMemo(
@@ -676,7 +682,7 @@ const MapOverlay: React.FC<Props> = (
                       <TableCell className="pt-[2.5vh]">
                         <ButtonGroup variant="bordered" size="sm" disableRipple>
                           <Button disableRipple disableAnimation className="w-[120px]">
-                            {selectedMonth || monthNames[0]}
+                            {selectedMonthDisplay}
                           </Button>
                           <Dropdown isOpen={monthListOpen} onOpenChange={(open) => setMonthListOpen(open)}>
                             <DropdownTrigger>
@@ -687,7 +693,7 @@ const MapOverlay: React.FC<Props> = (
                             <DropdownMenu
                               className="max-h-[200px] overflow-y-auto"
                               aria-label="Month Selector"
-                              onAction={(key) => setSelectedMonth?.(key as Month)}
+                              onAction={(key) => setSelectedMonth?.(Month[key as keyof typeof Month])}
                             >
                               {monthNames.map((month) => (
                                 <DropdownItem
@@ -726,7 +732,7 @@ const MapOverlay: React.FC<Props> = (
                             <DropdownMenu
                               className="max-h-[200px] overflow-y-auto"
                               aria-label="Hour Selector"
-                              onAction={(key) => setSelectedHour?.(Hour[key as keyof typeof Hour])}
+                              onAction={(key) => setSelectedHour?.(key as Hour)}
                             >
                               {hours.map((hour) => (
                                 <DropdownItem

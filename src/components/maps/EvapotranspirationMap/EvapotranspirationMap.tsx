@@ -36,11 +36,11 @@ const EVAPOTRANSPIRATION_CONFIG: ClimateMapConfig = {
     MM: [
       [0.01000113, 174.6194], [0.005563876, 185.7965], [0.01000143, 228.0023], [0.01000151, 243.8095], [0.01000162, 264.4229],
       [0.01000165, 267.6649], [0.01000171, 266.4807], [0.01000171, 265.511], [0.01000161, 256.084], [0.00488334, 215.087],
-      [0.01000116, 173.8864], [0.01000108, 162.975], [0.1199287, 2300], 
+      [0.01000116, 173.8864], [0.01000108, 162.975], [0.1199287, 2704.34], 
     ],
   },
   // Use evapotranspiration data hooks instead of rainfall
-  useComposite: useEvapComposite,
+  useEvapComposite: useEvapComposite,
   useAllGrids: useAETAllGrids,
   // Evap maps don't use the rainfall uncertainty endpoints — provide no-op hooks
   useUncertaintyComposite: (units, period) => ({ asciiGrid: undefined, allDataLoaded: true, isLoading: false }),

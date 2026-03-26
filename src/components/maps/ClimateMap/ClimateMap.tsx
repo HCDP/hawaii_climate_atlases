@@ -31,6 +31,11 @@ import {
   useRainfallUncertaintyAllGrids,
   useRainfallUncertaintyComposite
 } from "@/hooks/rainfall";
+import {
+  useAETAllGrids,
+  useAETAllHourGrids,
+  useEvapComposite
+} from "@/hooks/evaporation";
 import { defaultSettings } from "@/constants";
 import { GridLoader } from "react-spinners";
 
@@ -54,6 +59,11 @@ export interface AllGridsHookResult {
 export interface UncertaintyCompositeHookResult {
   asciiGrid: AsciiGrid | undefined;
   allDataLoaded: boolean;
+  isLoading: boolean;
+}
+
+export interface EvapCompositeHookResult {
+  asciiGrid: AsciiGrid | undefined;
   isLoading: boolean;
 }
 
@@ -82,11 +92,6 @@ export interface ClimateMapConfig {
     IN: [number, number][];
     MM: [number, number][];
   };
-  // Custom color breakpoints for non-linear color mapping (per-period, must match colorScheme length)
-  colorDomains?: {
-    IN: number[][];
-    MM: number[][];
-  };
 
   // Color layer component — defaults to RainfallColorLayer
   ColorLayerComponent?: React.ComponentType<any>;
@@ -99,6 +104,7 @@ export interface ClimateMapConfig {
   useAllGrids?: (units: Units, hour?: string) => AllGridsHookResult;
   useUncertaintyComposite?: (units: Units, period: Period) => UncertaintyCompositeHookResult;
   useUncertaintyAllGrids?: (units: Units) => AllGridsHookResult;
+  useEvapComposite?: (units: Units, month: Month) => EvapCompositeHookResult;
 }
 
 // Default configuration for full-featured rainfall map
@@ -281,7 +287,7 @@ export const PopupOnClick = (
     if (coords !== null) {
       index = ncols * coords.y + coords.x;
       const value: number | undefined = grid.values[index];
-      if (value) {
+      if (value !== undefined && value !== -9999) {
         setGridValue(value);
         setSelectedGridIndex(index);
       } else {
@@ -298,6 +304,10 @@ export const PopupOnClick = (
   });
 
   const periodText = Number(selectedPeriod) === Period.Annual ? "annual" : Period[selectedPeriod];
+  const selectedMonthText = (() => {
+    const entry = Object.entries(Month).find(([key, value]) => value === selectedMonth);
+    return entry ? entry[0] : String(selectedMonth);
+  })();
 
   return gridValue && location ? (
     <>
@@ -315,7 +325,7 @@ export const PopupOnClick = (
             </>
           )}
           {enableRainfall && (isLoading ? `Loading mean ${periodText} rainfall values (in ${selectedUnits.toLocaleLowerCase()})...` : `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`)}
-          {enableEvap && (isLoading ? `Loading ${selectedMonth} evapotranspiration values (in ${selectedUnits.toLocaleLowerCase()})...` : `${selectedMonth} evapotranspiration: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`)}
+          {enableEvap && (isLoading ? `Loading ${selectedMonthText} evapotranspiration values (in ${selectedUnits.toLocaleLowerCase()})...` : `${selectedMonthText} evapotranspiration: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`)}
         </div>
       </Popup>
       {/* X marker that indicates where the user last clicked on the map (only valid grid spaces + stations) 
@@ -552,6 +562,9 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     mode = 'rainfall' as const,
   } = mergedConfig;
 
+  const useEvapCompositeHook: (units: Units, month: Month, hour: Hour) => EvapCompositeHookResult =
+    mergedConfig.useEvapComposite ?? useEvapComposite;
+
   // State management
   const [selectedStation, setSelectedStation] = useState<Station | null>(
     enableStations ? defaultSettings.selectedStation : null
@@ -602,6 +615,16 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   const uncertaintyGridsIN = useUncertaintyAllGridsHook(enableDualLoading ? Units.IN : selectedUnits);
   const uncertaintyGridsMM = useUncertaintyAllGridsHook(enableDualLoading ? Units.MM : selectedUnits);
 
+  // ✅ Hook call only — no early return after it
+  const evapData = useEvapCompositeHook(selectedUnits, selectedMonth, selectedHour);
+
+  const evapGridsIN = useAllGridsHook(Units.IN, selectedHour);
+  const evapGridsMM = useAllGridsHook(Units.MM, selectedHour);
+
+  // Fetch hourly grids annually (24 grids, one per hour)
+  const evapHourlyGridsIN = useAETAllHourGrids(Units.IN, 'Annual');
+  const evapHourlyGridsMM = useAETAllHourGrids(Units.MM, 'Annual');
+
   // Select appropriate data based on units and dual loading configuration
   const currentRainfallData = enableDualLoading 
     ? (selectedUnits === Units.IN ? rainfallData : rainfallDataMM)
@@ -615,6 +638,14 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   const currentUncertaintyGrids = enableDualLoading
     ? (selectedUnits === Units.IN ? uncertaintyGridsIN : uncertaintyGridsMM)
     : uncertaintyGridsIN;
+  
+  const currentEvapGrids = enableDualLoading
+    ? (selectedUnits === Units.IN ? evapGridsIN : evapGridsMM)
+    : evapGridsIN;
+
+  const currentEvapHourlyGrids = enableDualLoading
+    ? (selectedUnits === Units.IN ? evapHourlyGridsIN : evapHourlyGridsMM)
+    : evapHourlyGridsIN;
 
   // Default data ranges (rainfall fallback)
   const defaultRanges_IN: [number, number][] = [
@@ -651,19 +682,22 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   const uncertaintyIsLoading = enableDualLoading
     ? (selectedUnits === Units.IN ? uncertaintyDataIN.isLoading : uncertaintyDataMM.isLoading)
     : uncertaintyDataIN.isLoading;
+  const evapIsLoading = enableDualLoading 
+    ? (selectedUnits === Units.IN ? evapData.isLoading : evapData.isLoading)
+    : evapData.isLoading;
 
-  const isLoading = rainfallIsLoading || uncertaintyIsLoading;
-  const gridsAreLoading = currentRainfallGrids.gridsAreLoading || currentUncertaintyGrids.gridsAreLoading;
+  const isLoading = rainfallIsLoading || uncertaintyIsLoading || evapIsLoading;
+  const gridsAreLoading = currentRainfallGrids.gridsAreLoading || currentUncertaintyGrids.gridsAreLoading || currentEvapGrids.gridsAreLoading || currentEvapHourlyGrids.gridsAreLoading;
 
   // Only show loading screen if BOTH unit systems are still loading (first load only) when dual loading enabled
   const bothUnitsStillLoading = enableDualLoading 
-    ? (rainfallData.isLoading && rainfallDataMM.isLoading) || (uncertaintyDataIN.isLoading && uncertaintyDataMM.isLoading)
+    ? (rainfallData.isLoading && rainfallDataMM.isLoading) || (uncertaintyDataIN.isLoading && uncertaintyDataMM.isLoading) || (evapData.isLoading && evapData.isLoading)
     : isLoading;
   const showLoadingScreen = bothUnitsStillLoading;
 
   // Memoize layers
   const rainfallLayer = useMemo(() => {
-    if (!showGrids || showUncertainty || !currentRainfallData.asciiGrid || rainfallIsLoading) return null;
+    if (!showGrids || showUncertainty || enableEvap || !currentRainfallData.asciiGrid || rainfallIsLoading) return null;
     
     const range = selectedUnits === Units.IN ? ranges_IN[selectedPeriod] : ranges_MM[selectedPeriod];
     // legacy `colorDomains` config is no longer passed through; use `colorPadding` in layer options instead
@@ -680,7 +714,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
         }}
       />
     );
-  }, [showGrids, showUncertainty, currentRainfallData.asciiGrid, selectedUnits, selectedPeriod, selectedMonth, selectedHour, rainfallIsLoading]);
+  }, [showGrids, showUncertainty, enableEvap, currentRainfallData.asciiGrid, selectedUnits, selectedPeriod, selectedMonth, selectedHour, rainfallIsLoading]);
 
   const uncertaintyLayer = useMemo(() => {
     if (!showUncertainty || !currentUncertaintyData.asciiGrid || uncertaintyIsLoading) return null;
@@ -741,6 +775,35 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     );
   }, [enableIsohyets, currentRainfallData.featureCollections, selectedPeriod, selectedUnits]);
 
+  // passing through ranges from evap
+  // Use selectedMonth to choose range index when evap mode is active
+  const monthOrder: Month[] = [
+    Month.January, Month.February, Month.March, Month.April, Month.May, Month.June,
+    Month.July, Month.August, Month.September, Month.October, Month.November, Month.December, Month.Annual
+  ];
+    
+  const EvapLayer = useMemo(() => {
+    if (!enableEvap || !evapData?.asciiGrid || evapData?.isLoading) return null;
+    const rangeIndex = monthOrder.indexOf(selectedMonth);
+    const range = selectedUnits === Units.IN ? ranges_IN[rangeIndex] : ranges_MM[rangeIndex];
+
+    // Add this to debug
+    console.log('Evap range:', range);
+    console.log('Selected units:', selectedUnits);
+    console.log('Sample grid values:', Object.values(evapData.asciiGrid.values).filter(v => v > 0).slice(0, 5));
+   
+    return (
+      <EvapColorLayer
+        key={`evap-layer-${selectedUnits}-${selectedMonth}`}
+        options={{
+          cacheEmpty: true,
+          colorScale: { colors: [], range },
+          asciiGrid: evapData.asciiGrid,
+        }}
+      />
+    );
+  }, [enableEvap, evapData?.asciiGrid, selectedUnits, selectedMonth, selectedHour, evapData?.isLoading]);
+
   if (showLoadingScreen) {
     return (
       <div style={{padding: "20px"}} className="text-center">
@@ -751,11 +814,13 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   }
 
   // Determine which grid is active based on user selection
-  const activeGrid = showUncertainty ? currentUncertaintyData.asciiGrid : currentRainfallData.asciiGrid;
-  const activeGrids = showUncertainty ? currentUncertaintyGrids.asciiGrids : currentRainfallGrids.asciiGrids;
-  const activeRanges = showUncertainty 
-    ? (selectedUnits === Units.IN ? uncertainty_ranges_IN : uncertainty_ranges_MM)
-    : (selectedUnits === Units.IN ? ranges_IN : ranges_MM);
+  const activeGrid = enableEvap ? evapData?.asciiGrid : showUncertainty ? currentUncertaintyData.asciiGrid : currentRainfallData.asciiGrid;
+  const activeGrids = enableEvap ? currentEvapGrids.asciiGrids : showUncertainty ? currentUncertaintyGrids.asciiGrids : currentRainfallGrids.asciiGrids;
+  const activeRanges = enableEvap
+    ? (selectedUnits === Units.IN ? ranges_IN : ranges_MM)
+    : showUncertainty
+      ? (selectedUnits === Units.IN ? uncertainty_ranges_IN : uncertainty_ranges_MM)
+      : (selectedUnits === Units.IN ? ranges_IN : ranges_MM);
 
   return (
     <div className="flex w-full h-full max-h-full">
@@ -764,8 +829,11 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
         isOtherStation={enableStations ? selectedStationIsOther : false}
         selectedUnits={selectedUnits}
         selectedPeriod={selectedPeriod}
+        selectedMonth={selectedMonth}
+        selectedHour={selectedHour}
         selectedVariable={selectedVariable}
         asciiGrids={activeGrids}
+        hourlyAsciiGrids={enableEvap ? currentEvapHourlyGrids.asciiGrids : []}
         canShowGridValues={!gridsAreLoading && selectedGridIndex !== -1}
         selectedGridIndex={selectedGridIndex}
         location={location}
@@ -797,6 +865,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
           {otherStationIcons}
 
           {showIsohyets && isohyetsLayer}
+          {EvapLayer}
 
           {activeGrid && (
             <PopupOnClick

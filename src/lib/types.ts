@@ -144,6 +144,8 @@ export type AsciiGrid = {
     yllcorner: number,
     cellsize: number,
     NODATA_value: number,
+    // Optional: name of the source file inside zip used to build this grid
+    sourceFileName?: string,
   },
   values: {
     [gridIndex: number]: number,

@@ -8,7 +8,8 @@ export interface RasterOptions {
   asciiGrid: AsciiGrid;
   cache?: Set<string>;
   colorScheme?: string[] | string;  // e.g., ['red', 'yellow', 'green'] or 'rainbow'
-  colorPadding?: number;            // Optional padding value passed to chroma.scale().padding()
+  colorPadding?: number | [number, number]; // Symmetric or asymmetric [low, high] padding
+  colorGamma?: number;              // Gamma correction: <1 shifts colors toward high end (more reds), >1 toward low end
 }
 
 export interface Color {
@@ -107,16 +108,25 @@ export const createBaseRasterLayer = (layerName: string) => {
      * Builds the color lookup table based on the color scheme
      */
     setColorScale: function () {
+      // Log which source ASCII file produced the grid so devs can confirm correct file
+      try {
+        console.log("Displaying ASCII grid file:", this.options.asciiGrid?.header?.sourceFileName);
+      } catch (e) {
+        // ignore logging errors
+      }
       let colors: Color[] = [];
 
       // Default color scheme is rainbow if no scheme is specified
       const colorScheme = this.options.colorScheme || ['red', 'yellow', 'green', 'blue', 'purple', 'indigo'];
       const range = this.options.colorScale.range;
-        // Build chroma scale using explicit domain and optional padding from `colorPadding`.
-        const colorScale = chroma
+        // Build chroma scale using explicit domain, optional padding, and optional gamma.
+        let colorScale = chroma
           .scale(colorScheme)
           .domain(range)
-          .padding(this.options.colorPadding ?? 0); // Optional color curve adjustment for better contrast
+          .padding(this.options.colorPadding ?? 0);
+        if (this.options.colorGamma) {
+          colorScale = colorScale.gamma(this.options.colorGamma);
+        }
 
       let span = range[1] - range[0];
       let interval = span / 500; // 500 = numColors

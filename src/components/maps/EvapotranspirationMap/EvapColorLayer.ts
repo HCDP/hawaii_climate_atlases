@@ -11,9 +11,11 @@ R.gridLayer.EvapRasterLayer = function (options: RasterOptions) {
   // Set the rainbow color scheme for evapotranspiration maps
   const evapOptions: RasterOptions = {
     ...options,
-    colorScheme: options.colorScheme || ['#1a16f3', '#698afe', '#6bc0ff', '#3fffff', '#aeffc7', '#ddff8f', '#ffff3f', '#ffca40', '#ff9340', '#ff2000'],
+    colorScheme: options.colorScheme || ['#1a16f3', '#3fffff', '#ffff3f', '#ff9340', '#ff2000'],
     // specify padding for better color distribution, especially for skewed data like evap
-    colorPadding: options.colorPadding || -0.15, 
+    colorPadding: options.colorPadding ?? [-0.75, -0.10],
+    // gamma < 1 shifts the scale so reds/oranges appear for a wider range of higher values
+    colorGamma: (options as any).colorGamma ?? 0.4,
   };
   return new R.GridLayer.EvapRasterLayer(evapOptions);
 };

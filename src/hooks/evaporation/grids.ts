@@ -46,3 +46,28 @@ export function useAETAllGrids(selectedUnits: Units, selectedHour: string = Hour
     gridsAreLoading: Object.values(results).some(r => r.isLoading),
   };
 }
+
+/**
+ * Hook to fetch evapotranspiration grids for all 24 hours for a specific month.
+ * Used to provide hourly data for the HourPlot.
+ */
+export function useAETAllHourGrids(selectedUnits: Units, selectedMonth: string = 'Annual') {
+  type GridFetchResult = {
+    asciiGrid: AsciiGrid | undefined;
+    isLoading: boolean;
+    error: Error | undefined;
+  };
+
+  const hourKeys = Object.values(Hour).filter(h => h !== Hour.HR_00);
+  const results: GridFetchResult[] = [];
+  for (const hour of hourKeys) {
+    results.push(useAETGrids(selectedUnits, selectedMonth, hour));
+  }
+
+  const asciiGrids: AsciiGrid[] = results.flatMap(r => r.asciiGrid ? [r.asciiGrid] : []);
+
+  return {
+    asciiGrids,
+    gridsAreLoading: results.some(r => r.isLoading),
+  };
+}

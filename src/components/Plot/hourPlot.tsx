@@ -35,11 +35,11 @@ export const HourPlot: React.FC<HistogramProps> = ({ data, units, selectedVariab
             ]}
             layout={{
                 title: {
-                    text: title || `Monthly ${selectedVariable} (${units})`,
+                    text: title || `Annual ${selectedVariable} By Hour (${units})`,
                 },
                 yaxis: {
                     title: {
-                        text: '',
+                        text: 'Hour',
                     },
                     rangemode: 'nonnegative',
                 },

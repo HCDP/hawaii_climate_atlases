@@ -9,8 +9,8 @@ export async function getCachedFileBuffer(fetchUrl: string | URL, cachePath: str
   // if the file has already been cached, use it
   try {
     return await fs.readFile(filePath);
-  } catch (e) {
-    console.log(`Could not read cached file, either an error occurred or the file had not been cached yet. Will fetch data from ${fetchUrl}.`, e);
+  } catch {
+    console.log(`Cache miss for ${fileName}. Fetching from ${fetchUrl}...`);
   }
   // the file was not cached, so fetch it and cache it
   try {
