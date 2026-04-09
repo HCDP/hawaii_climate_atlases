@@ -105,7 +105,7 @@ async function fetchAsciiGridData(asciiZip: JSZip, month: Month, hour: Hour): Pr
   }
   const file = asciiZip.files[fileName];
   const dataAsText = await file.async("string");
-  console.log(`------\nSelected evap ASCII file for month ${month} and hour ${hour}: ${fileName}`);
+  console.log(`Loading ${fileName}`);
   const asciiGrids = grabAsciiData(dataAsText);
   // annotate with source filename so clients can confirm which file was used
   (asciiGrids.header as any).sourceFileName = fileName;

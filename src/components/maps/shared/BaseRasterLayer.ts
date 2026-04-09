@@ -12,6 +12,24 @@ export interface RasterOptions {
   colorGamma?: number;              // Gamma correction: <1 shifts colors toward high end (more reds), >1 toward low end
 }
 
+/**
+ * Computes the [min, max] range from an ASCII grid's values, excluding NODATA.
+ */
+export function computeGridRange(asciiGrid: AsciiGrid): [number, number] {
+  const nodata = asciiGrid.header.NODATA_value;
+  let min = Infinity;
+  let max = -Infinity;
+  const values = asciiGrid.values;
+  for (const key in values) {
+    const v = values[key];
+    if (Number.isFinite(v) && v !== nodata) {
+      if (v < min) min = v;
+      if (v > max) max = v;
+    }
+  }
+  return [min, max];
+}
+
 export interface Color {
   r: number;
   g: number;
@@ -111,6 +129,8 @@ export const createBaseRasterLayer = (layerName: string) => {
       // Log which source ASCII file produced the grid so devs can confirm correct file
       try {
         console.log("Displaying ASCII grid file:", this.options.asciiGrid?.header?.sourceFileName);
+        const range = this.options.colorScale.range;
+        console.log("Color scale min/max:", range[0], "→", range[1]);
       } catch (e) {
         // ignore logging errors
       }
@@ -123,10 +143,8 @@ export const createBaseRasterLayer = (layerName: string) => {
         let colorScale = chroma
           .scale(colorScheme)
           .domain(range)
-          .padding(this.options.colorPadding ?? 0);
-        if (this.options.colorGamma) {
-          colorScale = colorScale.gamma(this.options.colorGamma);
-        }
+          .padding(this.options.colorPadding ?? 0)
+          .gamma(this.options.colorGamma ?? 1);
 
       let span = range[1] - range[0];
       let interval = span / 500; // 500 = numColors

@@ -24,8 +24,8 @@ export const HourPlot: React.FC<HistogramProps> = ({ data, units, selectedVariab
             data={[
                 {
                     type: 'bar',
-                    x: data,
-                    y: hours,
+                    x: hours,
+                    y: data,
                     name: 'Data',
                     marker: {
                         color: 'rgba(255, 140, 0, 0.7)',
@@ -39,13 +39,13 @@ export const HourPlot: React.FC<HistogramProps> = ({ data, units, selectedVariab
                 },
                 yaxis: {
                     title: {
-                        text: 'Hour',
+                        text: `${units}`,
                     },
                     rangemode: 'nonnegative',
                 },
                 xaxis: {
                     title: {
-                        text: `${units}`,
+                        text: 'Hour',
                     },
                 },
                 autosize: true,

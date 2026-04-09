@@ -29,6 +29,8 @@ const SideBar: React.FC<{
   uncertaintyRange?: [number, number],
   units: string,
   dataMode: 'rainfall' | 'evap',
+  isLoading?: boolean,
+  isTableLoading?: boolean,
 }> = ({
   selectedStation,
   isOtherStation,
@@ -45,9 +47,14 @@ const SideBar: React.FC<{
   units,
   location,
   dataMode,
+  isLoading = false,
+  isTableLoading = false,
 }) => {
     const isRainfall = dataMode === 'rainfall';
+    const hasLocation = location !== null || selectedStation != null;
     const [showErrorBars, setShowErrorBars] = useState(false);
+
+    console.log('[SideBar] isLoading:', isLoading, 'isTableLoading:', isTableLoading, 'isRainfall:', isRainfall);
 
     // Handles resize bar functionality
     const [width, setWidth] = useState(24);
@@ -113,6 +120,15 @@ const SideBar: React.FC<{
       };
     })
 
+    const evapRows = fullPeriods.map((period, index) => {
+      const gridValue = canShowGridValues ? asciiGrids[index]?.values[selectedGridIndex] : undefined;
+      return {
+        key: index,
+        period: period,
+        data: gridValue != null ? Math.round(gridValue * 100) / 100 : "",
+      };
+    })
+
     const stationColumns = [
       { key: "field", label: "Field" },
       { key: "value", label: "Value" },
@@ -133,13 +149,42 @@ const SideBar: React.FC<{
       { key: "status", field: "Station Status", value: `${selectedStation["StationStatus"]}` },
     ] : [];
 
+    const evapColumns = [
+      { key: "period", label: "Month" },
+      { key: "data", label: `${selectedVariable}` },
+    ];
+
     return (
       <>
         <div
-          className="flex flex-col max-h-full"
+          className="flex flex-col max-h-full relative"
           style={{ minWidth: `${width}rem` }}
         >
+          {isLoading && (
+            <div className="absolute inset-0 z-20 bg-white/80 flex items-center justify-center">
+              <div className="flex flex-col items-center gap-3">
+                <svg className="animate-spin h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <p className="text-gray-500 font-semibold">Loading data...</p>
+              </div>
+            </div>
+          )}
           <div className="overflow-y-auto px-4 pt-0 mt-0">
+            {!hasLocation && !isLoading && (
+              <div className="sticky top-0 z-10 bg-white/90 flex items-center justify-center py-8">
+                <div className="text-center p-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                  </svg>
+                  <p className="text-gray-500 font-semibold text-lg">No location selected</p>
+                  <p className="text-gray-400 text-sm mt-1">Click on the map to view data</p>
+                </div>
+              </div>
+            )}
+            <div className={!hasLocation ? "opacity-30 pointer-events-none" : ""}>
             <Accordion
               isCompact
               defaultExpandedKeys=
@@ -275,36 +320,6 @@ const SideBar: React.FC<{
                 </AccordionItem>
               )}
 
-              {/* For non-rainfall charts */}
-              {!isRainfall ? (
-              <AccordionItem
-                key="graphs"
-                aria-label="graphs"
-                title={'Graphs'}
-                classNames={{ title: "font-extrabold text-gray-600", trigger: "" }}
-              >
-                <div className="h-[300px] shrink-0 border-2 border-gray-300 rounded">
-                  <MonthPlot
-                    data={gridData.slice(0, -1)} // First 12 months (excluding annual)
-                    units={selectedUnits.toLocaleLowerCase()}
-                    selectedVariable={selectedVariable}
-                    title={`${selectedVariable} By Month`}
-                  />
-                </div>
-                <div className="h-[300px] shrink-0 border-2 border-gray-300 rounded mt-4">
-                  <HourPlot
-                    data={hourlyGridData}
-                    units={selectedUnits.toLocaleLowerCase()}
-                    selectedVariable={selectedVariable}
-                    title={`Annual ${selectedVariable} Per Hour`}
-                  />
-                </div>
-              </AccordionItem>
-              ) : (
-                <AccordionItem key="Hour-hidden" className="hidden">
-                </AccordionItem>
-              )}
-
               {isRainfall ? (
               <AccordionItem
                 key="legend"
@@ -383,7 +398,100 @@ const SideBar: React.FC<{
                 <AccordionItem key="legend-hidden" className="hidden">
                 </AccordionItem>
               )}
+
+              {/* For non-rainfall charts */}
+              {!isRainfall ? (
+              <AccordionItem
+                key="graphs"
+                aria-label="graphs"
+                title={'Graphs'}
+                classNames={{ title: "font-extrabold text-gray-600", trigger: "" }}
+              >
+                <div className="h-[300px] shrink-0 border-2 border-gray-300 rounded">
+                  <MonthPlot
+                    data={gridData.slice(0, -1)} // First 12 months (excluding annual)
+                    units={selectedUnits.toLocaleLowerCase()}
+                    selectedVariable={selectedVariable}
+                    title={`${selectedVariable} By Month`}
+                  />
+                </div>
+                <div className="h-[300px] shrink-0 border-2 border-gray-300 rounded mt-4">
+                  <HourPlot
+                    data={hourlyGridData}
+                    units={selectedUnits.toLocaleLowerCase()}
+                    selectedVariable={selectedVariable}
+                    title={`Annual ${selectedVariable} Per Hour`}
+                  />
+                </div>
+              </AccordionItem>
+              ) : (
+                <AccordionItem key="Hour-hidden" className="hidden">
+                </AccordionItem>
+              )}
+
+              {/* for tables */}
+              {!isRainfall ? (
+              <AccordionItem
+                key="data-tables"
+                aria-label={`${selectedVariable} Data`}
+                title={"Tables"}
+                classNames={{ title: "font-extrabold text-gray-600", trigger: "" }}
+              >
+                {isTableLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="flex flex-col items-center gap-3">
+                      <svg className="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      <p className="text-gray-500 text-sm font-semibold">Loading table data...</p>
+                    </div>
+                  </div>
+                ) : (
+                <>
+                <Table
+                  removeWrapper
+                  isCompact
+                  classNames={{ th: "first:rounded-s-md last:rounded-e-md" }}
+                  aria-label={`${selectedVariable} data table`}
+                >
+                  <TableHeader columns={evapColumns}>
+                    {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                  </TableHeader>
+                <TableBody items={evapRows}>
+                  {item => (
+                    <TableRow key={item.key}>
+                      {columnKey => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
+                    </TableRow>
+                  )}
+                </TableBody>
+                </Table>
+                <Table
+                  removeWrapper
+                  isCompact
+                  classNames={{ th: "first:rounded-s-md last:rounded-e-md" }}
+                  aria-label={`${selectedVariable} data table`}
+                >
+                  <TableHeader columns={evapColumns}>
+                    {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                  </TableHeader>
+                <TableBody items={evapRows}>
+                  {item => (
+                    <TableRow key={item.key}>
+                      {columnKey => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
+                    </TableRow>
+                  )}
+                </TableBody>
+                </Table>
+                </>
+                )}
+              </AccordionItem>
+              ) : (
+                <AccordionItem key="Hour-hidden" className="hidden">
+                </AccordionItem>
+              )}
             </Accordion>
+            </div>
           </div>
         </div>
         {/* Resize bar */}
