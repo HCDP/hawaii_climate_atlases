@@ -60,7 +60,7 @@ export default function Downloads() {
           Files for download:
         </p>
         <p>
-          *File will open in a new window.  To save to your computer, right click and go to "Save image as..."
+          *File will open in a new window.  To save to your computer, right click and go to &quot;Save image as...&quot;
         </p>
         <table className="bordered-table">
           <thead>
