@@ -3,7 +3,7 @@ import { FeatureCollection } from "geojson";
 export enum Units {
   IN = 'IN',
   MM = 'MM',
-  Others = 'Others',
+  WM2 = 'WM2',
 }
 
 export enum Period {

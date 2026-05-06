@@ -6,7 +6,7 @@
  */
 
 // Grid hooks
-export { useAETGrids, useAETAllGrids, useAETAllHourGrids } from "./grids";
+export { useAETGrid, useAETAllGrids, useAETAllHourGrids } from "./grids";
 
 // Composite hook
 export { useEvapComposite } from "./composite";

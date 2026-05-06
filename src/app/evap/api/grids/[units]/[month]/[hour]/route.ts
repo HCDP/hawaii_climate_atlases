@@ -11,7 +11,7 @@ const fetcher: Fetcher<AsciiGrid, string> = async (url: string): Promise<AsciiGr
   return res.json();
 }; */
 
-export async function GET(_: NextRequest, { params }: {
+export async function GET(request: NextRequest, { params }: {
   params: {
     units: string,
     month: string,
@@ -25,7 +25,9 @@ export async function GET(_: NextRequest, { params }: {
   const hour: string = params.hour;
   if (!isHour(hour)) return invalidHourResponse;
 
-  const asciiGrids = await getAETGrids({ units, month: Month[month], hour: hour as Hour });
+  const varName = request.nextUrl.searchParams.get('var') ?? 'Evapotranspiration';
+
+  const asciiGrids = await getAETGrids({ units, month: Month[month], hour: hour as Hour, varName });
   if (!asciiGrids) return unableToRetrieveResponse;
 
   return NextResponse.json(asciiGrids, { status: 200 });

@@ -41,3 +41,7 @@ body {
 .bordered-table td {
   @apply p-1 border-1 border-gray-300
 }
+
+.leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.8) !important;
+}

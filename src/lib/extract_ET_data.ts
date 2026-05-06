@@ -1,29 +1,39 @@
-import { AsciiGrid, Period, Month, Hour, Units } from "@/lib/types";
+import { AsciiGrid, Month, Hour, Units } from "@/lib/types";
 import { getCachedFileBuffer } from "@/lib/data_cache";
 import path from "path";
 import JSZip from "jszip";
 
 const CACHE_PATH = path.join('evap', 'raw');
 
-// const BASE_URL = 'https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/';
- 
-const IN_AET_MON_NAME = "AET_in_month_ascii.zip";
-const IN_AET_MON_URL = new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_in_month_ascii.zip');
+const BASE_URL = 'https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/';
 
-const MM_AET_MON_NAME = "AET_mm_month_ascii.zip";
-const MM_AET_MON_URL = new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_mm_month_ascii.zip');
+const FILE_NAMES: Record<string, string> = {
+  'Evapotranspiration': 'AET',
+  'Transpiration': 'Transpiration',
+  'Wet-Canopy Evaporation': 'WetCanopyEvaporation',
+  'Soil Evaporation': 'SoilEvaporation',
+  'Grass Reference Surface Potential ET': 'GrassReferenceET0',
+  'Penman-Monteith Potential ET': 'PenmanET0',
+  'Priestly-Taylor Potential ET': 'PriestlyET0',
+  // 'Latent Heat Flux': 'AET', can't find file (maybe w/m^2)
+};
 
-const IN_AET_ANN_HR_NAME = "AET_in_ann_hr_ascii.zip";
-const IN_AET_ANN_HR_URL = new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_in_ann_hr_ascii.zip');
+// no units in file name (only one unit is used)
+const FILE_NO_UNITS: Record<string, string> = {
+  'Solar Radiation': 'SolarRadiation', // no units
+  'Clear Sky Radiation': 'ClearSkyRadiation',
+  'Cloud Frequency': 'CloudFreq',
+  'Net Radiation': 'RNet',
+  'Air Temperature': 'Tair',
+  'Relative Humidity': 'RH',
+  'Vapor Pressure Deficit': 'VPD',
+};
 
-const MM_AET_ANN_HR_NAME = "AET_mm_ann_hr_ascii.zip";
-const MM_AET_ANN_HR_URL = new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_mm_ann_hr_ascii.zip');
-
-const IN_AET_MON_HR_NAME = "AET_in_month_hr_ascii.zip";
-const IN_AET_MON_HR_URL = new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_in_month_hr_ascii.zip');
-
-const MM_AET_MON_HR_NAME = "AET_mm_month_hr_ascii.zip";
-const MM_AET_MON_HR_URL = new URL('https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/AET_mm_month_hr_ascii.zip');
+// only one file
+const FILE_EXCEPTIONS: Record<string, string> = {
+  'Wind Speed': 'WindSpeed',
+  'Albedo': 'Albedo'
+};
 
 const MONTH_SUFFIX: Record<Month, string> = {
   [Month.January]: 'jan',
@@ -84,6 +94,7 @@ async function fetchAsciiGridData(asciiZip: JSZip, month: Month, hour: Hour): Pr
     .filter(fileName => fileName.endsWith(".txt"))
     .sort();
 
+  // doesn't include varName since the file naming convention is different than the name of the zip file
   const fileName = fileNames.find(name => {
     const matchesMonth = name.includes(MONTH_SUFFIX[month]);
     const matchesHour = name.includes(`${hour}`);
@@ -92,7 +103,7 @@ async function fetchAsciiGridData(asciiZip: JSZip, month: Month, hour: Hour): Pr
     if (hour !== Hour.HR_00 && month !== Month.Annual) {
       return matchesMonth && matchesHour;
     
-    // For annual + hour (e.g. aet_in_01.txt) since annual_hr has it's own zip
+    // For annual + hour (e.g. aetc_in_01.txt) since annual_hr has it's own zip
     } else if (hour !== Hour.HR_00 && month === Month.Annual) {
       return matchesHour;
 
@@ -118,39 +129,50 @@ export async function getAETGrids({
   units,
   month,
   hour,
+  varName,
 }: {
   units: Units,
   month: Month,
   hour: Hour,
+  varName: string,
 }) {
   let fileName, fetchUrl;
 
-  if (units === Units.IN) {
+  let filePrefix = FILE_NAMES[varName];
+  let unitPrefix = units === Units.IN ? 'in' : units === Units.MM ? 'mm' : units === Units.WM2 ? 'wm2' : null;
 
-    // if hour is 00 then we fetch the non hourly ascii files
-    if (hour === Hour.HR_00) {
-      fileName = IN_AET_MON_NAME;
-      fetchUrl = IN_AET_MON_URL;
-    } else if (month === Month.Annual) {
-      fileName = IN_AET_ANN_HR_NAME;
-      fetchUrl = IN_AET_ANN_HR_URL;
-    } else {
-      fileName = IN_AET_MON_HR_NAME;
-      fetchUrl = IN_AET_MON_HR_URL;
-    }
-  } else if (units === Units.MM) {
-    if (hour === Hour.HR_00) {
-      fileName = MM_AET_MON_NAME;
-      fetchUrl = MM_AET_MON_URL;
-    } else if (month === Month.Annual) {
-      fileName = MM_AET_ANN_HR_NAME;
-      fetchUrl = MM_AET_ANN_HR_URL;
-    } else {
-      fileName = MM_AET_MON_HR_NAME;
-      fetchUrl = MM_AET_MON_HR_URL;
-    }
+  // file name convention doesn't work for Latent Heat Flux
+  if (varName === 'Latent Heat Flux') {
+    filePrefix = 'AET';
+    unitPrefix = 'wm2';
+  }
+
+  // some variables don't have unit-specific files (e.g. Solar Radiation)
+  if (!filePrefix) {
+    filePrefix = FILE_NO_UNITS[varName];
+    unitPrefix = ''; // no unit in file name
+  }
+
+  // only one file
+  if (!filePrefix) {
+    filePrefix = FILE_EXCEPTIONS[varName];
+  }
+  
+  if (!filePrefix) {
+    throw new Error(`Variable name ${varName} not found in file mappings.`);
+  }
+
+  if (!unitPrefix) return null;
+
+  if (hour === Hour.HR_00) {
+    fileName = `${filePrefix}_${unitPrefix}_month_ascii.zip`;
+    fetchUrl = new URL(`${BASE_URL}${fileName}`);
+  } else if (month === Month.Annual) {
+    fileName = `${filePrefix}_${unitPrefix}_ann_hr_ascii.zip`;
+    fetchUrl = new URL(`${BASE_URL}${fileName}`);
   } else {
-    return null;
+    fileName = `${filePrefix}_${unitPrefix}_month_hr_ascii.zip`;
+    fetchUrl = new URL(`${BASE_URL}${fileName}`);
   }
 
   const gridsFileBuffer: Buffer | null = await getCachedFileBuffer(fetchUrl, CACHE_PATH, fileName);
@@ -161,7 +183,7 @@ export async function getAETGrids({
   const asciiGrids: AsciiGrid = await JSZip.loadAsync(gridsFileBuffer)
     .then(asciiZip => fetchAsciiGridData(asciiZip, month, hour));
 
-  console.log(`AET zip file used: ${fileName}; units: ${units}; month: ${month}; hour: ${hour}; internal file: ${(asciiGrids.header as any).sourceFileName}`);
+  console.log(`AET zip file used: ${fileName}; units: ${units}; month: ${month}; hour: ${hour}; var: ${varName}; internal file: ${(asciiGrids.header as any).sourceFileName}`);
 
   return asciiGrids;
 }

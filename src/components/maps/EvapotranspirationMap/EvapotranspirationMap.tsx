@@ -39,11 +39,13 @@ const EVAPOTRANSPIRATION_CONFIG: ClimateMapConfig = {
  * EvapotranspirationMap - Interactive map for evapotranspiration data
  * 
  * This component provides ET visualization with:
- * - Grid-based ET values
- * - Unit switching (mm/day vs inches/day)
- * - Period selection (monthly/annual averages)  
+ * - Grid-based ET values (as well as other variables like Transpiration, etc.)
+ * - Unit switching (mm/day vs inches/day)    
+    * - although sometimes only one unit is available for certain variables
+    * - also there's another unit wm2 (w/m^2)
+ * - Month selection (monthly/annual averages)
+ * - Hourly data (00 = All to 24 = specific hour)  
  * - Weather station data overlay
- * - Uncertainty analysis capability
  */
 const EvapotranspirationMap: React.FC = () => {
   return <ClimateMap config={EVAPOTRANSPIRATION_CONFIG} />;

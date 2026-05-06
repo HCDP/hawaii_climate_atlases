@@ -211,7 +211,7 @@ const SideBar: React.FC<{
                 </div>
               </AccordionItem>
               ) : (
-                <AccordionItem key="Hour-hidden" className="hidden">
+                <AccordionItem key="Uncertainty-hidden" className="hidden">
                 </AccordionItem>
               )}
 
@@ -244,7 +244,7 @@ const SideBar: React.FC<{
                 </div>
               </AccordionItem>
               ) : (
-                <AccordionItem key="Hour-hidden" className="hidden">
+                <AccordionItem key="Rainfall-hidden" className="hidden">
                 </AccordionItem>
               )}
 
@@ -282,7 +282,7 @@ const SideBar: React.FC<{
                 )}
               </AccordionItem>
               ) : (
-                <AccordionItem key="Hour-hidden" className="hidden">
+                <AccordionItem key="RainfallData-hidden" className="hidden">
                 </AccordionItem>
               )}
 
@@ -316,7 +316,7 @@ const SideBar: React.FC<{
                 </Table>
               </AccordionItem>
               ) : (
-                <AccordionItem key="Hour-hidden" className="hidden">
+                <AccordionItem key="Station-hidden" className="hidden">
                 </AccordionItem>
               )}
 
@@ -425,7 +425,7 @@ const SideBar: React.FC<{
                 </div>
               </AccordionItem>
               ) : (
-                <AccordionItem key="Hour-hidden" className="hidden">
+                <AccordionItem key="Graph-hidden" className="hidden">
                 </AccordionItem>
               )}
 
@@ -487,7 +487,7 @@ const SideBar: React.FC<{
                 )}
               </AccordionItem>
               ) : (
-                <AccordionItem key="Hour-hidden" className="hidden">
+                <AccordionItem key="EvapData-hidden" className="hidden">
                 </AccordionItem>
               )}
             </Accordion>

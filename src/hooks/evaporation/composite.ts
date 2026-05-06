@@ -1,4 +1,4 @@
-import { useAETGrids } from "./grids";
+import { useAETGrid } from "./grids";
 import { Units, Month, Hour } from "@/lib";
 
 /**
@@ -9,14 +9,14 @@ import { Units, Month, Hour } from "@/lib";
  * 
  * Note: No isohyets for ET data (not applicable)
  */
-export function useEvapComposite(selectedUnits: Units, selectedMonth: Month = Month.Annual, selectedHour: Hour = Hour.HR_00) {
+export function useEvapComposite(selectedUnits: Units, selectedMonth: Month = Month.Annual, selectedHour: Hour = Hour.HR_00, varName: string = 'Evapotranspiration') {
   // Convert Month enum value (e.g. "jan") to key name (e.g. "January") for the API URL
   const monthKeyName = Object.entries(Month).find(([_, value]) => value === selectedMonth)?.[0] ?? selectedMonth;
 
   const {
     asciiGrid,
     isLoading: gridsLoading,
-  } = useAETGrids(selectedUnits, monthKeyName, selectedHour);
+  } = useAETGrid(selectedUnits, monthKeyName, selectedHour, varName);
   
   const allDataLoaded =
     !!asciiGrid;

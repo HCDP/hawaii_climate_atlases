@@ -184,6 +184,8 @@ interface Props {
   isLoading: boolean,
   gridsAreLoading: boolean,
   minimap: boolean,
+  setInteractionPaused?: (paused: boolean) => void,
+  initialBackgroundLoadComplete?: boolean,
 }
 
 const MapOverlay: React.FC<Props> = (
@@ -214,7 +216,9 @@ const MapOverlay: React.FC<Props> = (
     setShowUncertainty,
     isLoading,
     gridsAreLoading,
-    minimap
+    minimap,
+    setInteractionPaused,
+    initialBackgroundLoadComplete = true,
   }
 ) => {
   const { maximized, setMaximized } = useContext(LayoutContext);
@@ -250,6 +254,14 @@ const MapOverlay: React.FC<Props> = (
   const [monthListOpen, setMonthListOpen] = useState(false);
   const [hourListOpen, setHourListOpen] = useState(false);
   const [variableListOpen, setVariableListOpen] = useState(false);
+  const [unitListOpen, setUnitListOpen] = useState(false);
+
+  // Pause background grid prefetching while any dropdown is open so the menu stays responsive.
+  const anyDropdownOpen =
+    basemapListOpen || periodListOpen || monthListOpen || hourListOpen || variableListOpen || unitListOpen;
+  useEffect(() => {
+    setInteractionPaused?.(anyDropdownOpen);
+  }, [anyDropdownOpen, setInteractionPaused]);
 
   // Variable options defined locally in MapOverlay
   const variableOptions = 
@@ -269,9 +281,10 @@ const MapOverlay: React.FC<Props> = (
       'Air Temperature',
       'Relative Humidity',
       'Vapor Pressure Deficit',
-      'Wind Speed',
-      'Rainfall'
+      'Wind Speed'
     ];
+
+    const unitOptions = Object.values(Units);
 
   // Hours 01-24 and ALL for hour selection
   const hours = Object.values(Hour);
@@ -288,6 +301,18 @@ const MapOverlay: React.FC<Props> = (
     return entry ? entry[0] : monthNames[0];
   })();
 
+  // used in order to display the units that are available
+  // there are some extra variables refer to the archive:
+  // https://atlas.uhtapis.org/evapo/assets/files/PDF/Metadata_Grids_ET.pdf
+  const allVars = ['Transpiration', 'Wet-Canopy Evaporation', 'Soil Evaporation', 'Grass Reference Surface Potential ET', 'Penman-Monteith Potential ET', 'Priestly-Taylor Potential ET'];
+  const isAllVar = allVars.includes(selectedVariable);
+  const wm2Vars = ['Solar Radiation', 'Clear Sky Radiation', 'Cloud Frequency', 'Net Radiation', 'Latent Heat Flux', 'Diffuse Radiation', 'Downward Longwave Radiation'];
+  const isWm2Var = wm2Vars.includes(selectedVariable);
+  const tempVars = ['Air Temperature', 'Surface Temperature'];
+  const isTempVar = tempVars.includes(selectedVariable);
+  const percentVars = ['Albedo', 'Relative Humidity', 'Available Soil Moisture', 'Cloud Frequency'];
+  const isPercentVar = percentVars.includes(selectedVariable);
+  const onlyMmInVars = 'Evapotranspiration' == selectedVariable;
 
   const minimapControl = useMemo(
     () => {
@@ -446,7 +471,7 @@ const MapOverlay: React.FC<Props> = (
                 aria-label="Map controls"
                 classNames={{
                   base: "rounded-lg shadow-md mb-0 z-10",
-                  wrapper: "rounded-lg",
+                  wrapper: "rounded-lg bg-white/80",
                 }}
               >
                 <TableHeader>
@@ -454,14 +479,15 @@ const MapOverlay: React.FC<Props> = (
                   <TableColumn>Options</TableColumn>
                 </TableHeader>
                 <TableBody>
-                  <TableRow key="Units">
-                    <TableCell><p className="text-base">Units: </p></TableCell>
-                    <TableCell>
-                      <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
-                        {/* Disabled unit switching until inch grids are fully loaded. Otherwise, loading speeds
+                  {onlyMmInVars ? (
+                    <TableRow key="Units">
+                      <TableCell><p className="text-base">Units: </p></TableCell>
+                      <TableCell>
+                        <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
+                          {/* Disabled unit switching until inch grids are fully loaded. Otherwise, loading speeds
                           are slower because mm grids also start fetching, forcing the user to wait longer
                           before accessing other layers. */}
-                        {Object.keys(Units).map(u => (
+                        {([Units.IN, Units.MM] as Units[]).map(u => (
                           <Button
                             isDisabled={gridsAreLoading && selectedUnits == Units.IN}
                             key={u}
@@ -475,6 +501,67 @@ const MapOverlay: React.FC<Props> = (
                       </ButtonGroup>
                     </TableCell>
                   </TableRow>
+                  ) : isAllVar ? (
+                    <TableRow key="Units">
+                      <TableCell><p className="text-base">Units: </p></TableCell>
+                      <TableCell>
+                        <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
+                          {/* Disabled unit switching until inch grids are fully loaded. Otherwise, loading speeds
+                          are slower because mm grids also start fetching, forcing the user to wait longer
+                          before accessing other layers. */}
+                          <Button disableRipple disableAnimation className="w-[120px]">
+                            {selectedUnits.toLocaleLowerCase()}
+                          </Button>
+                          <Dropdown isOpen={unitListOpen} onOpenChange={(open) => setUnitListOpen(open)}>
+                            <DropdownTrigger>
+                              <Button isIconOnly>
+                                <DropdownChevron isOpen={unitListOpen}/>
+                              </Button>
+                            </DropdownTrigger>
+                            {/* When changing to a variable that only uses wm2 units, it will set it once the user picks that variable */}
+                            <DropdownMenu
+                              className="max-h-[200px] overflow-y-auto"
+                              aria-label="Variable Selector"
+                              onAction={(key) => {
+                                const unit = key as Units;
+                                setSelectedUnits(unit);
+                              }}
+                            >
+                              {unitOptions.map((unit) => (
+                                <DropdownItem
+                                  key={unit}
+                                  className="hover:outline-white hover:bg-gray-100"
+                                >
+                                  {unit.toLocaleLowerCase()}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
+                          </Dropdown>
+                      </ButtonGroup>
+                    </TableCell>
+                  </TableRow>
+                  ) : isWm2Var ? (
+                    <TableRow key="Units">
+                      <TableCell><p className="text-base">Units: </p></TableCell>
+                      <TableCell>
+                        <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
+                          <Button
+                            key={'wm2'}
+                            variant={"bordered"}
+                            onPress={() => setSelectedUnits(Units.WM2)}
+                            className={"bg-gray-400"}
+                          >
+                            {'W/M^2'}
+                          </Button>
+                        </ButtonGroup>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    <TableRow key="Units-hidden" className="hidden">
+                      <TableCell>{null}</TableCell>
+                      <TableCell>{null}</TableCell>
+                    </TableRow>
+                  )}
 
                   {/* enableRainfall is used to show the variables that change for rainfall data */}
                   {enableRainfall ? (
@@ -559,16 +646,15 @@ const MapOverlay: React.FC<Props> = (
                   )}
 
                   <TableRow key="Basemap">
-                    <TableCell><p className="text-base pb-[4px] pt-[1.5vh]">Basemap: </p></TableCell>
-                    <TableCell className="pb-[12px] pt-[2.5vh]">
+                    <TableCell><p className="text-base pb-[4px] pt-[0.5vh]">Basemap: </p></TableCell>
+                    <TableCell className="pb-[12px] pt-[0.5vh]">
                       <ButtonGroup variant="bordered" size="sm" disableRipple>
                         <Button disableRipple disableAnimation className="w-[120px]">
                           {tileLayerProps.name}
                         </Button>
                         <Dropdown isOpen={basemapListOpen} onOpenChange={(open) => setBasemapListOpen(open)}>
                           <DropdownTrigger>
-                            {/* Since menu won't render while grids are loading, disable for now */}
-                            <Button isIconOnly isDisabled={gridsAreLoading}>
+                            <Button isIconOnly>
                               <DropdownChevron isOpen={basemapListOpen}/>
                             </Button>
                           </DropdownTrigger>
@@ -639,11 +725,11 @@ const MapOverlay: React.FC<Props> = (
 
                   {enableEvap ? (
                     <TableRow key="Variable">
-                      <TableCell><p className="text-base pt-[1.95vh]">Variable: </p></TableCell>
-                      <TableCell className="pt-[2.5vh]">
+                      <TableCell><p className="text-base pt-[0.5vh]">Variable: </p></TableCell>
+                      <TableCell className="pt-[0.5vh]">
                         <ButtonGroup variant="bordered" size="sm" disableRipple>
                           <Button disableRipple disableAnimation className="w-[120px]">
-                            {selectedVariable || variableOptions[0]}
+                            {!initialBackgroundLoadComplete ? 'Loading...' : (selectedVariable || variableOptions[0])}
                           </Button>
                           <Dropdown isOpen={variableListOpen} onOpenChange={(open) => setVariableListOpen(open)}>
                             <DropdownTrigger>
@@ -651,10 +737,19 @@ const MapOverlay: React.FC<Props> = (
                                 <DropdownChevron isOpen={variableListOpen}/>
                               </Button>
                             </DropdownTrigger>
+                            {/* When changing to a variable that only uses wm2 units, it will set it once the user picks that variable */}
                             <DropdownMenu
                               className="max-h-[200px] overflow-y-auto"
                               aria-label="Variable Selector"
-                              onAction={(key) => setSelectedVariable?.(String(key))}
+                              onAction={(key) => {
+                                const varName = String(key);
+                                setSelectedVariable?.(varName);
+                                if (wm2Vars.includes(varName)) {
+                                  setSelectedUnits(Units.WM2);
+                                } else if (allVars.includes(varName) && selectedUnits === Units.WM2) {
+                                  setSelectedUnits(Units.IN);
+                                }
+                              }}
                             >
                               {variableOptions.map((variable) => (
                                 <DropdownItem
@@ -678,11 +773,11 @@ const MapOverlay: React.FC<Props> = (
 
                   {enableEvap ? (
                     <TableRow key="Month">
-                      <TableCell><p className="text-base pt-[1.95vh]">Months: </p></TableCell>
-                      <TableCell className="pt-[2.5vh]">
+                      <TableCell><p className="text-base pt-[0.5vh]">Months: </p></TableCell>
+                      <TableCell className="pt-[0.5vh]">
                         <ButtonGroup variant="bordered" size="sm" disableRipple>
                           <Button disableRipple disableAnimation className="w-[120px]">
-                            {selectedMonthDisplay}
+                            {!initialBackgroundLoadComplete ? 'Loading...' : selectedMonthDisplay}
                           </Button>
                           <Dropdown isOpen={monthListOpen} onOpenChange={(open) => setMonthListOpen(open)}>
                             <DropdownTrigger>
@@ -717,11 +812,11 @@ const MapOverlay: React.FC<Props> = (
 
                   {enableEvap ? (
                     <TableRow key="Hour">
-                      <TableCell><p className="text-base pt-[1.95vh]">Hour: </p></TableCell>
-                      <TableCell className="pt-[2.5vh]">
+                      <TableCell><p className="text-base pt-[0.5vh]">Hour: </p></TableCell>
+                      <TableCell className="pt-[0.5vh]">
                         <ButtonGroup variant="bordered" size="sm" disableRipple>
                           <Button disableRipple disableAnimation className="w-[120px]">
-                            {selectedHour}
+                            {!initialBackgroundLoadComplete ? 'Loading...' : selectedHour}
                           </Button>
                           <Dropdown isOpen={hourListOpen} onOpenChange={(open) => setHourListOpen(open)}>
                             <DropdownTrigger>

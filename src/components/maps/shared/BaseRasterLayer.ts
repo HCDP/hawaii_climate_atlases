@@ -13,7 +13,7 @@ export interface RasterOptions {
 }
 
 /**
- * Computes the [min, max] range from an ASCII grid's values, excluding NODATA.
+ * Computes the [min, max] range from an ASCII grid's values in order to be used for color scale since it's non-linear
  */
 export function computeGridRange(asciiGrid: AsciiGrid): [number, number] {
   const nodata = asciiGrid.header.NODATA_value;
@@ -139,19 +139,18 @@ export const createBaseRasterLayer = (layerName: string) => {
       // Default color scheme is rainbow if no scheme is specified
       const colorScheme = this.options.colorScheme || ['red', 'yellow', 'green', 'blue', 'purple', 'indigo'];
       const range = this.options.colorScale.range;
-        // Build chroma scale using explicit domain, optional padding, and optional gamma.
-        let colorScale = chroma
-          .scale(colorScheme)
-          .domain(range)
-          .padding(this.options.colorPadding ?? 0)
-          .gamma(this.options.colorGamma ?? 1);
+        
+      // Build chroma scale using explicit domain, optional padding, and optional gamma.
+      let colorScale = chroma
+        .scale(colorScheme)
+        .domain(range)
+        .padding(this.options.colorPadding ?? 0)
+        .gamma(this.options.colorGamma ?? 1);
 
       let span = range[1] - range[0];
       let interval = span / 500; // 500 = numColors
       let value: number;
       let i: number;
-
-      const debugMapping = []; // For debugging: log value-color mappings
 
       for (i = 0, value = range[0]; i < 500; i++, value += interval) {
         let color: Color = { r: 0, g: 0, b: 0, a: 0 };
