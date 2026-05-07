@@ -14,8 +14,7 @@ export function middleware(request: NextRequest) {
       pathname.startsWith("/rainfall") ||
       pathname.startsWith("/evap") ||
       pathname.startsWith("/climate") ||
-      pathname.startsWith("/solarradiation") ||
-      pathname.startsWith("/evapotranspiration")
+      pathname.startsWith("/solarradiation")
     ) {
       return NextResponse.next();
     }
@@ -28,8 +27,12 @@ export function middleware(request: NextRequest) {
       case "rainfall.geography.hawaii.edu":
         rewriteUrl.pathname = "/rainfall" + cleanPath;
         return NextResponse.rewrite(rewriteUrl);
+
+      // changed to /evap in order to have evapotranspiration.geography.hawaii.edu:3000/ work in dev
+      // you can type in /rainfall if you still want to check that nothing was affected
       case "localhost":
-        rewriteUrl.pathname = "/rainfall" + cleanPath;
+        rewriteUrl.pathname = "/evap" + cleanPath;
+
         return NextResponse.rewrite(rewriteUrl);
       case "climate.geography.hawaii.edu":
         rewriteUrl.pathname = "/climate" + cleanPath;
@@ -38,7 +41,7 @@ export function middleware(request: NextRequest) {
         rewriteUrl.pathname = "/solarradiation" + cleanPath;
         return NextResponse.rewrite(rewriteUrl);
       case "evapotranspiration.geography.hawaii.edu":
-        rewriteUrl.pathname = "/evapotranspiration" + cleanPath;
+        rewriteUrl.pathname = "/evap" + cleanPath;
         return NextResponse.rewrite(rewriteUrl);
       default:
         rewriteUrl.pathname = "/rainfall" + cleanPath;

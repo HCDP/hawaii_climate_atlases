@@ -540,6 +540,29 @@ export const StationIcons = ({
   return null;
 }
 
+const DEFAULT_RANGES_IN: [number, number][] = [
+  [0.8, 32.2], [0.4, 26.4], [0.6, 51.9], [0.3, 38.5], [0.1, 30.7], [0, 32.8],
+  [0, 38.7], [0, 34.7], [0, 30.1], [0.3, 38.3], [0.7, 38.6], [0.6, 36.4], [8, 404.4]
+];
+
+const DEFAULT_RANGES_MM: [number, number][] = [
+  [21, 818], [11, 669], [16, 1323], [7, 978], [2, 777], [0, 833],
+  [0, 984], [1, 881], [1, 764], [8, 973], [19, 980], [14, 921], [204, 10271]
+];
+
+const UNCERTAINTY_RANGES_IN: [number, number][] = [
+  [0.0005019, 3.354232], [0.0014641, 2.839714], [0.0009792, 4.090142], [0.0001895, 11.3037],
+  [0.0007213, 2.740073], [0.0008297, 3.273416], [0.0001819, 3.422752], [0.00446305, 3.086848],
+  [0.0007306, 2.773549], [0.0011364, 2.597468], [0.004848769, 3.840706], [0.001260578, 3.433185],
+  [0.05284176, 11.87222]
+];
+
+const UNCERTAINTY_RANGES_MM: [number, number][] = [
+  [0.01274, 85.18], [0.0371, 72.09], [0.0248, 103.89], [0.0048, 287.11], [0.0183, 69.58],
+  [0.0210, 83.14], [0.0046, 86.98], [0.1134, 78.41], [0.0185, 70.47], [0.0289, 65.92],
+  [0.1232, 97.51], [0.0320, 87.18], [1.3422, 301.5]
+];
+
 interface ClimateMapProps {
   config?: ClimateMapConfig;
 }
@@ -651,20 +674,15 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     ? (selectedUnits === Units.IN ? evapHourlyGridsIN : evapHourlyGridsMM)
     : evapHourlyGridsIN;
 
-  // Default data ranges (rainfall fallback)
-  const defaultRanges_IN: [number, number][] = [
-    [0.8, 32.2], [0.4, 26.4], [0.6, 51.9], [0.3, 38.5], [0.1, 30.7], [0, 32.8],
-    [0, 38.7], [0, 34.7], [0, 30.1], [0.3, 38.3], [0.7, 38.6], [0.6, 36.4], [8, 404.4]
-  ];
-
-  const defaultRanges_MM: [number, number][] = [
-    [21, 818], [11, 669], [16, 1323], [7, 978], [2, 777], [0, 833],
-    [0, 984], [1, 881], [1, 764], [8, 973], [19, 980], [14, 921], [204, 10271]
-  ];
-
   // Use config-provided ranges if available, otherwise fall back to defaults
-  const ranges_IN = mergedConfig.dataRanges?.IN ?? defaultRanges_IN;
-  const ranges_MM = mergedConfig.dataRanges?.MM ?? defaultRanges_MM;
+  const ranges_IN = useMemo(
+    () => config?.dataRanges?.IN ?? DEFAULT_RANGES_IN,
+    [config?.dataRanges?.IN]
+  );
+  const ranges_MM = useMemo(
+    () => config?.dataRanges?.MM ?? DEFAULT_RANGES_MM,
+    [config?.dataRanges?.MM]
+  );
 
   // Compute dynamic range from the current evap grid (used when evap is enabled)
   const evapComputedRange: [number, number] | undefined = useMemo(() => {
@@ -673,19 +691,6 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     }
     return undefined;
   }, [enableEvap, evapData?.asciiGrid]);
-
-  const uncertainty_ranges_IN: [number, number][] = [
-    [0.0005019, 3.354232], [0.0014641, 2.839714], [0.0009792, 4.090142], [0.0001895, 11.3037],
-    [0.0007213, 2.740073], [0.0008297, 3.273416], [0.0001819, 3.422752], [0.00446305, 3.086848],
-    [0.0007306, 2.773549], [0.0011364, 2.597468], [0.004848769, 3.840706], [0.001260578, 3.433185],
-    [0.05284176, 11.87222]
-  ];
-
-  const uncertainty_ranges_MM: [number, number][] = [
-    [0.01274, 85.18], [0.0371, 72.09], [0.0248, 103.89], [0.0048, 287.11], [0.0183, 69.58],
-    [0.0210, 83.14], [0.0046, 86.98], [0.1134, 78.41], [0.0185, 70.47], [0.0289, 65.92],
-    [0.1232, 97.51], [0.0320, 87.18], [1.3422, 301.5]
-  ];
 
   // Determine loading states
   const rainfallIsLoading = enableDualLoading 
@@ -757,12 +762,12 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
         }}
       />
     );
-  }, [showGrids, showUncertainty, enableEvap, currentRainfallData.asciiGrid, selectedUnits, selectedPeriod, selectedMonth, selectedHour, rainfallIsLoading]);
+  }, [showGrids, showUncertainty, enableEvap, currentRainfallData.asciiGrid, selectedUnits, selectedPeriod, selectedMonth, selectedHour, rainfallIsLoading, ActiveColorLayer, ranges_IN, ranges_MM]);
 
   const uncertaintyLayer = useMemo(() => {
     if (!showUncertainty || !currentUncertaintyData.asciiGrid || uncertaintyIsLoading) return null;
     
-    const range = selectedUnits === Units.IN ? uncertainty_ranges_IN[selectedPeriod] : uncertainty_ranges_MM[selectedPeriod];
+    const range = selectedUnits === Units.IN ? UNCERTAINTY_RANGES_IN[selectedPeriod] : UNCERTAINTY_RANGES_MM[selectedPeriod];
     
     return (
       <UncertaintyColorLayer
@@ -856,7 +861,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
   const activeRanges = enableEvap
     ? (evapComputedRange ? [evapComputedRange] : (selectedUnits === Units.IN ? ranges_IN : ranges_MM))
     : showUncertainty
-      ? (selectedUnits === Units.IN ? uncertainty_ranges_IN : uncertainty_ranges_MM)
+      ? (selectedUnits === Units.IN ? UNCERTAINTY_RANGES_IN : UNCERTAINTY_RANGES_MM)
       : (selectedUnits === Units.IN ? ranges_IN : ranges_MM);
 
   return (
