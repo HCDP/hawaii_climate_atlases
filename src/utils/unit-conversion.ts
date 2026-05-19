@@ -84,15 +84,15 @@ export class DataManager {
       switch (type) {
         case 'grids':
           return this.loadWithDeduplication(key, () => 
-            fetch(`/api/grids/${units}/${period !== undefined ? Period[period] : ''}`).then(res => res.json())
+            fetch(`/rainfall/api/grids/${units}/${period !== undefined ? Period[period] : ''}`).then(res => res.json())
           );
         case 'uncertainty':
           return this.loadWithDeduplication(key, () => 
-            fetch(`/api/uncertainty-grids/${units}/${Period[period!]}`).then(res => res.json())
+            fetch(`/rainfall/api/uncertainty-grids/${units}/${Period[period!]}`).then(res => res.json())
           );
         case 'isohyets':
           return this.loadWithDeduplication(key, () => 
-            fetch(`/api/isohyets/${units}`).then(res => res.json())
+            fetch(`/rainfall/api/isohyets/${units}`).then(res => res.json())
           );
         default:
           return Promise.resolve();
@@ -172,15 +172,15 @@ export class DataManager {
     switch (type) {
       case 'grids':
         return this.loadWithDeduplication(key, () => 
-          fetch(`/api/grids/${units}/${period !== undefined ? Period[period] : ''}`).then(res => res.json())
+          fetch(`/rainfall/api/grids/${units}/${period !== undefined ? Period[period] : ''}`).then(res => res.json())
         );
       case 'uncertainty':
         return this.loadWithDeduplication(key, () => 
-          fetch(`/api/uncertainty-grids/${units}/${Period[period!]}`).then(res => res.json())
+          fetch(`/rainfall/api/uncertainty-grids/${units}/${Period[period!]}`).then(res => res.json())
         );
       case 'isohyets':
         return this.loadWithDeduplication(key, () => 
-          fetch(`/api/isohyets/${units}`).then(res => res.json())
+          fetch(`/rainfall/api/isohyets/${units}`).then(res => res.json())
         );
       default:
         return Promise.resolve();

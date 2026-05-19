@@ -14,7 +14,7 @@ export function useRainfallGrids(units: string, period: string): {
   error: Error | undefined;
 } {
   const { data, isLoading, error } = useSWRImmutable<AsciiGrid, Error>(
-    `/api/grids/${units}/${period}`, 
+    `/rainfall/api/grids/${units}/${period}`, 
     fetcher
   );
   return {

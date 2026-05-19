@@ -15,7 +15,7 @@ export function useRainfallStations(filter?: string): {
   error: Error | undefined;
 } {
   const { data, isLoading, error } = useSWRImmutable<Station[], Error>(
-    `/api/stations${filter ? `?filter=${filter}` : ""}`, 
+    `/rainfall/api/stations${filter ? `?filter=${filter}` : ""}`, 
     fetcher, 
     {
       keepPreviousData: true

@@ -15,7 +15,7 @@ const FILE_NAMES: Record<string, string> = {
   'Grass Reference Surface Potential ET': 'GrassReferenceET0',
   'Penman-Monteith Potential ET': 'PenmanET0',
   'Priestly-Taylor Potential ET': 'PriestlyET0',
-  // 'Latent Heat Flux': 'AET', can't find file (maybe w/m^2)
+  // 'Latent Energy': 'AET', uses AET wm2 files
 };
 
 // no units in file name (only one unit is used)
@@ -141,8 +141,8 @@ export async function getAETGrids({
   let filePrefix = FILE_NAMES[varName];
   let unitPrefix = units === Units.IN ? 'in' : units === Units.MM ? 'mm' : units === Units.WM2 ? 'wm2' : null;
 
-  // file name convention doesn't work for Latent Heat Flux
-  if (varName === 'Latent Heat Flux') {
+  // Latent Energy uses AET wm2 files
+  if (varName === 'Latent Energy') {
     filePrefix = 'AET';
     unitPrefix = 'wm2';
   }

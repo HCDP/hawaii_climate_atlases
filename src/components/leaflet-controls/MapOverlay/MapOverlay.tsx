@@ -266,7 +266,7 @@ const MapOverlay: React.FC<Props> = (
   // Variable options defined locally in MapOverlay
   const variableOptions = 
     ['Evapotranspiration', 
-      'Latent Heat Flux', 
+      'Latent Energy', 
       'Transpiration', 
       'Wet-Canopy Evaporation', 
       'Soil Evaporation', 
@@ -306,7 +306,7 @@ const MapOverlay: React.FC<Props> = (
   // https://atlas.uhtapis.org/evapo/assets/files/PDF/Metadata_Grids_ET.pdf
   const allVars = ['Transpiration', 'Wet-Canopy Evaporation', 'Soil Evaporation', 'Grass Reference Surface Potential ET', 'Penman-Monteith Potential ET', 'Priestly-Taylor Potential ET'];
   const isAllVar = allVars.includes(selectedVariable);
-  const wm2Vars = ['Solar Radiation', 'Clear Sky Radiation', 'Cloud Frequency', 'Net Radiation', 'Latent Heat Flux', 'Diffuse Radiation', 'Downward Longwave Radiation'];
+  const wm2Vars = ['Solar Radiation', 'Clear Sky Radiation', 'Cloud Frequency', 'Net Radiation', 'Latent Energy', 'Diffuse Radiation', 'Downward Longwave Radiation'];
   const isWm2Var = wm2Vars.includes(selectedVariable);
   const tempVars = ['Air Temperature', 'Surface Temperature'];
   const isTempVar = tempVars.includes(selectedVariable);

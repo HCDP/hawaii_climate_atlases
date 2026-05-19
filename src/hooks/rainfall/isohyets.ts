@@ -14,7 +14,7 @@ export function useRainfallIsohyets(units: string): {
   error: Error | undefined;
 } {
   const { data, isLoading, error } = useSWRImmutable<FeatureCollection[], Error>(
-    `/api/isohyets/${units}`, 
+    `/rainfall/api/isohyets/${units}`, 
     fetcher, 
     {
       keepPreviousData: true
