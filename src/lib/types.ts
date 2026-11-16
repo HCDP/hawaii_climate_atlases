@@ -66,6 +66,10 @@ export enum Hour {
   HR_24 = '24', 
 }
 
+export const SOLAR_RADIATION_HOURS = Object.values(Hour).filter(
+  hour => hour !== Hour.HR_00 && Number(hour) >= 6 && Number(hour) <= 20
+);
+
 export interface Station {
   SKN: number,
   Name: string,

@@ -222,8 +222,10 @@ export const PopupOnClick = (
   {
     isLoading,
     selectedUnits,
+    units,
     selectedPeriod,
     selectedMonth,
+    selectedHour,
     selectedVarName,
     selectedStation,
     setSelectedStation,
@@ -237,8 +239,10 @@ export const PopupOnClick = (
   }: {
     isLoading: boolean,
     selectedUnits: Units,
+    units: string,
     selectedPeriod: Period,
     selectedMonth: Month,
+    selectedHour: Hour,
     selectedVarName: string,
     selectedStation?: Station | null,
     setSelectedStation?: (station: Station | null) => void,
@@ -333,8 +337,10 @@ export const PopupOnClick = (
                 <hr />
               </>
             )}
-            {enableRainfall && (isLoading ? `Loading mean ${periodText} rainfall values (in ${selectedUnits.toLocaleLowerCase()})...` : `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`)}
-            {enableEvap && (isLoading ? `Loading ${selectedMonthText} ${selectedVarName} values (in ${selectedUnits.toLocaleLowerCase()})...` : `${selectedMonthText} ${selectedVarName}: ${gridValue.toFixed(4)} ${selectedUnits.toLocaleLowerCase()}`)}
+            {enableRainfall && (isLoading ? `Loading mean ${periodText} rainfall values (in ${units})...` : `Mean ${periodText} rainfall: ${gridValue.toFixed(4)} ${units}`)}
+            {enableEvap && (isLoading
+              ? `Loading ${selectedMonthText} ${selectedVarName} values${selectedHour === Hour.HR_00 ? '' : ` for hour ${selectedHour}`} (in ${units})...`
+              : `${selectedMonthText} ${selectedVarName}${selectedHour === Hour.HR_00 ? '' : ` at hour ${selectedHour}`}: ${gridValue.toFixed(4)} ${units}`)}
           </div>
         </Popup>
       )}
@@ -865,6 +871,11 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
     : showUncertainty
       ? (selectedUnits === Units.IN ? UNCERTAINTY_RANGES_IN : UNCERTAINTY_RANGES_MM)[selectedPeriod]
       : (selectedUnits === Units.IN ? ranges_IN : ranges_MM)[selectedPeriod];
+  const displayUnits = selectedVariable === 'Cloud Frequency'
+    ? '%'
+    : selectedVariable === 'Wind Speed'
+      ? 'm/s'
+      : selectedUnits === Units.WM2 ? 'W/m²' : selectedUnits.toLocaleLowerCase();
 
   return (
     <div className="flex w-full h-full max-h-full">
@@ -883,7 +894,7 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
         selectedGridIndex={selectedGridIndex}
         location={location}
         range={activeRanges[selectedPeriod]}
-        units={showUncertainty ? (selectedUnits === Units.IN ? 'in²' : 'mm²') : (selectedUnits === Units.IN ? 'in' : 'mm')}
+        units={showUncertainty ? (selectedUnits === Units.IN ? 'in²' : 'mm²') : displayUnits}
         dataMode={mode}
         isLoading={evapLoadingGraph}
         isTableLoading={evapLoadingTable}
@@ -919,8 +930,10 @@ const ClimateMap: React.FC<ClimateMapProps> = ({ config = DEFAULT_CONFIG }) => {
               isLoading={isLoading}
               grid={activeGrid}
               selectedUnits={selectedUnits}
+              units={displayUnits}
               selectedPeriod={selectedPeriod}
               selectedMonth={selectedMonth}
+              selectedHour={selectedHour}
               selectedStation={enableStations ? selectedStation : undefined}
               setSelectedStation={enableStations ? setSelectedStation : undefined}
               location={location}

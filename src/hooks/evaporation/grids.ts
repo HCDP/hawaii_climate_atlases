@@ -2,8 +2,11 @@ import { Fetcher } from "swr";
 import useSWRImmutable from "swr/immutable";
 import { AsciiGrid, Units, Period, Hour } from "@/lib";
 
-const fetcher: Fetcher<AsciiGrid, string> = (url: string): Promise<AsciiGrid> => 
-  fetch(url).then(res => res.json());
+const fetcher: Fetcher<AsciiGrid, string> = async (url: string): Promise<AsciiGrid> => {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Failed to fetch grid: ${response.status}`);
+  return response.json();
+};
 
 export type AETPointValues = {
   monthly: (number | null)[];

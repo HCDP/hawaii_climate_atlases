@@ -26,6 +26,18 @@ export async function GET(request: NextRequest, { params }: {
   if (!isHour(hour)) return invalidHourResponse;
 
   const varName = request.nextUrl.searchParams.get('var') ?? 'Evapotranspiration';
+  if (varName === 'Clear Sky Radiation' && hour === Hour.HR_00) {
+    return NextResponse.json(
+      { error: 'Monthly-average grids are not available for Clear Sky Radiation.' },
+      { status: 400 },
+    );
+  }
+  if (varName === 'Wind Speed' && (Month[month] !== Month.Annual || hour === Hour.HR_00)) {
+    return NextResponse.json(
+      { error: 'Only annual hourly grids are available for Wind Speed.' },
+      { status: 400 },
+    );
+  }
 
   const asciiGrids = await getAETGrids({ units, month: Month[month], hour: hour as Hour, varName });
   if (!asciiGrids) return unableToRetrieveResponse;

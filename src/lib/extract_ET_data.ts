@@ -1,4 +1,4 @@
-import { AsciiGrid, Month, Hour, Units } from "@/lib/types";
+import { AsciiGrid, Month, Hour, Units, SOLAR_RADIATION_HOURS } from "@/lib/types";
 import { getCachedFileBuffer } from "@/lib/data_cache";
 import path from "path";
 import JSZip from "jszip";
@@ -8,6 +8,9 @@ const CACHE_PATH = path.join('evap', 'raw');
 const BASE_URL = 'https://atlas.uhtapis.org/evapo/assets/files/AsciiFiles/';
 const MAX_CACHED_ARCHIVES = 3;
 const archiveCache = new Map<string, Promise<JSZip | null>>();
+const CLEAR_SKY_RADIATION_DATA_HOURS = Object.values(Hour).filter(
+  hour => hour !== Hour.HR_00 && Number(hour) >= 6 && Number(hour) <= 20
+);
 
 const FILE_NAMES: Record<string, string> = {
   'Evapotranspiration': 'AET',
@@ -29,11 +32,11 @@ const FILE_NO_UNITS: Record<string, string> = {
   'Air Temperature': 'Tair',
   'Relative Humidity': 'RH',
   'Vapor Pressure Deficit': 'VPD',
+  'Wind Speed': 'WindSpeed',
 };
 
 // only one file
 const FILE_EXCEPTIONS: Record<string, string> = {
-  'Wind Speed': 'WindSpeed',
   'Albedo': 'Albedo'
 };
 
@@ -125,6 +128,30 @@ async function fetchAsciiGridData(asciiZip: JSZip, month: Month, hour: Hour): Pr
   return asciiGrids;
 }
 
+async function fetchZeroClearSkyRadiationGrid(asciiZip: JSZip, month: Month): Promise<AsciiGrid> {
+  const fileNames = Object.keys(asciiZip.files)
+    .filter(fileName =>
+      fileName.endsWith(".txt") &&
+      fileName.includes(MONTH_SUFFIX[month]) &&
+      CLEAR_SKY_RADIATION_DATA_HOURS.some(hour => fileName.includes(`_${hour}.`))
+    )
+    .sort();
+
+  for (const fileName of fileNames) {
+    const dataAsText = await asciiZip.files[fileName].async("string");
+    if (!dataAsText.trimStart().startsWith("ncols")) continue;
+
+    const grid = grabAsciiData(dataAsText);
+    for (const index of Object.keys(grid.values)) {
+      grid.values[Number(index)] = 0;
+    }
+    grid.header.sourceFileName = fileName;
+    return grid;
+  }
+
+  throw new Error(`No clear-sky radiation grid available to create nighttime values for ${month}.`);
+}
+
 function getAsciiArchive(fileName: string, fetchUrl: URL): Promise<JSZip | null> {
   const cachedArchive = archiveCache.get(fileName);
   if (cachedArchive) {
@@ -186,6 +213,13 @@ function getAsciiPointValue(dataAsText: string, latitude: number, longitude: num
   return Number.isFinite(value) && value !== nodataValue ? value : null;
 }
 
+function convertCloudFrequencyGridToPercent(grid: AsciiGrid): AsciiGrid {
+  for (const index of Object.keys(grid.values)) {
+    grid.values[Number(index)] *= 100;
+  }
+  return grid;
+}
+
 function getAETArchiveSource(units: Units, month: Month, hour: Hour, varName: string) {
   let filePrefix = FILE_NAMES[varName];
   let unitPrefix: string | null = units === Units.IN ? 'in' : units === Units.MM ? 'mm' : units === Units.WM2 ? 'wm2' : null;
@@ -200,13 +234,14 @@ function getAETArchiveSource(units: Units, month: Month, hour: Hour, varName: st
   }
   if (!filePrefix) filePrefix = FILE_EXCEPTIONS[varName];
   if (!filePrefix) throw new Error(`Variable name ${varName} not found in file mappings.`);
-  if (!unitPrefix) return null;
+  if (unitPrefix === null) return null;
 
+  const unitSuffix = unitPrefix ? `_${unitPrefix}` : '';
   const fileName = hour === Hour.HR_00
-    ? `${filePrefix}_${unitPrefix}_month_ascii.zip`
+    ? `${filePrefix}${unitSuffix}_month_ascii.zip`
     : month === Month.Annual
-      ? `${filePrefix}_${unitPrefix}_ann_hr_ascii.zip`
-      : `${filePrefix}_${unitPrefix}_month_hr_ascii.zip`;
+      ? `${filePrefix}${unitSuffix}_ann_hr_ascii.zip`
+      : `${filePrefix}${unitSuffix}_month_hr_ascii.zip`;
   return { fileName, fetchUrl: new URL(`${BASE_URL}${fileName}`) };
 }
 
@@ -218,15 +253,30 @@ async function getAETPointValue(
   latitude: number,
   longitude: number,
 ): Promise<number | null> {
+  if (varName === 'Clear Sky Radiation' && hour === Hour.HR_00) {
+    return null;
+  }
+
   const source = getAETArchiveSource(units, month, hour, varName);
   if (!source) return null;
 
   const asciiZip = await getAsciiArchive(source.fileName, source.fetchUrl);
   if (!asciiZip) return null;
 
+  if (varName === 'Clear Sky Radiation' && !CLEAR_SKY_RADIATION_DATA_HOURS.includes(hour)) {
+    const grid = await fetchZeroClearSkyRadiationGrid(asciiZip, month);
+    const { ncols, nrows, xllcorner, yllcorner, cellsize } = grid.header;
+    const column = Math.floor((longitude - xllcorner) / cellsize);
+    const row = Math.floor(nrows - (latitude - yllcorner) / cellsize);
+    if (column < 0 || column >= ncols || row < 0 || row >= nrows) return null;
+    const index = ncols * row + column;
+    return grid.values[index] === undefined ? null : 0;
+  }
+
   const fileName = findGridFileName(asciiZip, month, hour);
   const dataAsText = await asciiZip.files[fileName].async("string");
-  return getAsciiPointValue(dataAsText, latitude, longitude);
+  const value = getAsciiPointValue(dataAsText, latitude, longitude);
+  return varName === 'Cloud Frequency' && value !== null ? value * 100 : value;
 }
 
 export async function getAETPointValues({
@@ -255,9 +305,16 @@ export async function getAETPointValues({
     Month.December,
     Month.Annual,
   ];
-  const hours = Object.values(Hour).filter(hour => hour !== Hour.HR_00);
+  const hours = varName === 'Solar Radiation'
+    ? SOLAR_RADIATION_HOURS
+    : Object.values(Hour).filter(hour => hour !== Hour.HR_00);
+  const monthlyValues = varName === 'Clear Sky Radiation' || varName === 'Wind Speed'
+    ? Array<(number | null)>(months.length).fill(null)
+    : await Promise.all(months.map(month =>
+      getAETPointValue(units, month, Hour.HR_00, varName, latitude, longitude)
+    ));
   const values = await Promise.all([
-    ...months.map(month => getAETPointValue(units, month, Hour.HR_00, varName, latitude, longitude)),
+    ...monthlyValues,
     ...hours.map(hour => getAETPointValue(units, Month.Annual, hour, varName, latitude, longitude)),
   ]);
 
@@ -280,51 +337,29 @@ export async function getAETGrids({
   hour: Hour,
   varName: string,
 }) {
-  let fileName, fetchUrl;
-
-  let filePrefix = FILE_NAMES[varName];
-  let unitPrefix = units === Units.IN ? 'in' : units === Units.MM ? 'mm' : units === Units.WM2 ? 'wm2' : null;
-
-  // Latent Energy uses AET wm2 files
-  if (varName === 'Latent Energy') {
-    filePrefix = 'AET';
-    unitPrefix = 'wm2';
+  if (varName === 'Clear Sky Radiation' && hour === Hour.HR_00) {
+    throw new Error('Monthly-average grids are not available for Clear Sky Radiation.');
+  }
+  if (varName === 'Wind Speed' && (month !== Month.Annual || hour === Hour.HR_00)) {
+    throw new Error('Only annual hourly grids are available for Wind Speed.');
   }
 
-  // some variables don't have unit-specific files (e.g. Solar Radiation)
-  if (!filePrefix) {
-    filePrefix = FILE_NO_UNITS[varName];
-    unitPrefix = ''; // no unit in file name
-  }
+  const source = getAETArchiveSource(units, month, hour, varName);
+  if (!source) return null;
 
-  // only one file
-  if (!filePrefix) {
-    filePrefix = FILE_EXCEPTIONS[varName];
-  }
-  
-  if (!filePrefix) {
-    throw new Error(`Variable name ${varName} not found in file mappings.`);
-  }
-
-  if (!unitPrefix) return null;
-
-  if (hour === Hour.HR_00) {
-    fileName = `${filePrefix}_${unitPrefix}_month_ascii.zip`;
-    fetchUrl = new URL(`${BASE_URL}${fileName}`);
-  } else if (month === Month.Annual) {
-    fileName = `${filePrefix}_${unitPrefix}_ann_hr_ascii.zip`;
-    fetchUrl = new URL(`${BASE_URL}${fileName}`);
-  } else {
-    fileName = `${filePrefix}_${unitPrefix}_month_hr_ascii.zip`;
-    fetchUrl = new URL(`${BASE_URL}${fileName}`);
-  }
-
+  const { fileName, fetchUrl } = source;
   const asciiZip = await getAsciiArchive(fileName, fetchUrl);
   if (!asciiZip) {
     return null;
   }
 
-  const asciiGrids: AsciiGrid = await fetchAsciiGridData(asciiZip, month, hour);
+  const asciiGrids: AsciiGrid = varName === 'Clear Sky Radiation' &&
+    !CLEAR_SKY_RADIATION_DATA_HOURS.includes(hour)
+    ? await fetchZeroClearSkyRadiationGrid(asciiZip, month)
+    : await fetchAsciiGridData(asciiZip, month, hour);
+  if (varName === 'Cloud Frequency') {
+    convertCloudFrequencyGridToPercent(asciiGrids);
+  }
 
   console.log(`AET zip file used: ${fileName}; units: ${units}; month: ${month}; hour: ${hour}; var: ${varName}; internal file: ${(asciiGrids.header as any).sourceFileName}`);
 

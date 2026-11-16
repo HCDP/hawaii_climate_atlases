@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import L, { Rectangle, LatLng, LatLngBounds, Map } from "leaflet";
 import { useMap, MapContainer, TileLayer, useMapEvent } from "react-leaflet";
-import { Hour, Month, Period, TileLayerProps, Units } from "@/lib";
+import { Hour, Month, Period, TileLayerProps, Units, SOLAR_RADIATION_HOURS } from "@/lib";
 import {
   defaultSettings,
   LEAFLET_POSITIONS,
@@ -242,7 +242,11 @@ const MapOverlay: React.FC<Props> = (
     : showUncertainty ? 'Rainfall uncertainty' : 'Rainfall';
   const legendUnits = showUncertainty
     ? `${selectedUnits === Units.IN ? 'in' : 'mm'}²`
-    : selectedUnits.toLocaleLowerCase();
+    : selectedVariable === 'Cloud Frequency'
+      ? '%'
+      : selectedVariable === 'Wind Speed'
+        ? 'm/s'
+    : selectedUnits === Units.WM2 ? 'W/m²' : selectedUnits.toLocaleLowerCase();
   const legendValues = [
     legendRange[0],
     (legendRange[0] + legendRange[1]) / 2,
@@ -308,7 +312,13 @@ const MapOverlay: React.FC<Props> = (
     const unitOptions = Object.values(Units);
 
   // Hours 01-24 and ALL for hour selection
-  const hours = Object.values(Hour);
+  const hours = selectedVariable === 'Solar Radiation'
+    ? SOLAR_RADIATION_HOURS
+    : selectedVariable === 'Clear Sky Radiation'
+      ? Object.values(Hour).filter(hour => hour !== Hour.HR_00)
+      : selectedVariable === 'Wind Speed'
+        ? Object.values(Hour).filter(hour => hour !== Hour.HR_00)
+      : Object.values(Hour);
 
   // Array of the string keys of the Period enum ("January", "February", etc.)
   const periodNames: string[] = Object.keys(Period).filter(period => isNaN(parseInt(period)));
@@ -329,6 +339,7 @@ const MapOverlay: React.FC<Props> = (
   const isAllVar = allVars.includes(selectedVariable);
   const wm2Vars = ['Solar Radiation', 'Clear Sky Radiation', 'Cloud Frequency', 'Net Radiation', 'Latent Energy', 'Diffuse Radiation', 'Downward Longwave Radiation'];
   const isWm2Var = wm2Vars.includes(selectedVariable);
+  const isWindSpeedVar = selectedVariable === 'Wind Speed';
   const tempVars = ['Air Temperature', 'Surface Temperature'];
   const isTempVar = tempVars.includes(selectedVariable);
   const percentVars = ['Albedo', 'Relative Humidity', 'Available Soil Moisture', 'Cloud Frequency'];
@@ -594,7 +605,18 @@ const MapOverlay: React.FC<Props> = (
                             onPress={() => setSelectedUnits(Units.WM2)}
                             className={"bg-gray-400"}
                           >
-                            {'W/M^2'}
+                            {selectedVariable === 'Cloud Frequency' ? '%' : 'W/M^2'}
+                          </Button>
+                        </ButtonGroup>
+                      </TableCell>
+                    </TableRow>
+                  ) : isWindSpeedVar ? (
+                    <TableRow key="Units">
+                      <TableCell><p className="text-base">Units: </p></TableCell>
+                      <TableCell>
+                        <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
+                          <Button disableRipple disableAnimation className="w-[120px]">
+                            m/s
                           </Button>
                         </ButtonGroup>
                       </TableCell>
@@ -787,10 +809,17 @@ const MapOverlay: React.FC<Props> = (
                               onAction={(key) => {
                                 const varName = String(key);
                                 setSelectedVariable?.(varName);
+                                if (varName === 'Wind Speed') {
+                                  setSelectedMonth(Month.Annual);
+                                  if (selectedHour === Hour.HR_00) setSelectedHour(Hour.HR_01);
+                                }
                                 if (wm2Vars.includes(varName)) {
                                   setSelectedUnits(Units.WM2);
                                 } else if (allVars.includes(varName) && selectedUnits === Units.WM2) {
                                   setSelectedUnits(Units.IN);
+                                }
+                                if (varName === 'Clear Sky Radiation' && selectedHour === Hour.HR_00) {
+                                  setSelectedHour(Hour.HR_06);
                                 }
                               }}
                             >
@@ -822,6 +851,7 @@ const MapOverlay: React.FC<Props> = (
                           <Button disableRipple disableAnimation className="w-[120px]">
                             {!initialBackgroundLoadComplete ? 'Loading...' : selectedMonthDisplay}
                           </Button>
+                          {selectedVariable !== 'Wind Speed' && (
                           <Dropdown isOpen={monthListOpen} onOpenChange={(open) => setMonthListOpen(open)}>
                             <DropdownTrigger>
                               <Button isIconOnly>
@@ -843,6 +873,7 @@ const MapOverlay: React.FC<Props> = (
                               ))}
                             </DropdownMenu>
                           </Dropdown>
+                          )}
                         </ButtonGroup>
                       </TableCell>
                     </TableRow>
