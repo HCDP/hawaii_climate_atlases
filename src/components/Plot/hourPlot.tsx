@@ -7,7 +7,6 @@ type HistogramProps = {
     data: number[];
     units: string;
     selectedVariable: string;
-<<<<<<< HEAD
     hours?: string[];
     title?: string;
 };
@@ -15,14 +14,6 @@ type HistogramProps = {
 const allHours = Array.from({ length: 24 }, (_, i) => String(i + 1).padStart(2, '0'));
 
 export const HourPlot: React.FC<HistogramProps> = ({ data, units, selectedVariable, hours = allHours, title }) => {
-=======
-    title?: string;
-};
-
-const hours = Array.from({ length: 24 }, (_, i) => String(i + 1).padStart(2, '0'));
-
-export const HourPlot: React.FC<HistogramProps> = ({ data, units, selectedVariable, title }) => {
->>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
     
     // Create a unique key based on data to force proper re-render
     const dataKey = useMemo(() => data.join(','), [data]);

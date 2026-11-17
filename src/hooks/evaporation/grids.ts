@@ -2,7 +2,6 @@ import { Fetcher } from "swr";
 import useSWRImmutable from "swr/immutable";
 import { AsciiGrid, Units, Period, Hour } from "@/lib";
 
-<<<<<<< HEAD
 const fetcher: Fetcher<AsciiGrid, string> = async (url: string): Promise<AsciiGrid> => {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Failed to fetch grid: ${response.status}`);
@@ -37,10 +36,6 @@ export function useAETPointValues(
     error,
   };
 }
-=======
-const fetcher: Fetcher<AsciiGrid, string> = (url: string): Promise<AsciiGrid> => 
-  fetch(url).then(res => res.json());
->>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
 
 /**
  * Hook to fetch a single evapotranspiration grid for a specific unit, month, and hour
