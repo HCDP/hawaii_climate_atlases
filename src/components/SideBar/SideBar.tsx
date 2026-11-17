@@ -2,7 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import Plot from '@/components/Plot';
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, getKeyValue } from "@heroui/table";
+<<<<<<< HEAD
 import { Station, Units, Period, AsciiGrid, Month, Hour, SOLAR_RADIATION_HOURS } from "@/lib";
+=======
+import { Station, Units, Period, AsciiGrid, Month, Hour } from "@/lib";
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
 import { StationIcon } from "@/components/maps/Map";
 import { LatLng } from "leaflet";
 import { Button } from '@heroui/button';
@@ -21,8 +25,12 @@ const SideBar: React.FC<{
   selectedHour: Hour | null,
   selectedVariable: string,
   asciiGrids: AsciiGrid[],
+<<<<<<< HEAD
   evapMonthlyValues: (number | null)[],
   evapHourlyValues: (number | null)[],
+=======
+  hourlyAsciiGrids?: AsciiGrid[],
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
   canShowGridValues: boolean,
   selectedGridIndex: number,
   location: LatLng | null,
@@ -41,8 +49,12 @@ const SideBar: React.FC<{
   selectedHour,
   selectedVariable,
   asciiGrids,
+<<<<<<< HEAD
   evapMonthlyValues,
   evapHourlyValues,
+=======
+  hourlyAsciiGrids = [],
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
   canShowGridValues,
   selectedGridIndex,
   range,
@@ -95,6 +107,7 @@ const SideBar: React.FC<{
     }) : [];
 
     // Grab data up to december
+<<<<<<< HEAD
     const gridData: number[] = canShowGridValues
       ? isRainfall
         ? asciiGrids.slice(0, -1).map(asciiGrid => asciiGrid.values[selectedGridIndex])
@@ -104,6 +117,16 @@ const SideBar: React.FC<{
     const hourlyGridData: number[] = canShowGridValues
       ? evapHourlyValues.map(value => value ?? NaN)
       : [];
+=======
+    const gridData: number[] = canShowGridValues ? asciiGrids.slice(0, -1).map(asciiGrid =>
+      asciiGrid.values[selectedGridIndex]
+    ) : [];
+
+    const hourlyGridData: number[] = canShowGridValues && hourlyAsciiGrids.length > 0
+      ? hourlyAsciiGrids.map(asciiGrid => asciiGrid.values[selectedGridIndex])
+      : [];
+
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
     const rainfallColumns = [
       { key: "period", label: "Month" },
       { key: "map_data", label: "Map" },
@@ -124,6 +147,7 @@ const SideBar: React.FC<{
     })
 
     const evapRows = fullPeriods.map((period, index) => {
+<<<<<<< HEAD
       const gridValue = canShowGridValues ? evapMonthlyValues[index] : undefined;
       return {
         key: index,
@@ -149,6 +173,16 @@ const SideBar: React.FC<{
       };
     });
 
+=======
+      const gridValue = canShowGridValues ? asciiGrids[index]?.values[selectedGridIndex] : undefined;
+      return {
+        key: index,
+        period: period,
+        data: gridValue != null ? Math.round(gridValue * 100) / 100 : "",
+      };
+    })
+
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
     const stationColumns = [
       { key: "field", label: "Field" },
       { key: "value", label: "Value" },
@@ -174,11 +208,14 @@ const SideBar: React.FC<{
       { key: "data", label: `${selectedVariable}` },
     ];
 
+<<<<<<< HEAD
     const evapHourColumns = [
       { key: "period", label: "Hour" },
       { key: "data", label: `${selectedVariable}` },
     ];
 
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
     return (
       <>
         <div
@@ -435,7 +472,11 @@ const SideBar: React.FC<{
                 <div className="h-[300px] shrink-0 border-2 border-gray-300 rounded">
                   <MonthPlot
                     data={gridData.slice(0, -1)} // First 12 months (excluding annual)
+<<<<<<< HEAD
                     units={graphUnits}
+=======
+                    units={selectedUnits.toLocaleLowerCase()}
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
                     selectedVariable={selectedVariable}
                     title={`${selectedVariable} By Month`}
                   />
@@ -443,9 +484,14 @@ const SideBar: React.FC<{
                 <div className="h-[300px] shrink-0 border-2 border-gray-300 rounded mt-4">
                   <HourPlot
                     data={hourlyGridData}
+<<<<<<< HEAD
                     units={graphUnits}
                     selectedVariable={selectedVariable}
                     hours={hourlyLabels}
+=======
+                    units={selectedUnits.toLocaleLowerCase()}
+                    selectedVariable={selectedVariable}
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
                     title={`Annual ${selectedVariable} Per Hour`}
                   />
                 </div>
@@ -498,10 +544,17 @@ const SideBar: React.FC<{
                   classNames={{ th: "first:rounded-s-md last:rounded-e-md" }}
                   aria-label={`${selectedVariable} data table`}
                 >
+<<<<<<< HEAD
                   <TableHeader columns={evapHourColumns}>
                     {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                   </TableHeader>
                 <TableBody items={evapHourRows}>
+=======
+                  <TableHeader columns={evapColumns}>
+                    {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                  </TableHeader>
+                <TableBody items={evapRows}>
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
                   {item => (
                     <TableRow key={item.key}>
                       {columnKey => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}

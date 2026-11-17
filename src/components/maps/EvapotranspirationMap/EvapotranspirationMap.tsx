@@ -1,7 +1,11 @@
 import React from "react";
 import ClimateMap from "../ClimateMap";
 import { ClimateMapConfig } from "../ClimateMap/ClimateMap";
+<<<<<<< HEAD
 import { useEvapComposite, useAETPointValues } from "@/hooks/evaporation";
+=======
+import { useEvapComposite, useAETAllGrids, useAETAllHourGrids } from "@/hooks/evaporation";
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
 import { EvapColorLayer } from "./EvapColorLayer";
 
 /**
@@ -27,6 +31,7 @@ const EVAPOTRANSPIRATION_CONFIG: ClimateMapConfig = {
   // Use evap-specific color layer
   ColorLayerComponent: EvapColorLayer,
   // Use evapotranspiration data hooks instead of rainfall
+<<<<<<< HEAD
   useComposite: () => ({
     rfStations: undefined,
     otherStations: undefined,
@@ -38,6 +43,11 @@ const EVAPOTRANSPIRATION_CONFIG: ClimateMapConfig = {
   useEvapComposite: useEvapComposite,
   useAllGrids: () => ({ asciiGrids: [], gridsAreLoading: false }),
   useEvapPointValues: useAETPointValues,
+=======
+  useEvapComposite: useEvapComposite,
+  useAllGrids: useAETAllGrids,
+  useEvapAllHourGrids: useAETAllHourGrids,
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
   // Evap maps don't use the rainfall uncertainty endpoints — provide no-op hooks
   useUncertaintyComposite: (units, period) => ({ asciiGrid: undefined, allDataLoaded: true, isLoading: false }),
   useUncertaintyAllGrids: (units) => ({ asciiGrids: [], gridsAreLoading: false }),

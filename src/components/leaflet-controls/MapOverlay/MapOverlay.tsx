@@ -1,7 +1,11 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import L, { Rectangle, LatLng, LatLngBounds, Map } from "leaflet";
 import { useMap, MapContainer, TileLayer, useMapEvent } from "react-leaflet";
+<<<<<<< HEAD
 import { Hour, Month, Period, TileLayerProps, Units, SOLAR_RADIATION_HOURS } from "@/lib";
+=======
+import { Hour, Month, Period, TileLayerProps, Units } from "@/lib";
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
 import {
   defaultSettings,
   LEAFLET_POSITIONS,
@@ -181,8 +185,11 @@ interface Props {
   setShowGrids: (show: boolean) => void,
   showUncertainty: boolean,
   setShowUncertainty: (show: boolean) => void,
+<<<<<<< HEAD
   setLocation: (location: LatLng) => void,
   legendRange: [number, number],
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
   isLoading: boolean,
   gridsAreLoading: boolean,
   minimap: boolean,
@@ -216,8 +223,11 @@ const MapOverlay: React.FC<Props> = (
     setShowGrids,
     showUncertainty,
     setShowUncertainty,
+<<<<<<< HEAD
     setLocation,
     legendRange,
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
     isLoading,
     gridsAreLoading,
     minimap,
@@ -232,6 +242,7 @@ const MapOverlay: React.FC<Props> = (
 
   const [locationInput, setLocationInput] = useState<string>("");
   const [locationError, setLocationError] = useState<string | null>(null);
+<<<<<<< HEAD
   const legendColors = enableEvap
     ? ['#1a16f3', '#3fffff', '#ffff3f', '#ff9340', '#ff2000']
     : showUncertainty
@@ -253,6 +264,8 @@ const MapOverlay: React.FC<Props> = (
     legendRange[1],
   ];
   const formatLegendValue = (value: number) => value.toLocaleString(undefined, { maximumFractionDigits: 3 });
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
   const handleLocationChange = () => {
     if (locationInput.length === 0) {
       setLocationError(null);
@@ -260,7 +273,11 @@ const MapOverlay: React.FC<Props> = (
     }
     const parsedLatLng = parseLocation(locationInput);
     if (parsedLatLng !== null) {
+<<<<<<< HEAD
       setLocation(parsedLatLng);
+=======
+      map.setView(parsedLatLng);
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
       setLocationError(null);
     } else {
       setLocationError("Invalid coordinates entered");
@@ -312,6 +329,7 @@ const MapOverlay: React.FC<Props> = (
     const unitOptions = Object.values(Units);
 
   // Hours 01-24 and ALL for hour selection
+<<<<<<< HEAD
   const hours = selectedVariable === 'Solar Radiation'
     ? SOLAR_RADIATION_HOURS
     : selectedVariable === 'Clear Sky Radiation'
@@ -319,6 +337,9 @@ const MapOverlay: React.FC<Props> = (
       : selectedVariable === 'Wind Speed'
         ? Object.values(Hour).filter(hour => hour !== Hour.HR_00)
       : Object.values(Hour);
+=======
+  const hours = Object.values(Hour);
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
 
   // Array of the string keys of the Period enum ("January", "February", etc.)
   const periodNames: string[] = Object.keys(Period).filter(period => isNaN(parseInt(period)));
@@ -339,7 +360,10 @@ const MapOverlay: React.FC<Props> = (
   const isAllVar = allVars.includes(selectedVariable);
   const wm2Vars = ['Solar Radiation', 'Clear Sky Radiation', 'Cloud Frequency', 'Net Radiation', 'Latent Energy', 'Diffuse Radiation', 'Downward Longwave Radiation'];
   const isWm2Var = wm2Vars.includes(selectedVariable);
+<<<<<<< HEAD
   const isWindSpeedVar = selectedVariable === 'Wind Speed';
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
   const tempVars = ['Air Temperature', 'Surface Temperature'];
   const isTempVar = tempVars.includes(selectedVariable);
   const percentVars = ['Albedo', 'Relative Humidity', 'Available Soil Moisture', 'Cloud Frequency'];
@@ -431,7 +455,11 @@ const MapOverlay: React.FC<Props> = (
   return (
     <>
       <div ref={disableClickPropagation} className={LEAFLET_POSITIONS.topleft}>
+<<<<<<< HEAD
         <div className="leaflet-control flex flex-col gap-2">
+=======
+        <div className="leaflet-control flex gap-0">
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
           <form
             ref={disableClickPropagation}
             className="flex flex-col gap-2.5"
@@ -450,6 +478,7 @@ const MapOverlay: React.FC<Props> = (
             />
             {locationError && <p className="text-red-700 pl-3">{locationError}</p>}
           </form>
+<<<<<<< HEAD
           {(enableEvap || showUncertainty || showGrids) && (
             <div
               ref={disableClickPropagation}
@@ -472,6 +501,8 @@ const MapOverlay: React.FC<Props> = (
               </div>
             </div>
           )}
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
           {/*<Button*/}
           {/*  onPress={() => {*/}
           {/*    setLocationError(null);*/}
@@ -605,6 +636,7 @@ const MapOverlay: React.FC<Props> = (
                             onPress={() => setSelectedUnits(Units.WM2)}
                             className={"bg-gray-400"}
                           >
+<<<<<<< HEAD
                             {selectedVariable === 'Cloud Frequency' ? '%' : 'W/M^2'}
                           </Button>
                         </ButtonGroup>
@@ -617,6 +649,9 @@ const MapOverlay: React.FC<Props> = (
                         <ButtonGroup size="sm" className="font-bold" radius="sm" color="primary">
                           <Button disableRipple disableAnimation className="w-[120px]">
                             m/s
+=======
+                            {'W/M^2'}
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
                           </Button>
                         </ButtonGroup>
                       </TableCell>
@@ -809,18 +844,24 @@ const MapOverlay: React.FC<Props> = (
                               onAction={(key) => {
                                 const varName = String(key);
                                 setSelectedVariable?.(varName);
+<<<<<<< HEAD
                                 if (varName === 'Wind Speed') {
                                   setSelectedMonth(Month.Annual);
                                   if (selectedHour === Hour.HR_00) setSelectedHour(Hour.HR_01);
                                 }
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
                                 if (wm2Vars.includes(varName)) {
                                   setSelectedUnits(Units.WM2);
                                 } else if (allVars.includes(varName) && selectedUnits === Units.WM2) {
                                   setSelectedUnits(Units.IN);
                                 }
+<<<<<<< HEAD
                                 if (varName === 'Clear Sky Radiation' && selectedHour === Hour.HR_00) {
                                   setSelectedHour(Hour.HR_06);
                                 }
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
                               }}
                             >
                               {variableOptions.map((variable) => (
@@ -851,7 +892,10 @@ const MapOverlay: React.FC<Props> = (
                           <Button disableRipple disableAnimation className="w-[120px]">
                             {!initialBackgroundLoadComplete ? 'Loading...' : selectedMonthDisplay}
                           </Button>
+<<<<<<< HEAD
                           {selectedVariable !== 'Wind Speed' && (
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
                           <Dropdown isOpen={monthListOpen} onOpenChange={(open) => setMonthListOpen(open)}>
                             <DropdownTrigger>
                               <Button isIconOnly>
@@ -873,7 +917,10 @@ const MapOverlay: React.FC<Props> = (
                               ))}
                             </DropdownMenu>
                           </Dropdown>
+<<<<<<< HEAD
                           )}
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
                         </ButtonGroup>
                       </TableCell>
                     </TableRow>
@@ -985,4 +1032,8 @@ const MapOverlay: React.FC<Props> = (
   )
 }
 
+<<<<<<< HEAD
 export default MapOverlay;
+=======
+export default MapOverlay;
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3

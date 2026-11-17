@@ -26,6 +26,7 @@ export async function GET(request: NextRequest, { params }: {
   if (!isHour(hour)) return invalidHourResponse;
 
   const varName = request.nextUrl.searchParams.get('var') ?? 'Evapotranspiration';
+<<<<<<< HEAD
   if (varName === 'Clear Sky Radiation' && hour === Hour.HR_00) {
     return NextResponse.json(
       { error: 'Monthly-average grids are not available for Clear Sky Radiation.' },
@@ -38,14 +39,20 @@ export async function GET(request: NextRequest, { params }: {
       { status: 400 },
     );
   }
+=======
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
 
   const asciiGrids = await getAETGrids({ units, month: Month[month], hour: hour as Hour, varName });
   if (!asciiGrids) return unableToRetrieveResponse;
 
+<<<<<<< HEAD
   return NextResponse.json(asciiGrids, {
     status: 200,
     headers: {
       "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
     },
   });
+=======
+  return NextResponse.json(asciiGrids, { status: 200 });
+>>>>>>> 41ac3342763d5684dbbe569d0abdd195664577f3
 }
